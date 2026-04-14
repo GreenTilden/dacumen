@@ -1,0 +1,39 @@
+# DAcumen .gitignore
+#
+# The repo ships only docs, skeleton templates, and scripts. Nothing that
+# references anyone's actual working state should ever land in a commit.
+# If you're editing DAcumen for yourself, keep local adaptations out of
+# the upstream repo.
+
+# Local adaptations the giver might have made
+/local/
+*.local.md
+*.local.json
+*.local.sh
+
+# OS
+.DS_Store
+Thumbs.db
+*~
+.#*
+\#*#
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python / Node if any script grows a helper someday
+__pycache__/
+*.pyc
+node_modules/
+.env
+.env.*
+
+# Private test data — if anyone runs install.sh --target against a
+# scratch dir inside the repo, never commit the output
+/scratch/
+/tmp-install/
+backup-*.tar
+~/.claude.pre-dacumen.*

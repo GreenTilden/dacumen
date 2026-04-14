@@ -12,7 +12,7 @@ The Foreman^^ framework organizes work into three concurrent sprints that form a
 
 Described that way the sprints sound like roles on a spreadsheet. In practice, people run work better when the sprints have personalities. Naming them lets you say *"Dewey found a way around that"* instead of *"the consolidation sprint produced an artifact at L23"* — the first sentence stays in your head, the second one doesn't.
 
-The framework also lets different agents (or different Claude Code sessions) inhabit each sprint. When you and a teammate are both working with DAcumen, you can pass briefs between sprints by identity: *"Louie wrote an upstream brief for Huey before logging off"* is more legible than *"the DTAPE session committed louie-upstream-to-huey.md and then the DDANN session picked it up."*
+The framework also lets different agents (or different Claude Code sessions) inhabit each sprint. When you and a teammate are both working with DAcumen, you can pass briefs between sprints by identity: *"Louie wrote an upstream brief for Huey before logging off"* is more legible than *"the validation session committed louie-upstream-to-huey.md and then the discovery session picked it up."*
 
 ## The default trio — Huey, Louie, Dewey
 
@@ -63,7 +63,7 @@ If you keep the trio names but want different colors (or if you're naming your o
 2. **Three hues at least 60° apart on the color wheel.** Red/green/blue is 120° apart — maximum separation. Red/orange/yellow would be too close.
 3. **One of the three should be green-ish for validation.** Green reads as "tested" everywhere. Going against that convention works but costs legibility.
 4. **None of them should be amber, purple, or white.** Those are reserved for other semantic roles in the framework (amber = life/domestic, purple = R&D, white = text). Pick hues that don't collide.
-5. **Provide a triplet per identity.** Primary, dark (for text-on-color), and pale (for backgrounds). See `ellabot-app/src/styles/tokens.css` for how DAcumen's Louie triplet is structured:
+5. **Provide a triplet per identity.** Primary, dark (for text-on-color), and pale (for backgrounds). Shape the tokens like this in your project's design-tokens file:
 
 ```css
 --louie-primary: #50C878;   /* emerald jewel */
@@ -79,7 +79,7 @@ Once you've picked names and colors, there are three places to edit them:
 
 1. **`~/.claude/CLAUDE.md`** — add a `## Trio Identities` section near the top describing your three sprints and their mapping to discovery/validation/consolidation. This is the source of truth agents read when they need to know which name maps to which role.
 2. **`~/.claude/sprints/<name>/charter.md`** — the individual sprint charters reference their identity (e.g., "This is Louie's sprint — the validation layer").
-3. **`ellabot-app/src/styles/tokens.css`** (if you run the atomic ledger UI) — update the `--<identity>-primary/-dark/-pale` tokens to your chosen palette. The CascadePanel reads through these variables automatically.
+3. **Your project's design-tokens file** (if you run a dashboard UI built on Foreman^^) — update the `--<identity>-primary/-dark/-pale` tokens to your chosen palette. Any cascade panel or role-accent consumer reads through these variables automatically.
 
 A future DAcumen install.sh loop will prompt for your trio names and palette at setup time and wire all three surfaces for you. Until then the edit is manual — but it's three files, and you only do it once.
 

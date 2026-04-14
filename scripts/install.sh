@@ -151,6 +151,45 @@ for script in cross-sprint-audit.sh; do
     fi
 done
 
+# ---- Trio identity prompt (skipped in --force mode) ----
+# Offers a "pick your trio" onboarding step during interactive install so
+# the user names their three sprint agents before the first session. The
+# resulting names land in $TARGET/.dacumen-trio.json for downstream scripts
+# and in the CLAUDE.md skeleton's Trio Identities table for the agent to
+# read on wake. Default is Huey/Louie/Dewey — same as Donald Duck's nephews
+# with the red/green/blue palette. See docs/trio-identities.md for alternate
+# starter trios (Three Stooges, Chipmunks, Musketeers, etc.) and the
+# pick-your-own-palette checklist.
+TRIO_FILE="$TARGET/.dacumen-trio.json"
+if [ "$FORCE" -eq 0 ] && [ ! -e "$TRIO_FILE" ]; then
+    say ""
+    say_blue "Trio identities"
+    say_dim "  Name your three sprint agents. Press Enter at each prompt to accept"
+    say_dim "  the default (Huey/Louie/Dewey). See docs/trio-identities.md for alternate"
+    say_dim "  starter trios or write your own."
+    say ""
+    printf "  Discovery layer (leader, runs first)  [Huey]: "
+    read -r trio_discovery
+    trio_discovery="${trio_discovery:-Huey}"
+    printf "  Validation layer (stress-tester)     [Louie]: "
+    read -r trio_validation
+    trio_validation="${trio_validation:-Louie}"
+    printf "  Consolidation layer (baker)          [Dewey]: "
+    read -r trio_consolidation
+    trio_consolidation="${trio_consolidation:-Dewey}"
+    cat > "$TRIO_FILE" <<EOF
+{
+  "discovery": "$trio_discovery",
+  "validation": "$trio_validation",
+  "consolidation": "$trio_consolidation",
+  "installed_at": "$(date -Iseconds)",
+  "note": "Edit this file anytime to rename. Downstream scripts and the CLAUDE.md skeleton's Trio Identities table read through these names. See docs/trio-identities.md for role semantics and palette guidance."
+}
+EOF
+    say_green "  saved $TRIO_FILE"
+    say_dim "    $trio_discovery (discovery) · $trio_validation (validation) · $trio_consolidation (consolidation)"
+fi
+
 # ---- Summary ----
 say ""
 say_bold "Done."

@@ -58,7 +58,18 @@ else
     C_BOLD=''; C_GREEN=''; C_RED=''; C_AMBER=''; C_DIM=''; C_RESET=''
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Resolve the real path even when invoked through a symlink (which happens
+# when installed as a git pre-commit hook via install.sh --hooks). Without
+# this resolution, BASH_SOURCE[0] points at the symlink in .git/hooks/,
+# and REPO_ROOT would compute to .git/ instead of the DAcumen root, causing
+# the script lint step to find zero scripts.
+SCRIPT_SELF="${BASH_SOURCE[0]}"
+if command -v readlink >/dev/null 2>&1; then
+    # readlink -f resolves all symlinks; portable on Linux + most BSDs
+    RESOLVED=$(readlink -f "$SCRIPT_SELF" 2>/dev/null || echo "$SCRIPT_SELF")
+    SCRIPT_SELF="$RESOLVED"
+fi
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_SELF")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 FAIL_COUNT=0

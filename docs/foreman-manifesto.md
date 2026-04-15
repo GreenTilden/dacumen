@@ -5,6 +5,9 @@ license: MIT (see repo LICENSE)
 distribution: DAcumen onboarding kit
 ---
 
+<!-- check-guardrails: allow-forbidden-terms — this doc teaches the guardrail pattern in §6 and quotes the forbidden vocabulary verbatim to explain what it is; exempt from the forbidden-term grep check -->
+
+
 # The Foreman^^ Manifesto
 
 > **Foreman^^** (two carets, a loose double helix) is a framework for running real work with AI coding assistants. It provides the methodology, the loop structure, and the cross-sprint coordination discipline that make a long-running collaboration with an AI actually compound instead of sprawl.

@@ -2,11 +2,13 @@
 # DAcumen installer — non-destructive setup for a Claude Code working rhythm.
 #
 # Usage:
-#   ./scripts/install.sh                 # interactive, installs to ~/.claude
-#   ./scripts/install.sh --reference     # prints paths, writes nothing
-#   ./scripts/install.sh --target <dir>  # install to a custom path (for testing)
-#   ./scripts/install.sh --force         # skip confirmation prompts
-#   ./scripts/install.sh --help          # show this help
+#   ./scripts/install.sh                    # interactive, installs to ~/.claude
+#   ./scripts/install.sh --reference        # prints paths, writes nothing
+#   ./scripts/install.sh --target <dir>     # install to a custom path (for testing)
+#   ./scripts/install.sh --force            # skip confirmation prompts
+#   ./scripts/install.sh --hooks <repo>     # also install check-guardrails.sh as
+#                                             pre-commit hook in <repo>
+#   ./scripts/install.sh --help             # show this help
 #
 # The installer:
 #   1. Backs up your existing ~/.claude/ to ~/.claude.pre-dacumen.<timestamp>
@@ -23,12 +25,15 @@ set -u
 MODE="install"
 TARGET="${HOME}/.claude"
 FORCE=0
+INSTALL_HOOKS=0
+HOOKS_REPO=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
         --reference) MODE="reference"; shift ;;
         --target)    TARGET="$2"; shift 2 ;;
         --force)     FORCE=1; shift ;;
+        --hooks)     INSTALL_HOOKS=1; HOOKS_REPO="$2"; shift 2 ;;
         -h|--help)
             sed -n '2,22p' "$0" | sed 's/^# //; s/^#//'
             exit 0
@@ -141,7 +146,7 @@ done
 # ---- Install scripts into $TARGET/scripts so they're easy to find ----
 say_blue "Installing scripts..."
 mkdir -p "$TARGET/scripts"
-for script in cross-sprint-audit.sh; do
+for script in cross-sprint-audit.sh check-guardrails.sh; do
     src="$REPO_ROOT/scripts/$script"
     dst="$TARGET/scripts/$script"
     if [ -e "$src" ]; then
@@ -150,6 +155,32 @@ for script in cross-sprint-audit.sh; do
         say_green "  installed scripts/$script"
     fi
 done
+
+# ---- Optional: install check-guardrails.sh as a pre-commit hook in a git repo ----
+# Triggered by --hooks <repo-path>. Creates a symlink from <repo>/.git/hooks/
+# pre-commit into the DAcumen scripts directory so every commit in that repo
+# runs the guardrail audit before landing. Non-destructive: if a pre-commit
+# hook already exists, print a warning and skip.
+if [ "$INSTALL_HOOKS" -eq 1 ]; then
+    if [ -z "$HOOKS_REPO" ]; then
+        say_amber "  --hooks requires a git repo path (usage: --hooks <repo-path>)"
+    elif [ ! -d "$HOOKS_REPO/.git" ]; then
+        say_amber "  --hooks: $HOOKS_REPO is not a git repo (no .git directory)"
+    else
+        HOOK_FILE="$HOOKS_REPO/.git/hooks/pre-commit"
+        if [ -e "$HOOK_FILE" ] && [ ! -L "$HOOK_FILE" ]; then
+            say_amber "  --hooks: pre-commit hook already exists at $HOOK_FILE"
+            say_dim "    (non-symlink; refusing to overwrite; move it manually or"
+            say_dim "     chain the guardrail check into your existing hook)"
+        elif [ -L "$HOOK_FILE" ] && [ "$(readlink "$HOOK_FILE")" = "$REPO_ROOT/scripts/check-guardrails.sh" ]; then
+            say_green "  --hooks: pre-commit symlink already points at check-guardrails.sh"
+        else
+            [ -L "$HOOK_FILE" ] && rm "$HOOK_FILE"
+            ln -s "$REPO_ROOT/scripts/check-guardrails.sh" "$HOOK_FILE"
+            say_green "  --hooks: installed pre-commit -> $REPO_ROOT/scripts/check-guardrails.sh"
+        fi
+    fi
+fi
 
 # ---- Trio identity prompt (skipped in --force mode) ----
 # Offers a "pick your trio" onboarding step during interactive install so

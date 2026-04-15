@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+<!-- check-guardrails: allow-forbidden-terms — the Conventions section cites the forbidden vocabulary as an example of what not to say; exempt from the forbidden-term grep check. Users adapting this skeleton to their own project should DELETE this marker and the Conventions section example if they don't keep the guardrail rule. -->
+
 *Auto-loaded into every Claude Code session for this repo. This is a DAcumen skeleton — shape it to your project. See `dacumen/docs/memory-framework.md` for the full convention.*
 
 ## Project Identity

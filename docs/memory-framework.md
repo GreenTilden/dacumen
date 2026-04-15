@@ -1,5 +1,7 @@
 # Memory Framework — CLAUDE.md + MEMORY.md
 
+<!-- check-guardrails: allow-forbidden-terms — the Vocabulary Guardrails section explicitly lists forbidden display vocabulary to teach the pattern; exempt from the forbidden-term grep check -->
+
 *Standard conventions for cross-session continuity in Claude Code projects. Zero-dependency, markdown-native. Applies to every repo — personal, professional, client work, utilities, experiments. If it has a git repo, it gets this structure.*
 
 ## Why this exists

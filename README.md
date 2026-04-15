@@ -1,6 +1,10 @@
 # DAcumen
 
+<img src="public/favicon.svg" alt="DAcumen — pixelated robot dove with olive branch" width="96" height="96" align="left" />
+
 *A working-rhythm kit for people collaborating with Claude Code.*
+
+&nbsp;
 
 DAcumen is a set of **opinionated, shareable patterns** for running real work with [Claude Code](https://claude.com/claude-code) — the sprint structure, the memory framework, the loop discipline, the cross-sprint audit, the three-pillars test — pulled out of one person's setup and packaged so you can drop it onto your own machine in about five minutes.
 

@@ -1,0 +1,80 @@
+<!--
+  DAcumen favicon · pixelated robot-dove-with-olive-branch
+  placeholder — not real art, hand-rolled SVG rectangles in 32×32
+  pixel grid. Replaces when commissioned art lands. See
+  docs/logo-concept.md for the design brief.
+
+  Palette:
+    body   #e6edf3  (off-white body)
+    shadow #30363d  (dark body shadow)
+    beak   #d29922  (amber beak + feet, LIF pillar color)
+    eye    #7ee787  (single-pixel cli-green eye)
+    leaf   #58a6ff  (ops-blue olive-branch leaves)
+    olive  #a371f7  (rnd-purple olives on the branch)
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" shape-rendering="crispEdges">
+  <rect width="32" height="32" fill="#0d1117"/>
+
+  <!-- dove body (off-white) -->
+  <rect x="10" y="9" width="2" height="1" fill="#e6edf3"/>
+  <rect x="12" y="8" width="3" height="1" fill="#e6edf3"/>
+  <rect x="11" y="10" width="5" height="1" fill="#e6edf3"/>
+  <rect x="10" y="11" width="7" height="1" fill="#e6edf3"/>
+  <rect x="9" y="12" width="9" height="1" fill="#e6edf3"/>
+  <rect x="8" y="13" width="11" height="1" fill="#e6edf3"/>
+  <rect x="8" y="14" width="12" height="1" fill="#e6edf3"/>
+  <rect x="9" y="15" width="11" height="1" fill="#e6edf3"/>
+  <rect x="10" y="16" width="9" height="1" fill="#e6edf3"/>
+
+  <!-- body shadow (darker underside) -->
+  <rect x="9" y="13" width="1" height="1" fill="#30363d"/>
+  <rect x="8" y="14" width="1" height="1" fill="#30363d"/>
+  <rect x="9" y="15" width="1" height="1" fill="#30363d"/>
+  <rect x="17" y="16" width="2" height="1" fill="#30363d"/>
+
+  <!-- wing (single fold) -->
+  <rect x="12" y="11" width="1" height="1" fill="#30363d"/>
+  <rect x="13" y="11" width="1" height="1" fill="#e6edf3"/>
+  <rect x="11" y="12" width="1" height="1" fill="#30363d"/>
+  <rect x="12" y="12" width="2" height="1" fill="#e6edf3"/>
+  <rect x="14" y="12" width="1" height="1" fill="#30363d"/>
+
+  <!-- eye (cli green pixel) -->
+  <rect x="13" y="10" width="1" height="1" fill="#7ee787"/>
+
+  <!-- beak (amber, pointing right at the olive branch) -->
+  <rect x="15" y="9" width="1" height="1" fill="#d29922"/>
+  <rect x="16" y="9" width="1" height="1" fill="#d29922"/>
+
+  <!-- feet (amber) -->
+  <rect x="11" y="17" width="1" height="1" fill="#d29922"/>
+  <rect x="12" y="17" width="1" height="1" fill="#d29922"/>
+  <rect x="15" y="17" width="1" height="1" fill="#d29922"/>
+  <rect x="16" y="17" width="1" height="1" fill="#d29922"/>
+
+  <!-- olive branch — stem (dark) -->
+  <rect x="17" y="9" width="1" height="1" fill="#30363d"/>
+  <rect x="18" y="9" width="1" height="1" fill="#30363d"/>
+  <rect x="19" y="9" width="1" height="1" fill="#30363d"/>
+  <rect x="20" y="9" width="1" height="1" fill="#30363d"/>
+  <rect x="21" y="9" width="1" height="1" fill="#30363d"/>
+  <rect x="22" y="9" width="1" height="1" fill="#30363d"/>
+
+  <!-- olive branch — leaves (ops blue) -->
+  <rect x="18" y="8" width="1" height="1" fill="#58a6ff"/>
+  <rect x="19" y="8" width="1" height="1" fill="#58a6ff"/>
+  <rect x="20" y="8" width="1" height="1" fill="#58a6ff"/>
+  <rect x="19" y="7" width="1" height="1" fill="#58a6ff"/>
+  <rect x="21" y="10" width="1" height="1" fill="#58a6ff"/>
+  <rect x="22" y="10" width="1" height="1" fill="#58a6ff"/>
+  <rect x="23" y="10" width="1" height="1" fill="#58a6ff"/>
+  <rect x="22" y="11" width="1" height="1" fill="#58a6ff"/>
+
+  <!-- olive branch — olives (rnd purple) -->
+  <rect x="20" y="10" width="1" height="1" fill="#a371f7"/>
+  <rect x="21" y="11" width="1" height="1" fill="#a371f7"/>
+  <rect x="23" y="9" width="1" height="1" fill="#a371f7"/>
+
+  <!-- ground line (subtle) -->
+  <rect x="6" y="19" width="20" height="1" fill="#21262d"/>
+</svg>

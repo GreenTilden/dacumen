@@ -50,6 +50,18 @@
 | Dev | localhost | 5010 | http://localhost:5010 | `npm run dev` | — |
 | Prod | | | | | |
 
+## Cycle Context
+
+*Delete this section if you're not running pillar-rotation cycles. See `dacumen/docs/cycle-architecture.md` for when to add it.*
+
+- **Active**: cycle-N `<cycle-label>` · pillar **<professional | personal | domestic>** (rotation pos N) · structure `<dev-week | chore-cycle>` · cascade `sequential-with-lag-fixed-10` · opened YYYY-MM-DDTHH:MM
+- **Charter**: vN.N.N (Amendment NN status, cumulative rule count)
+- **Sprint trio**: **<Huey-id>** <DISCOVERY-CODE> discovery · **<Louie-id>** <VALIDATION-CODE> validation @ Huey L10 · **<Dewey-id>** <CONSOLIDATION-CODE> consolidation @ Louie L10
+- **Carryover from prior cycle**: (summary of ratified / HITL-pending / deferred items)
+- **Prior cycle**: closed YYYY-MM-DD, final commit <sha>
+- **Live-state sources**: `.foreman/cycle.json` · `docs/foreman/sprints/*/sprint-log.md` · (optional: cross-sprint-audit.json, ledger endpoint)
+- **Automations armed**: (pre-commit gates, timers, hooks currently active)
+
 ## Sprint State
 
 *If you're running Foreman^^ sprints in this project, mirror the current sprint-log cascade state here so cold-start agents see it before opening the sprint-log files.*

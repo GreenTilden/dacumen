@@ -42,10 +42,13 @@ This project follows the Foreman^^ methodology. Key docs at `dacumen/docs/`:
 
 - **`foreman-manifesto.md`** — the framework spec
 - **`three-sprint-cascade.md`** — the three-layer cascade architecture + rescue protocol
+- **`cycle-architecture.md`** — the layer above sprints: pillar rotation + cascade lag
 - **`three-pillars.md`** — the Professional / Personal / Domestic test
-- **`memory-framework.md`** — CLAUDE.md + MEMORY.md tier system + vocabulary guardrails
+- **`memory-framework.md`** — CLAUDE.md + MEMORY.md tier system + vocabulary guardrails + Cycle Context section
 - **`hitl-cadence.md`** — Human-in-the-Loop checkpoint rule
+- **`charter-versioning.md`** — amendment ratification process + external-sync rituals
 - **`trio-identities.md`** — naming your three sprints
+- **`dacumen-sync-process.md`** — the methodology-mirror sync ritual
 
 ## Architecture
 

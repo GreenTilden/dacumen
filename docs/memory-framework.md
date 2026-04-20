@@ -78,6 +78,36 @@ Cross-project references. Know what depends on what:
 | Prod | your.host | 80 | https://your-domain.example | `npm run build` | scp or similar |
 ```
 
+#### 7. Cycle Context (if running cycles)
+
+*Add this section when your project runs pillar-rotation cycles (see `cycle-architecture.md`). If you're running single-sprint arcs without cycle structure, skip it.*
+
+Cycle Context mirrors the active `.foreman/cycle.json` manifest into MEMORY.md so cold-start agents see cycle state in the same read as Session Status:
+
+```markdown
+## Cycle Context
+- **Active**: cycle-N `<cycle-label>` · pillar **<name>** (rotation pos N) · structure `<dev-week | chore-cycle>` · cascade `sequential-with-lag-fixed-N` · opened YYYY-MM-DDTHH:MM
+- **Charter**: vN.N.N (Amendment NN status, cumulative rule count)
+- **Sprint trio**: **<Identity1>** <SPRINT-01> discovery · **<Identity2>** <SPRINT-02> validation @ <Identity1> L10 · **<Identity3>** <SPRINT-03> consolidation @ <Identity2> L10
+- **Carryover from prior cycle**: (summary of ratified / contingent / deferred items)
+- **Prior cycle**: closed YYYY-MM-DD, final commit <sha>
+- **Live-state sources**: `.foreman/cycle.json` · `docs/foreman/sprints/*/sprint-log.md` · (optional: your cross-sprint-audit.json, your ledger endpoint)
+- **Automations armed**: (pre-commit gates, timers, hooks currently active)
+```
+
+The content here is always derived from `cycle.json` — Cycle Context is the human-readable mirror, the JSON is the authoritative state. If they diverge, the JSON wins and the mirror is updated in the next ratifying commit.
+
+### Lean-form discipline — where narrative lives
+
+MEMORY.md is a short orientation document, not a working journal. Key discipline:
+
+- **Per-loop narrative lives in sprint-log.md**, not MEMORY.md. If a sprint has a rich 40-loop history, that belongs in `docs/foreman/sprints/<SPRINT>/sprint-log.md` — MEMORY.md summarizes only the **current** focus.
+- **Session Status stays to 5 lines max** (status, focus, blockers, next steps, last updated). If you find yourself writing a paragraph in Current Focus, that detail goes in the sprint-log instead.
+- **Topic-specific state moves to topic files** (e.g., `memory/project_client_x.md`) referenced from a one-line index in MEMORY.md. This keeps MEMORY.md scannable as a cold-start entry point.
+- **If MEMORY.md exceeds ~200 lines, it's too big.** Either the project has outgrown what belongs in a single orientation doc (in which case: split to topic files), or the Session Status is accumulating historical narrative (in which case: the per-loop details belong in sprint-log).
+
+The failure mode this prevents: MEMORY.md growing unboundedly into a second sprint-log, becoming too expensive to read at session-start, and losing its orientation-doc purpose.
+
 ## CLAUDE.md — the identity-and-rules file
 
 CLAUDE.md is auto-loaded into every Claude Code session for the repo. It's the one file guaranteed to be in the agent's context, so it carries the highest-priority content: identity, rules, conventions the agent must follow.

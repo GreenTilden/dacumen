@@ -2,6 +2,21 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## [0.2.0-preview] — charter-amend-11 sync (in progress)
+
+Per the DAcumen-sync-ritual ratified in Amendment 11 (upstream), charter amendments and contract evolutions tick DAcumen-visible content. First partial payload lands while Amendment 11 is still drafting:
+
+### Added
+
+- **`docs/case-studies/telemetry-contract-inversion.md` — "Post-stabilization pitfall — tautological producer emission" appendix.** Captures an anti-pattern discovered upstream after the contract-inversion pattern stabilized: producers that emit a field structurally derived from another field on the same entry (e.g., `agent_wall_clock_s = duration_minutes * 60`) pass contract validation but carry zero real signal. Sections cover detection (point-mass distribution on slack), three fix options (session-lifecycle instrumentation / platform env var / retire the field), `agent_wcs_source` provenance field recommendation, generalization to other validating-but-meaningless fields, and cascade-discipline around handing the fix to the next role in the trio.
+
+### Notes
+
+- Full 0.2.0 charter-amend-11 payload (quickstart/skills/skeleton updates per the sync-ritual scope) lands once Amendment 11 ratifies upstream. This entry is the first partial ship — the anti-pattern appendix is independently valuable for existing readers of the telemetry-contract case study.
+- Guardrail 3/3 check passes on the appendix + this CHANGELOG entry (forbidden-term / private-financial-institution / script-lint).
+
+---
+
 ## v0.1.1 — overnight autonomy polish (2026-04-15)
 
 Shipped during a continuous autonomous Foreman^^ overnight run (Louie session, 2026-04-14 evening → 2026-04-15 morning). Each item here corresponds to a closed loop with full git history + EllaBot telemetry on the author's side.

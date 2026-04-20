@@ -14,6 +14,45 @@ If someone you trust handed you this link, they're inviting you into how they wo
 
 ---
 
+## Wait, what actually is this?
+
+The quickest way to explain DAcumen is **before and after**.
+
+**Before DAcumen** — you open Claude Code, tell it what you want, work through something, close the session. Next time you come back, the agent has no memory of the last session. You re-explain context, re-point at files, re-orient yourself. Your "current work" lives in your head. The session transcript is the only history.
+
+**After DAcumen** — you open Claude Code and run `/brief`. The agent responds with:
+
+```
+Cycle 3 · weekly-chores-v1 · pillar: domestic (rotation 3/3)
+Active sprint trio:
+  HUEY   (discovery)      L20 closed  — telemetry contract @99.9% convergence
+  LOUIE  (validation)     L04 open    — probe suite passing 12/14
+  DEWEY  (consolidation)  queued      — fires at LOUIE L10
+
+Open HITL checkpoints: 1 (huey-l19b-batch-patch, waiting 3h)
+Ledger last 24h: 7 loop_close · 1 charter_amendment_ratified · 2 smoke_test
+Narrative ↔ ledger alignment: ✓ no divergence
+Next step: resume HUEY L19b write-mode PATCH after operator green-light
+```
+
+That's the DAcumen difference. Your project has a *structure* the agent can read — sprints, loops, a cascade, a cycle, a cross-sprint audit — and it persists between sessions. You don't re-orient; you run `/brief` and you're in flight within 30 seconds.
+
+Everything in DAcumen exists to make that briefing trustworthy and cheap to produce. The Foreman^^ framework gives you the sprint shape. The memory framework gives you the persistent layer. The cross-sprint audit script gives you the rollup. The three-pillars test gives you the prioritization filter for which work to open next. The loop discipline gives you commit subjects the tooling can parse.
+
+**Is this for you?** Yes if any of these apply:
+
+- You use Claude Code for work that spans days, weeks, or months — not one-off tasks.
+- You have more than one active project and you lose the thread between them.
+- You want AI-assisted work that *compounds* instead of sprawls.
+- You care about having an honest, measurable R&D evidence trail for tax or audit purposes.
+
+Probably no if:
+
+- You use Claude Code for single-session tasks and close the window when done.
+- You already have a sprint/memory discipline you're happy with — DAcumen would just be noise.
+
+---
+
 ## What's in the box
 
 - **The Foreman^^ framework** — a three-sprint cascading-learning methodology (discovery / validation / consolidation) with a loop nomenclature, wall-clock time anchoring, and HITL cadence rules. Readable in one sitting. Opinionated in a good way.
@@ -69,6 +108,12 @@ Once installed, the onboarding path is:
 5. **`docs/quickstart.md`** — your first sprint, start to finish. ~10 minutes to read + try.
 
 At that point you have enough to open a real sprint, fire a real loop, and see your first cross-sprint audit. Everything else in DAcumen is reference material you pull in when you need it.
+
+### Case studies
+
+If you want to see the framework applied to real infrastructure work before you try it yourself, `docs/case-studies/` contains worked examples from the reference implementation:
+
+- **[Telemetry Contract Inversion](docs/case-studies/telemetry-contract-inversion.md)** — how a Foreman^^ setup went from ten drifting telemetry writers to one contract-validated ledger, with the whole dashboard, briefing, and regenerated MEMORY.md as derived views. Seven loops, one sprint, measurable before/after.
 
 ## How to make this yours
 

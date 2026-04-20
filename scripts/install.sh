@@ -2,19 +2,23 @@
 # DAcumen installer — non-destructive setup for a Claude Code working rhythm.
 #
 # Usage:
-#   ./scripts/install.sh                    # interactive, installs to ~/.claude
-#   ./scripts/install.sh --reference        # prints paths, writes nothing
-#   ./scripts/install.sh --target <dir>     # install to a custom path (for testing)
-#   ./scripts/install.sh --force            # skip confirmation prompts
-#   ./scripts/install.sh --hooks <repo>     # also install check-guardrails.sh as
-#                                             pre-commit hook in <repo>
-#   ./scripts/install.sh --help             # show this help
+#   ./scripts/install.sh                           # interactive, installs to ~/.claude
+#   ./scripts/install.sh --reference               # prints paths, writes nothing
+#   ./scripts/install.sh --target <dir>            # install to a custom path (for testing)
+#   ./scripts/install.sh --force                   # skip confirmation prompts
+#   ./scripts/install.sh --hooks <repo>            # also install check-guardrails.sh
+#                                                    as pre-commit hook in <repo>
+#   ./scripts/install.sh --install-commit-hook <repo>
+#                                                  # also install post-commit-hook.sh
+#                                                    as post-commit hook in <repo>
+#   ./scripts/install.sh --help                    # show this help
 #
 # The installer:
 #   1. Backs up your existing ~/.claude/ to ~/.claude.pre-dacumen.<timestamp>
-#   2. Copies skeleton templates into your target path
-#   3. Copies scripts into the target scripts dir
-#   4. Prints a "where to go next" summary
+#   2. Copies skeleton templates (CLAUDE.md, MEMORY.md, sprints) into your target
+#   3. Copies skills (brief) + commands (brief.md) so /brief works out of the box
+#   4. Copies scripts into the target scripts dir
+#   5. Prints a "where to go next" summary
 #
 # Nothing is destroyed. Nothing phones home. You can uninstall by deleting
 # the newly-installed files and restoring the backup directory.
@@ -27,15 +31,18 @@ TARGET="${HOME}/.claude"
 FORCE=0
 INSTALL_HOOKS=0
 HOOKS_REPO=""
+INSTALL_COMMIT_HOOK=0
+COMMIT_HOOK_REPO=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        --reference) MODE="reference"; shift ;;
-        --target)    TARGET="$2"; shift 2 ;;
-        --force)     FORCE=1; shift ;;
-        --hooks)     INSTALL_HOOKS=1; HOOKS_REPO="$2"; shift 2 ;;
+        --reference)           MODE="reference"; shift ;;
+        --target)              TARGET="$2"; shift 2 ;;
+        --force)               FORCE=1; shift ;;
+        --hooks)               INSTALL_HOOKS=1; HOOKS_REPO="$2"; shift 2 ;;
+        --install-commit-hook) INSTALL_COMMIT_HOOK=1; COMMIT_HOOK_REPO="$2"; shift 2 ;;
         -h|--help)
-            sed -n '2,22p' "$0" | sed 's/^# //; s/^#//'
+            sed -n '2,25p' "$0" | sed 's/^# //; s/^#//'
             exit 0
             ;;
         *) echo "unknown arg: $1" >&2; exit 2 ;;
@@ -146,7 +153,7 @@ done
 # ---- Install scripts into $TARGET/scripts so they're easy to find ----
 say_blue "Installing scripts..."
 mkdir -p "$TARGET/scripts"
-for script in cross-sprint-audit.sh check-guardrails.sh; do
+for script in cross-sprint-audit.sh check-guardrails.sh post-commit-hook.sh; do
     src="$REPO_ROOT/scripts/$script"
     dst="$TARGET/scripts/$script"
     if [ -e "$src" ]; then
@@ -155,6 +162,21 @@ for script in cross-sprint-audit.sh check-guardrails.sh; do
         say_green "  installed scripts/$script"
     fi
 done
+
+# ---- Install skills + commands so /brief works out of the box ----
+say_blue "Installing skills + commands..."
+mkdir -p "$TARGET/skills" "$TARGET/commands"
+if [ -d "$REPO_ROOT/skills/brief" ]; then
+    mkdir -p "$TARGET/skills/brief"
+    cp "$REPO_ROOT/skills/brief/brief.sh" "$TARGET/skills/brief/brief.sh"
+    chmod +x "$TARGET/skills/brief/brief.sh"
+    say_green "  installed skills/brief/brief.sh"
+fi
+if [ -f "$REPO_ROOT/commands/brief.md" ]; then
+    cp "$REPO_ROOT/commands/brief.md" "$TARGET/commands/brief.md"
+    say_green "  installed commands/brief.md"
+    say_dim "    (restart Claude Code, then type /brief from any foreman-enabled project)"
+fi
 
 # ---- Optional: install check-guardrails.sh as a pre-commit hook in a git repo ----
 # Triggered by --hooks <repo-path>. Creates a symlink from <repo>/.git/hooks/
@@ -178,6 +200,35 @@ if [ "$INSTALL_HOOKS" -eq 1 ]; then
             [ -L "$HOOK_FILE" ] && rm "$HOOK_FILE"
             ln -s "$REPO_ROOT/scripts/check-guardrails.sh" "$HOOK_FILE"
             say_green "  --hooks: installed pre-commit -> $REPO_ROOT/scripts/check-guardrails.sh"
+        fi
+    fi
+fi
+
+# ---- Optional: install post-commit-hook.sh as a post-commit hook in a git repo ----
+# Triggered by --install-commit-hook <repo-path>. Creates a symlink from
+# <repo>/.git/hooks/post-commit to the DAcumen scripts directory so every
+# commit in that repo emits loop-telemetry to an optional ledger.
+# Non-destructive: if a post-commit hook already exists as a non-symlink, the
+# installer warns and leaves it alone.
+if [ "$INSTALL_COMMIT_HOOK" -eq 1 ]; then
+    if [ -z "$COMMIT_HOOK_REPO" ]; then
+        say_amber "  --install-commit-hook requires a git repo path (usage: --install-commit-hook <repo-path>)"
+    elif [ ! -d "$COMMIT_HOOK_REPO/.git" ]; then
+        say_amber "  --install-commit-hook: $COMMIT_HOOK_REPO is not a git repo (no .git directory)"
+    else
+        CH_FILE="$COMMIT_HOOK_REPO/.git/hooks/post-commit"
+        if [ -e "$CH_FILE" ] && [ ! -L "$CH_FILE" ]; then
+            say_amber "  --install-commit-hook: post-commit hook already exists at $CH_FILE"
+            say_dim "    (non-symlink; refusing to overwrite; move it manually or"
+            say_dim "     chain post-commit-hook.sh into your existing hook)"
+        elif [ -L "$CH_FILE" ] && [ "$(readlink "$CH_FILE")" = "$REPO_ROOT/scripts/post-commit-hook.sh" ]; then
+            say_green "  --install-commit-hook: post-commit symlink already points at post-commit-hook.sh"
+        else
+            [ -L "$CH_FILE" ] && rm "$CH_FILE"
+            ln -s "$REPO_ROOT/scripts/post-commit-hook.sh" "$CH_FILE"
+            say_green "  --install-commit-hook: installed post-commit -> $REPO_ROOT/scripts/post-commit-hook.sh"
+            say_dim "    (set DACUMEN_LEDGER_URL in your shell to enable ledger emission;"
+            say_dim "     see docs/setup-post-commit-hook.md for env var configuration)"
         fi
     fi
 fi

@@ -2,18 +2,43 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
-## [0.2.0-preview] — charter-amend-11 sync (in progress)
+## v0.2.0 — charter-amend-10-and-11 sync (partial, 2026-04-20)
 
-Per the DAcumen-sync-ritual ratified in Amendment 11 (upstream), charter amendments and contract evolutions tick DAcumen-visible content. First partial payload lands while Amendment 11 is still drafting:
+Per the DAcumen-sync-ritual ratified in upstream Amendment 11 (Rule 11.6), charter amendments with `dacumen_impact` non-`none` propagate here as a sanitized public mirror. This release lands the compressed sync arc for Amendments 10 and 11 — the doc-pattern backfill. Executable-code sanitization (skill + post-commit hook) is deferred to a future focused loop; see `docs/dacumen-sync-process.md` first-run postmortem for scope-split rationale.
 
 ### Added
 
-- **`docs/case-studies/telemetry-contract-inversion.md` — "Post-stabilization pitfall — tautological producer emission" appendix.** Captures an anti-pattern discovered upstream after the contract-inversion pattern stabilized: producers that emit a field structurally derived from another field on the same entry (e.g., `agent_wall_clock_s = duration_minutes * 60`) pass contract validation but carry zero real signal. Sections cover detection (point-mass distribution on slack), three fix options (session-lifecycle instrumentation / platform env var / retire the field), `agent_wcs_source` provenance field recommendation, generalization to other validating-but-meaningless fields, and cascade-discipline around handing the fix to the next role in the trio.
+- **`docs/cycle-architecture.md`** — the layer above sprints: pillar rotation (Professional → Personal → Domestic, 3-cycle period) + cascade lag (`sequential-with-lag-fixed-N`, default N=10) + lifecycle states + cycle open/close ceremonies. Covers Amendment 11 Rules 11.1–11.5 cycle-framing content.
+- **`docs/charter-versioning.md`** — amendment ratification process: DRAFT → RATIFIED-CONTINGENT → RATIFIED state machine, `dacumen_impact` frontmatter field, atomic ratification commits, partial-sync ratification as a first-class state. Covers Amendment 11 Rule 11.6 (sync ritual) and the operator-deferral authority from Rule 11.8.
+- **`docs/dacumen-sync-process.md`** — the sync ritual itself: when it fires, who owns it, the 5-step sanitize-and-commit cycle, exit conditions, sanitization sanity-check, and a first-run postmortem documenting lessons from this very arc. Loop-closes-on-itself per the Foreman^^ framing.
+- **`skeleton/amendment-template.md`** — generic amendment-document template with required frontmatter fields + body sections (Trigger, Rules, Ratification procedure, Cascade effects, Non-goals, Rationale pointers).
+- **`skeleton/charter-v0.1-seed.md`** — seed charter template for new adopters. Seven minimal rules (sprint-code naming, sprint-log schema, memory framework, three-pillars test, commit conventions, HITL cadence, cycle structure). Thin by design — your charter fills out via amendments as working rhythm matures.
+
+### Changed
+
+- **`docs/memory-framework.md`** — new `Cycle Context` section in the MEMORY.md required-sections catalog, covers mirroring `.foreman/cycle.json` state into MEMORY.md with active cycle + charter version + sprint trio + carryover + live-state sources + automations-armed. New `Lean-form discipline` section codifies where narrative belongs (sprint-log, not MEMORY.md) and the ~200-line MEMORY.md soft cap. Covers Amendment 11 MEMORY-lean guidance.
+- **`docs/hitl-cadence.md`** — new `HITL file states` section documenting the `open → waiting → resolved → archived` machine for checkpoint documents + telemetry event convention. Emergency-override recording format added to the existing override section.
+- **`docs/three-sprint-cascade.md`** — opening pointer to `cycle-architecture.md` so readers know where the layer-above lives.
+- **`skeleton/MEMORY.md`** — new `Cycle Context` section matching the memory-framework update.
+- **`skeleton/CLAUDE.md`** — framework reference list expanded with `cycle-architecture.md`, `charter-versioning.md`, `dacumen-sync-process.md`.
+- **`README.md`** — five-minute tour updated to include `cycle-architecture.md` as step 3.
+
+### Deferred to future focused loop
+
+- **L31 — `/brief` skill sanitization** (the skills-layer content). Involves sanitizing an executable shell script + its slash-command definition, which is higher-risk than doc-pattern work and deserves its own session. Scope reference: the upstream `dacumen-backfill-scope.md` L31 section.
+- **L32 — post-commit hook sanitization** (the scripts-layer content). Same rationale — sanitizing executable code needs focused attention. Scope reference: upstream `dacumen-backfill-scope.md` L32.
+
+Amendment 11 status upstream: `RATIFIED-PARTIAL` at v0.2.0 ship, flips to `RATIFIED` when L31 + L32 land.
 
 ### Notes
 
-- Full 0.2.0 charter-amend-11 payload (quickstart/skills/skeleton updates per the sync-ritual scope) lands once Amendment 11 ratifies upstream. This entry is the first partial ship — the anti-pattern appendix is independently valuable for existing readers of the telemetry-contract case study.
-- Guardrail 3/3 check passes on the appendix + this CHANGELOG entry (forbidden-term / private-financial-institution / script-lint).
+- Guardrail 3/3 check passes on all landed content (forbidden-term / private-financial-institution / script-lint).
+- This changelog entry supersedes the earlier `[0.2.0-preview]` preview section — the preview's telemetry-contract-inversion appendix is part of v0.2.0's payload, captured below.
+- The sync ritual's first-run postmortem (at the bottom of `docs/dacumen-sync-process.md`) is the canonical lessons-learned for subsequent consolidation nephews executing their first sync.
+
+### Carrying over from the preview
+
+- **`docs/case-studies/telemetry-contract-inversion.md` — "Post-stabilization pitfall — tautological producer emission" appendix.** Captures an anti-pattern discovered upstream after the contract-inversion pattern stabilized: producers that emit a field structurally derived from another field on the same entry (e.g., `agent_wall_clock_s = duration_minutes * 60`) pass contract validation but carry zero real signal. Sections cover detection (point-mass distribution on slack), three fix options (session-lifecycle instrumentation / platform env var / retire the field), `agent_wcs_source` provenance field recommendation, generalization to other validating-but-meaningless fields, and cascade-discipline around handing the fix to the next role in the trio. Originally landed in the preview; now formally part of v0.2.0.
 
 ---
 

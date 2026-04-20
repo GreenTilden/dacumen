@@ -96,6 +96,75 @@ If the operator explicitly asks the runtime to keep going without a HITL checkpo
 
 **The runtime cannot self-authorize an emergency override.** That request must come from the operator, explicitly, in the current session. "I assumed they meant keep going" is not an emergency override — it's the failure mode HITL exists to prevent.
 
+### Recording the override
+
+Emergency overrides live as explicit artifacts in the sprint log, not in agent memory or conversation transcripts:
+
+```markdown
+### HITL Override (L<NN>)
+
+**Trigger**: (operator verbatim — why they issued the override)
+**Scope**: (what the override covers — a specific arc, a loop range, the rest of the session)
+**Expiry**: (when the override ends — after a specific loop, at session-end, at next natural pause)
+**Logged by**: (session identity)
+```
+
+The override document is itself commit-worthy content — commit it atomically with the first post-override loop so the override is visible in git history and not just in-memory context.
+
+## HITL file states — the checkpoint document machine
+
+HITL checkpoints that span multiple loops live as their own markdown files under `docs/foreman/sprints/<SPRINT>/hitl-checkpoint-<description>-<date>.md`. The file is the workflow — its `status:` frontmatter field transitions through four states:
+
+| State | Meaning |
+|---|---|
+| `open` | checkpoint authored but not yet staged for operator |
+| `waiting` | artifact is staged, operator notified, awaiting response |
+| `resolved` | operator responded; response text captured in the file; next loop has been designed |
+| `archived` | checkpoint is >7 days old and no longer needs surfacing in active-state summaries |
+
+### Transitions
+
+```
+(author a checkpoint file) → open
+  ↓ stage artifact + notify operator
+waiting
+  ↓ operator responds; capture response + design next loop
+resolved
+  ↓ 7+ days elapsed; no longer active
+archived
+```
+
+**`open` and `waiting` are the only states that block work.** Once resolved, the checkpoint is historical record — the next loop should be designed off the resolution text, not off the checkpoint file itself.
+
+**Telemetry**: HITL file state transitions fire a ledger event with `activity_code = HITL.CHECKPOINT.<state>` (or equivalent for your tracking surface). This makes checkpoint flow visible in cross-sprint audits without having to read every checkpoint file.
+
+### Checkpoint document shape
+
+```markdown
+---
+sprint: <SPRINT-CODE>
+loop: L<NN>
+checkpoint_type: (feature-set | scope-pivot | honest-uncertainty | cadence)
+status: open | waiting | resolved | archived
+opened_at: YYYY-MM-DDTHH:MM
+resolved_at: (filled in at transition)
+---
+
+# HITL Checkpoint — <description>
+
+## What the operator should test
+
+(One runnable artifact, one decision. Never bundle multiple checks into one checkpoint.)
+
+## Artifact staging
+
+(File path, terminal command, link, screenshot — whatever minimizes friction to reviewing the thing)
+
+## Operator response
+
+(Filled in at transition to `resolved`. Capture the response verbatim, then the runtime's reading of the next-loop design.)
+```
+
 ## See also
 
 - **`foreman-manifesto.md`** — the framework spec (§5 covers HITL as a tracking-surface propagation barrier)

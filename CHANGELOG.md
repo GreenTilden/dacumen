@@ -2,6 +2,31 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.1 — charter-amend-11 sync follow-through (2026-04-20)
+
+Closes the executable-code portion of the Amendment 11 sync ritual that v0.2.0 deferred. With these two commits landed, Amendment 11 flips **RATIFIED-PARTIAL → RATIFIED** upstream. Prompted by operator course-correction that the docs-before-tools ordering inverts usefulness — a fresh clone needs the executables the docs reference, not docs that reference missing executables.
+
+### Added
+
+- **`skills/brief/brief.sh`** — sanitized `/brief` skill that composes a session briefing from `.foreman/cycle.json`, observatory rollup, sprint-log tails, HITL checkpoints, carryover decisions, and optionally a v2-compatible ledger. Gated on `DACUMEN_LEDGER_URL` env var; degrades gracefully when unset or unreachable.
+- **`commands/brief.md`** — slash-command definition pointing at the skill and documenting the env var overrides (`DACUMEN_LEDGER_URL`, `DACUMEN_CURL_TIMEOUT`).
+- **`docs/setup-brief.md`** — install guide + ledger-endpoint contract (JSON shape of `GET /api/v2/entries` response) + first-run troubleshooting.
+- **`scripts/post-commit-hook.sh`** — sanitized canonical post-commit hook that parses foreman commit subjects (`<type>(<sprint>): L##` + compound `L##+L##+...`) and emits one TELCON v1 ledger entry per loop. Non-loop commits emit a single entry with `source_ref: commit:<hash>`. Fire-and-forget; never blocks commits. Env vars: `DACUMEN_LEDGER_URL`, `DACUMEN_DEFAULT_ACTIVITY_CODE`, `DACUMEN_PROJECT_SLUG`, `DACUMEN_AGENT_WCS_HELPER`.
+- **`docs/setup-post-commit-hook.md`** — full setup guide: what the hook does step-by-step, three install options, env var reference, ledger contract with concrete JSON shapes for both loop-matched and fallback paths, compound-loop mechanics, troubleshooting.
+
+### Changed
+
+- **`scripts/install.sh`** — new `--install-commit-hook <repo>` flag symlinks `post-commit-hook.sh` into `<repo>/.git/hooks/post-commit` (non-destructive; warns on existing hooks). Default install flow now copies `skills/brief` + `commands/brief.md` + `scripts/post-commit-hook.sh` so `/brief` works out of the box after a fresh install.
+- **`docs/dacumen-sync-process.md`** — first-run postmortem appended with a follow-through section documenting the L31+L32 completion + the docs-before-tools prioritization lesson for future syncs.
+
+### Notes
+
+- Guardrail 3/3 passes on all landed content.
+- Upstream Amendment 11 status: **RATIFIED** (flipped from RATIFIED-PARTIAL at v0.2.1 close).
+- Lessons-learned follow-through is the canonical record of this ritual's mid-execution course correction — future consolidation nephews executing their first sync should read it before starting.
+
+---
+
 ## v0.2.0 — charter-amend-10-and-11 sync (partial, 2026-04-20)
 
 Per the DAcumen-sync-ritual ratified in upstream Amendment 11 (Rule 11.6), charter amendments with `dacumen_impact` non-`none` propagate here as a sanitized public mirror. This release lands the compressed sync arc for Amendments 10 and 11 — the doc-pattern backfill. Executable-code sanitization (skill + post-commit hook) is deferred to a future focused loop; see `docs/dacumen-sync-process.md` first-run postmortem for scope-split rationale.

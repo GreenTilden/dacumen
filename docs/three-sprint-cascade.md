@@ -2,6 +2,8 @@
 
 *The Foreman^^ framework runs best when three sprints execute in parallel at three different maturity layers. This doc explains the pattern, the bidirectional learning flow, the cross-sprint rescue protocol, and the cascade-sync brief format.*
 
+> **See also `cycle-architecture.md`** for the layer ABOVE this one — cycles group a sprint-trio under a pillar label and rotate the pillar across successive cycles. A sprint lives inside a cycle; a cycle contains exactly three sprints (one per nephew role).
+
 ## Why three sprints
 
 Two sprints is a **parallel-silo trap**. The comparison between two streams of work fits in a human head, so nobody builds the tool that would make it compound. The cross-learning never gets codified — it just lives in the operator's memory, and the operator eventually forgets.

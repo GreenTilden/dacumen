@@ -162,4 +162,53 @@ If any two of those apply, the pattern is worth considering. If all four apply, 
 
 ---
 
+## Post-stabilization pitfall — tautological producer emission
+
+After the contract stabilizes and producers refactor to emit contract-aware metadata (Phase 2 above), a subtle failure mode surfaces: a producer can emit a field that is *structurally* present and validation-passing but *semantically* tautological — derived from another field on the same entry rather than measured independently.
+
+The canonical example: an `agent_wall_clock_s` field intended to measure agent-active time independently from `duration_minutes` (which might be commit-gap or per-loop allocation). If the producer computes `agent_wall_clock_s = duration_minutes * 60` as a convenience, contract validation passes (the field is present, an integer, non-negative), but every entry has `slack = duration_minutes - agent_wcs/60 ≡ 0`. Any downstream metric built on that slack signal is structurally dead.
+
+### How to detect
+
+Query the ledger for entries in the last 24 hours that carry both fields. Compute `slack` per entry. If the distribution is a point mass at zero, the producer is lying-by-construction.
+
+```
+# Illustrative — adapt to your ledger query shape
+count where duration_minutes - agent_wall_clock_s/60 = 0  → tautological
+count where duration_minutes - agent_wall_clock_s/60 > 0  → honest
+```
+
+If tautological = total, fix the producer. If honest > 0, the field has real signal somewhere; investigate the distribution further.
+
+### How to fix
+
+Three options, ordered by preference:
+
+1. **Instrument the session lifecycle.** If your agent platform fires SessionStart / SessionEnd hooks, extend them to append `start<TAB><epoch>` and `end<TAB><epoch>` to a single-writer log file. A small helper script reads that log and sums session-interval clock-time within any given (prev_boundary, current_boundary) window. Producers call the helper at event-emission time. Semantic: "agent wall-clock attributable to work inside THIS window." Sum-across-multiple-sessions is natural — each session-minute falls into exactly one emission window, so no double-counting.
+
+2. **Expose a platform environment variable.** If your agent platform exposes session start epoch or elapsed time as an environment variable at hook-execution time, the fix reduces to one variable read. Check platform docs before assuming Option 1.
+
+3. **Retire the field.** If honest measurement is harder than its signal is worth, deprecate the field in the next contract version. This is an honest retreat — don't keep a validating-but-meaningless field in the contract.
+
+### Add a source-provenance field
+
+Whichever option you pick, add an `agent_wcs_source` field alongside the metric: values like `measured_session` for post-fix honest data and `producer_tautology` for pre-fix historical. Consumers that need real signal filter to the honest source; older data remains available but clearly labeled. Backfill is optional — an annotation pass over historical entries can tag them without mutating the numeric values.
+
+### Generalization — validating-but-meaningless fields
+
+The anti-pattern extends beyond wall-clock measurement. Any field whose value is *computed from another field on the same entry* instead of measured independently is vulnerable. Common failure shapes:
+
+- A `reviewed_count` field always equal to `edit_count` by construction
+- An `operator_interactions` field that defaults to 0 because no counter is wired
+- A `confidence` field that's always 1.0 because the model output was never captured
+- A `retry_count` that's set from a template default rather than observed
+
+Discipline: when you introduce a new metadata field, document its measurement source in the contract spec. At the next reconciliation pass, audit the distribution of the field against its paired field. A point-mass distribution is the signal.
+
+### Cascade discipline around the fix
+
+One meta-pattern worth capturing: when a discovery of this kind happens during one role's primary work (e.g., while refactoring a consumer-side dashboard), the discoverer should write a handoff artifact rather than fix the producer in-session. The handoff captures finding + live evidence + fix options with tradeoffs + validation requirements + backfill strategy. The next role in the trio picks up the implementation with full context, preserving the practice surface the three-role structure exists for. Collapsing discovery + fix into one role quietly turns the trio into a single-role implementation sprint.
+
+---
+
 *This case study describes the reference implementation's architecture as of its author's cycle-03. The pattern is portable; the specific file paths, sprint codes, and event class names are illustrative, not canonical. Adapt to your own context.*

@@ -103,9 +103,10 @@ Once installed, the onboarding path is:
 
 1. **`docs/foreman-manifesto.md`** — the methodology, end to end. ~15 minutes to read, shapes everything else.
 2. **`docs/three-sprint-cascade.md`** — the discovery / validation / consolidation pattern in detail. ~5 minutes.
-3. **`docs/three-pillars.md`** — the organizing principle that decides what work is worth doing. ~5 minutes.
-4. **`docs/memory-framework.md`** — how CLAUDE.md and MEMORY.md work together across sessions. ~5 minutes.
-5. **`docs/quickstart.md`** — your first sprint, start to finish. ~10 minutes to read + try.
+3. **`docs/cycle-architecture.md`** — the layer above sprints: pillar rotation + cascade lag across successive cycles. ~5 minutes.
+4. **`docs/three-pillars.md`** — the organizing principle that decides what work is worth doing. ~5 minutes.
+5. **`docs/memory-framework.md`** — how CLAUDE.md and MEMORY.md work together across sessions. ~5 minutes.
+6. **`docs/quickstart.md`** — your first sprint, start to finish. ~10 minutes to read + try.
 
 At that point you have enough to open a real sprint, fire a real loop, and see your first cross-sprint audit. Everything else in DAcumen is reference material you pull in when you need it.
 

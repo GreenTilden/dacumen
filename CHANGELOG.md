@@ -31,6 +31,8 @@ Closes the executable-code portion of the Amendment 11 sync ritual that v0.2.0 d
 
 Per the DAcumen-sync-ritual ratified in upstream Amendment 11 (Rule 11.6), charter amendments with `dacumen_impact` non-`none` propagate here as a sanitized public mirror. This release lands the compressed sync arc for Amendments 10 and 11 — the doc-pattern backfill. Executable-code sanitization (skill + post-commit hook) is deferred to a future focused loop; see `docs/dacumen-sync-process.md` first-run postmortem for scope-split rationale.
 
+**Retroactive marker note (added 2026-04-20 at NODEMAD-02 Huey L07)**: the three `feat(charter-amend-11):` commits that shipped v0.2.0 (6f2029a + 9ccb1dd + 3faf793) are ALSO the Amendment 10 sync commits — §OO nephew-first-loop-housekeeping cycle/ceremony patterns live in `docs/cycle-architecture.md` + `docs/charter-versioning.md`; the `02d8b97` case-study appendix pre-landed the telemetry-contract-inversion material for Amendment 10 as well. The compressed-arc shipped both amendments together but labeled only the latter, which the upstream sync-debt detector (`scripts/check-dacumen-sync-debt.sh`) read as Amendment 10 still owed. This CHANGELOG note plus the accompanying `feat(charter-amend-10):` marker commit resolve the detector to `debt_count: 0`. Lesson: future compressed-arc syncs should tag commits with every amendment number they close, not just the most recent.
+
 ### Added
 
 - **`docs/cycle-architecture.md`** — the layer above sprints: pillar rotation (Professional → Personal → Domestic, 3-cycle period) + cascade lag (`sequential-with-lag-fixed-N`, default N=10) + lifecycle states + cycle open/close ceremonies. Covers Amendment 11 Rules 11.1–11.5 cycle-framing content.

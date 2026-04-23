@@ -25,6 +25,8 @@ A cycle is defined by a JSON manifest (conventionally `.foreman/cycle.json` in t
 | `structure` | enum | `dev-week` (professional), `chore-cycle` (personal/domestic), or other |
 | `cascade_mode` | enum | `sequential-with-lag-fixed-N` (default N=10) / `parallel-nephew` / `manual-serial` |
 | `charter_version` | string | methodology version active when cycle opened |
+| `rotation_discipline_strictness` | enum | `strict` (default) / `relaxed` / `operator-override-per-cycle` — governs multi-cycle project engineering-hour discipline per Amendment 12 Rule 12.4 · see `amendment-12-patterns.md` |
+| `rotation_discipline_strictness_rationale` | string | required when field ≠ `strict` · names the Rule 11.8 operator-override rationale + which multi-cycle project(s) it covers |
 | `sprint_trio` | array | three entries naming the nephew roles + sprint codes + work loci |
 | `carryover_decisions_at_open` | object | HITL decisions inherited from prior cycle close |
 | `opened_at` | ISO8601 | cycle-open timestamp |
@@ -87,7 +89,7 @@ Consolidation nephew fires (L01)
 **Why fixed N=10**: large enough that the discovery nephew has produced substantive, consolidable work before the validation nephew picks up; small enough that the validation and consolidation nephews aren't waiting for discovery to be fully complete before they start. Empirically validated across multiple cycles before codification.
 
 **Cascade alternatives**:
-- `parallel-nephew`: all three nephews fire at cycle-open concurrently. Good for rapid prototyping when roles have genuinely independent scope.
+- `parallel-nephew`: all three nephews fire at cycle-open concurrently. Good for rapid prototyping when roles have genuinely independent scope. Empirically validated upstream cycle-05 (compressed 36h cycle · Amendment 12 sync covers the pattern — see `amendment-12-patterns.md` "Bundled patterns" section). Works cleanly when loop-scopes partition by deliverable and non-content-dependent L01 per nephew is feasible.
 - `manual-serial`: each cascade fire is explicitly operator-gated (no auto-fire at L10). Good for HITL-heavy cycles where the operator wants to review between roles.
 
 Operator overrides go in `cycle.json .notes` with rationale.

@@ -22,7 +22,9 @@ Charters use a variant of semver tuned for methodology docs:
 | `v0.2.0` | Structural change — existing rules reshaped, renumbered, or consolidated. Readers need to re-scan the document. |
 | `v1.0.0` | Methodology stabilization — the charter is considered load-bearing for long-term work. |
 
-**Amendment numbers are global, not per-version.** Amendment 10 landed in v0.1.9; Amendment 11 lands in v0.1.10. They don't reset on version bumps because the amendment log is a continuous historical record of methodology changes.
+**Amendment numbers are global, not per-version.** Amendment 10 landed in v0.1.9; Amendment 11 lands in v0.1.10; Amendment 12 lands in v0.1.11. They don't reset on version bumps because the amendment log is a continuous historical record of methodology changes.
+
+**Amendment 12 note**: ratified 2026-04-22 at upstream cycle-04-close. Bundles six rules (§12.1 commit-and-stage-events four-layer contract · §12.2 rolling-pin overload extension · §12.3 worktree-per-nephew family · §12.4 multi-cycle project planning discipline · §12.4.a language-discipline companion · §12.5 internal-before-external-doc discipline · §12.6 validation-pass-as-radical-candor-enforcer) plus Rule 11.9 §KK.5.a-c clarifying addendum plus `rotation_discipline_strictness` primitive on cycle.json. Content externalized here at v0.2.2 — see `docs/amendment-12-patterns.md`.
 
 ## Amendment ratification
 

@@ -2,6 +2,30 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.2 — charter-amend-12 sync (2026-04-23)
+
+Per the DAcumen-sync-ritual ratified upstream in Amendment 11 Rule 11.6, charter amendments with `dacumen_impact` non-`none` propagate here. This release lands the Amendment 12 content — six rules plus addendum plus primitive plus two bundled patterns that emerged during upstream cycles 04 and 05.
+
+Upstream charter version flips **v0.1.11 RATIFIED-CONTINGENT → RATIFIED** on these commits landing.
+
+### Added
+
+- **`docs/amendment-12-patterns.md`** — complete Amendment 12 reference with the six rules ratified in cycle-04-close + Rule 11.9 §KK.5.a-c clarifying addendum + `rotation_discipline_strictness` primitive + two bundled patterns from cycle-05 (parallel-nephew-cascade empirical firing + capability-matrix-as-session-RAG protocol). Every rule includes rationale, when-to-fire guidance, and applying-the-rule instructions. Non-goals section clarifies the amendment is additive and does not override operator judgment or retrofit historical cycles.
+
+### Changed
+
+- **`docs/cycle-architecture.md`** — cycle manifest table extended with `rotation_discipline_strictness` + `rotation_discipline_strictness_rationale` fields per Rule 12.4. Cascade-alternatives section adds empirical-validation note on parallel-nephew cascade from upstream cycle-05 (compressed 36h cycle · first-fire clean) + cross-reference to the `amendment-12-patterns.md` "Bundled patterns" section.
+- **`docs/charter-versioning.md`** — Amendment 12 entry added alongside the Amendment 10 + 11 references, summarizing the rule bundle + pointer to `docs/amendment-12-patterns.md`.
+
+### Notes
+
+- Guardrail 3/3 passes on all landed content (forbidden-term / private-financial-institution / script-lint).
+- Amendment 12 is deliberately additive — existing cycles running under Amendment 11 don't need to change to absorb Amendment 12. Rules fire when cycle shape matches (multi-cycle engineering · external-audience artifact · Pass 2 · persistent-worktree · etc.).
+- Upstream cycle-05 first-firing of parallel-nephew-cascade is the empirical anchor for the Amendment 12 cascade-mode bundled pattern. Upstream cycle-06+ persistent-worktree migration (§12.3.b) remains untested at v0.2.2 ship — deferred to a future sync ritual when empirical validation lands.
+- Amendment-12 language-discipline (§12.4.a) was itself caught at pre-ratification by a Dewey L10.7 audit correction — the rule's first external-audience-facing example (inside the amendment doc) had leaked internal-methodology vocabulary. The language-discipline companion codifies the catch into a permanent rule.
+
+---
+
 ## v0.2.1 — charter-amend-11 sync follow-through (2026-04-20)
 
 Closes the executable-code portion of the Amendment 11 sync ritual that v0.2.0 deferred. With these two commits landed, Amendment 11 flips **RATIFIED-PARTIAL → RATIFIED** upstream. Prompted by operator course-correction that the docs-before-tools ordering inverts usefulness — a fresh clone needs the executables the docs reference, not docs that reference missing executables.

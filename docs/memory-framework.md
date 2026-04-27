@@ -228,3 +228,5 @@ None of these are canonical. They're all workarounds for a real methodology gap.
 - **`hitl-cadence.md`** — HITL checkpoints are natural moments to update Session Status + propagate to external surfaces
 - **`skeleton/CLAUDE.md`** — a generic CLAUDE.md template you can adapt
 - **`skeleton/MEMORY.md`** — a generic MEMORY.md template with section guides
+- **`skeleton/topic-files-yaml/`** — a worked example of the framework applied to YAML topic files (illustrative placeholders, includes Tier 1 index + three Tier 2 topic files)
+- **`scripts/load_by_tier.py`** — minimal reference loader (~50 lines) demonstrating the tier-based loading convention in code; pure standard library, fork-and-rewrite in any language

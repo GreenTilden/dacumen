@@ -1,0 +1,30 @@
+---
+name: Active Projects
+description: Software projects in flight grouped by status discovery active shipped
+type: projects
+last_updated: 2026-04-27
+---
+
+# Illustrative placeholders only.
+
+active:
+  - id: project-alpha
+    name: Internal embedding pipeline refactor
+    status: active development
+    stack: Python + sentence-transformers + sqlite-vss
+    deadline: 2026-05-15
+    notes: original implementation hardcoded the model URL — making it configurable
+
+  - id: project-beta
+    name: Customer-facing reporting dashboard
+    status: discovery
+    stack: TypeScript + React
+    deadline: TBD
+    notes: discovery interviews scheduled next week
+
+queued:
+  - id: project-gamma
+    name: Internal CLI tooling consolidation
+    status: queued
+    stack: bash + Python
+    notes: combine three one-off scripts into one tool with subcommands

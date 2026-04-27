@@ -1,0 +1,24 @@
+---
+name: Collaborators
+description: People I work with across projects with role and cadence context
+type: contacts
+last_updated: 2026-04-27
+---
+
+# Illustrative placeholders only.
+
+collaborators:
+  - id: collab-1
+    role: project alpha stakeholder
+    cadence: weekly check-in
+    notes: prefers async written updates over live meetings
+
+  - id: collab-2
+    role: project beta product partner
+    cadence: bi-weekly
+    notes: leads discovery interviews; brings customer voice
+
+  - id: collab-3
+    role: open-source contributor
+    cadence: as-needed
+    notes: adopted the memory framework early; feedback shaped current shape

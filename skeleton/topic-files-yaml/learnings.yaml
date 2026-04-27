@@ -1,0 +1,24 @@
+---
+name: Technical Learnings
+description: Technical patterns and discoveries worth remembering across projects
+type: learnings
+last_updated: 2026-04-27
+---
+
+# Illustrative placeholders only.
+
+learnings:
+  - id: learning-1
+    topic: tier-based memory
+    summary: dumping all memory into context blows token budgets; tiered loading with on-demand retrieval scales
+    captured: 2026-03
+
+  - id: learning-2
+    topic: yaml frontmatter for retrieval
+    summary: one description line per topic file is enough for keyword-based retrieval in most use cases
+    captured: 2026-04
+
+  - id: learning-3
+    topic: open-source as positioning
+    summary: open-sourcing the methodology layer aligns with the gift-not-a-product framing
+    captured: 2026-04

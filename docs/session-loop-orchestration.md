@@ -12,20 +12,20 @@ This doc is companion-paired with:
 
 ```mermaid
 flowchart TB
-    Start([New session opens in worktree]) --> Wake[WAKE]
-    Wake --> Loop{Loop firing?}
-    Loop -- yes --> LoopBody[LOOP BODY]
-    LoopBody --> NextLoop{More loops this session?}
+    Start(["New session opens in worktree"]) --> Wake["WAKE"]
+    Wake --> Loop{"Loop firing?"}
+    Loop -- yes --> LoopBody["LOOP BODY"]
+    LoopBody --> NextLoop{"More loops this session?"}
     NextLoop -- yes --> LoopBody
-    NextLoop -- no --> Sleep[SLEEP]
+    NextLoop -- no --> Sleep["SLEEP"]
     Loop -- no --> Sleep
-    Sleep --> End([Session closes · branch on origin])
+    Sleep --> End(["Session closes — branch on origin"])
 
-    Wake -.->|reads| Sources[(CLAUDE.md · MEMORY.md ·<br/>brief: cycle.json + sprint-log +<br/>observatory + EllaBot ledger ·<br/>handoff docs from peer sessions)]
+    Wake -.->|reads| Sources["CLAUDE.md, MEMORY.md,<br/>brief output (cycle.json + sprint-log + observatory + EllaBot ledger),<br/>handoff docs from peer sessions"]
 
-    LoopBody -.->|writes| Artifacts[(sprint-log row ·<br/>path-scoped commit ·<br/>post-commit cascade)]
+    LoopBody -.->|writes| Artifacts["sprint-log row,<br/>path-scoped commit,<br/>post-commit cascade"]
 
-    Sleep -.->|writes| Closeout[(MEMORY.md Session Status ·<br/>final EllaBot entry ·<br/>Casey-Jr session_end ·<br/>git push origin branch)]
+    Sleep -.->|writes| Closeout["MEMORY.md Session Status,<br/>final EllaBot entry,<br/>Casey-Jr session_end,<br/>git push origin branch"]
 
     style Wake fill:#e3f2fd,stroke:#1976d2
     style LoopBody fill:#fff3e0,stroke:#e65100
@@ -38,18 +38,18 @@ What every session does in its first turn before any work fires:
 
 ```mermaid
 flowchart LR
-    A[Session opens] --> B[Auto-load CLAUDE.md]
-    B --> C[Read MEMORY.md]
-    C --> D[/brief: pull live state/]
-    D --> E{ahead/behind origin?}
-    E -- behind --> F[git pull origin BRANCH]
-    E -- ahead --> G[Surface ahead-state · push pending]
-    E -- in sync --> H[Read peer-session handoff docs<br/>in this worktree's sprint dir]
+    A["Session opens"] --> B["Auto-load CLAUDE.md"]
+    B --> C["Read MEMORY.md"]
+    C --> D["Run /brief — pull live state"]
+    D --> E{"ahead/behind origin?"}
+    E -- behind --> F["git pull origin BRANCH"]
+    E -- ahead --> G["Surface ahead-state — push pending"]
+    E -- in sync --> H["Read peer-session handoff docs<br/>in this worktree's sprint dir"]
     F --> H
     G --> H
-    H --> I{Operator directive?}
-    I -- yes --> J[Begin first loop]
-    I -- no --> K[Wait · stand by]
+    H --> I{"Operator directive?"}
+    I -- yes --> J["Begin first loop"]
+    I -- no --> K["Wait — stand by"]
 ```
 
 **Wake checklist** (verify each fired):
@@ -73,16 +73,16 @@ The unit of progress in a sprint. One loop = one bounded piece of work that fire
 
 ```mermaid
 flowchart TB
-    Start([Operator directive or cascade fire]) --> Work[Loop work executes:<br/>reads · writes · API calls]
-    Work --> Row[Author sprint-log row<br/>frontmatter-conformant]
-    Row --> Stage[git add -- specific paths<br/>NOT git add -A]
-    Stage --> Commit[git commit -m 'feat/fix/...']
-    Commit --> Hooks{post-commit cascade}
-    Hooks --> Ledger[TELCON v1 entry → EllaBot]
-    Hooks --> Audit[refresh-cross-sprint-audit.sh]
-    Hooks --> Notion[Notion dashboard push<br/>if cycle.json changed]
-    Hooks --> AutoPush[git push origin BRANCH<br/>if nephew branch · opt-in]
-    Ledger --> Done([Loop closed])
+    Start(["Operator directive or cascade fire"]) --> Work["Loop work executes —<br/>reads, writes, API calls"]
+    Work --> Row["Author sprint-log row<br/>frontmatter-conformant"]
+    Row --> Stage["git add -- specific paths<br/>NOT git add -A"]
+    Stage --> Commit["git commit -m feat/fix/..."]
+    Commit --> Hooks{"post-commit cascade"}
+    Hooks --> Ledger["TELCON v1 entry to EllaBot"]
+    Hooks --> Audit["refresh-cross-sprint-audit.sh"]
+    Hooks --> Notion["Notion dashboard push<br/>if cycle.json changed"]
+    Hooks --> AutoPush["git push origin BRANCH<br/>if nephew branch — opt-in"]
+    Ledger --> Done(["Loop closed"])
     Audit --> Done
     Notion --> Done
     AutoPush --> Done
@@ -114,14 +114,14 @@ What every session does before closing — even if work continues in another ses
 
 ```mermaid
 flowchart LR
-    A[Operator signals close OR<br/>natural cycle break] --> B[Update MEMORY.md<br/>Session Status]
-    B --> C[Path-scoped final commit<br/>if MEMORY.md changed]
-    C --> D[POST EllaBot session_end entry]
-    D --> E{Casey-Jr deployment?}
-    E -- yes --> F[POST activity action=session_end]
-    E -- no --> G[git push origin BRANCH]
+    A["Operator signals close OR<br/>natural cycle break"] --> B["Update MEMORY.md<br/>Session Status"]
+    B --> C["Path-scoped final commit<br/>if MEMORY.md changed"]
+    C --> D["POST EllaBot session_end entry"]
+    D --> E{"Casey-Jr deployment?"}
+    E -- yes --> F["POST activity action=session_end"]
+    E -- no --> G["git push origin BRANCH"]
     F --> G
-    G --> H([Session closes · state durable on origin])
+    G --> H(["Session closes — state durable on origin"])
 ```
 
 **Sleep checklist**:
@@ -143,36 +143,36 @@ Multi-session orchestration is where the framework breaks if discipline slips. T
 
 ```mermaid
 flowchart TB
-    subgraph Main["Main worktree<br/>(branch: main)"]
-        M1[main commits]
+    subgraph Main["Main worktree — branch main"]
+        M1["main commits"]
     end
 
-    subgraph Huey["Huey worktree<br/>(branch: cycle-N-huey)"]
-        H1[huey loop commits]
+    subgraph Huey["Huey worktree — branch cycle-N-huey"]
+        H1["huey loop commits"]
     end
 
-    subgraph Louie["Louie worktree<br/>(branch: cycle-N-louie)"]
-        L1[louie loop commits]
+    subgraph Louie["Louie worktree — branch cycle-N-louie"]
+        L1["louie loop commits"]
     end
 
-    subgraph Dewey["Dewey worktree<br/>(branch: cycle-N-dewey)"]
-        D1[dewey loop commits]
+    subgraph Dewey["Dewey worktree — branch cycle-N-dewey"]
+        D1["dewey loop commits"]
     end
 
-    Origin[(origin · GitHub)]
+    Origin["origin — GitHub"]
 
     M1 -->|push| Origin
-    H1 -->|push · auto on hook OR manual| Origin
-    L1 -->|push · auto on hook OR manual| Origin
-    D1 -->|push · auto on hook OR manual| Origin
+    H1 -->|"push — auto on hook OR manual"| Origin
+    L1 -->|"push — auto on hook OR manual"| Origin
+    D1 -->|"push — auto on hook OR manual"| Origin
 
     Origin -->|pull on wake| M1
     Origin -->|pull on wake| H1
     Origin -->|pull on wake| L1
     Origin -->|pull on wake| D1
 
-    H1 -.->|filesystem-write<br/>handoff doc| L1
-    L1 -.->|filesystem-write<br/>handoff doc| D1
+    H1 -.->|"filesystem-write<br/>handoff doc"| L1
+    L1 -.->|"filesystem-write<br/>handoff doc"| D1
 
     style Origin fill:#fff9c4,stroke:#f57f17
 

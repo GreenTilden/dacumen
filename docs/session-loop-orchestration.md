@@ -10,6 +10,8 @@ This doc is companion-paired with:
 
 ## High-level flow
 
+![High-level session flow](img/high-level-flow.png)
+
 ```mermaid
 flowchart TB
     Start(["New session opens in worktree"]) --> Wake["WAKE"]
@@ -35,6 +37,8 @@ flowchart TB
 ## WAKE — session start ritual
 
 What every session does in its first turn before any work fires:
+
+![Wake ritual](img/wake-ritual.png)
 
 ```mermaid
 flowchart LR
@@ -70,6 +74,8 @@ flowchart LR
 ## LOOP BODY — per-loop cascade
 
 The unit of progress in a sprint. One loop = one bounded piece of work that fires a sprint-log row and a single commit.
+
+![Loop body cascade](img/loop-body-cascade.png)
 
 ```mermaid
 flowchart TB
@@ -112,6 +118,8 @@ flowchart TB
 
 What every session does before closing — even if work continues in another session:
 
+![Sleep ritual](img/sleep-ritual.png)
+
 ```mermaid
 flowchart LR
     A["Operator signals close OR<br/>natural cycle break"] --> B["Update MEMORY.md<br/>Session Status"]
@@ -140,6 +148,8 @@ flowchart LR
 ## Cross-session synchronization
 
 Multi-session orchestration is where the framework breaks if discipline slips. The persistent-worktree pattern (charter §12.3.b) introduced a sync gap: nephew branches can sit unpushed indefinitely.
+
+![Cross-session sync](img/cross-session-sync.png)
 
 ```mermaid
 flowchart TB

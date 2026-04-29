@@ -2,6 +2,32 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.3 — orchestration + memory-framework topic-files (2026-04-29)
+
+Two structural additions since v0.2.2: a complete session-loop orchestration doc (the missing visual companion to the foreman manifesto) and the YAML topic-files skeleton + reference loader that completes the memory-framework's "on-demand topic detail" promise. Plus an opt-in post-commit hook that auto-pushes nephew branches to origin so the operator never has to ferry commits across the cascade by hand.
+
+### Added
+
+- **`docs/session-loop-orchestration.md`** — full session-loop flow document with diagrams (mermaid + pre-rendered PNG fallback). Walks through wake → work → sleep, the cross-sprint handoff shape, and how the post-commit hook chain fans out telemetry to ledgers. The visual companion to `foreman-manifesto.md` for collaborators who need the picture before the prose.
+- **`skeleton/topic-files-yaml/`** — the on-demand topic-file pattern the memory framework's "Tier-1 always-load + topic detail by pointer" promise depends on. Includes:
+  - `MEMORY.md` skeleton wired to YAML topic files via pointers
+  - `collaborators.yaml`, `learnings.yaml`, `projects.yaml` — three canonical topic shapes
+  - Reference Python loader that fetches a topic on-demand without always-loading
+  - `README.md` explaining when to use YAML topic files vs. plain markdown topic files (machine-typed shapes vs. prose)
+- **`scripts/post-commit-hook.sh`** opt-in `--auto-push` flag — pushes nephew branches (cycle-NN-{huey,louie,dewey}) to origin automatically on commit. Reduces operator-ferry overhead in cascade-fire workflows. Disabled by default; enabled per-repo via env var.
+
+### Changed
+
+- **`docs/session-loop-orchestration.md`** — mermaid syntax hardened: node labels quoted, cylinder/parallelogram shapes replaced with rectangle equivalents that GitHub's renderer handles. Pre-rendered PNG diagrams committed alongside the mermaid source for universal viewer compatibility (browsers without mermaid plugins, GitHub mobile, terminal-based markdown viewers).
+
+### Notes
+
+- The YAML topic-files skeleton is what makes the "context budget preservation" claim in the memory framework load-bearing. Without on-demand topic detail, the always-load index has to balloon to capture nuance — defeating the purpose. With it, MEMORY.md stays ≤200 lines and topic files lazy-load only when the active task touches their domain.
+- Reference Python loader is intentionally tiny and dependency-free. Drop it into your project's harness, point it at a topic, get the parsed YAML back. No framework lock-in.
+- Auto-push hook is OPT-IN per repo. Default behavior is unchanged — the operator still drives pushes manually unless they flip the env var. This is the safer default for repos with branch-protection rules or shared collaborators.
+
+---
+
 ## v0.2.2 — charter-amend-12 sync (2026-04-23)
 
 Per the DAcumen-sync-ritual ratified upstream in Amendment 11 Rule 11.6, charter amendments with `dacumen_impact` non-`none` propagate here. This release lands the Amendment 12 content — six rules plus addendum plus primitive plus two bundled patterns that emerged during upstream cycles 04 and 05.

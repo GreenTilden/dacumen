@@ -26,6 +26,12 @@ Charters use a variant of semver tuned for methodology docs:
 
 **Amendment 12 note**: ratified 2026-04-22 at upstream cycle-04-close. Bundles six rules (§12.1 commit-and-stage-events four-layer contract · §12.2 rolling-pin overload extension · §12.3 worktree-per-nephew family · §12.4 multi-cycle project planning discipline · §12.4.a language-discipline companion · §12.5 internal-before-external-doc discipline · §12.6 validation-pass-as-radical-candor-enforcer) plus Rule 11.9 §KK.5.a-c clarifying addendum plus `rotation_discipline_strictness` primitive on cycle.json. Content externalized here at v0.2.2 — see `docs/amendment-12-patterns.md`.
 
+**Amendment 13 note**: ratified at upstream cycle-08-OPEN. Bundles nine rules (Rules 13.1-13.7 + 13.i mini-batch consolidation gating + 13.j commit-unique source_ref) plus Rule 11.4 §LL.5 cycle-budget honesty addendum. Content externalized — see `docs/amendment-13-patterns.md`.
+
+**Amendment 14 note**: ratified at upstream cycle-12-OPEN 2026-05-04. Single rule §SS Rule 14a — cycle-close memory-hygiene discipline (4-lens framework · audit corpus restriction · memory-index size as health vector · voids-cascade sub-rule · mid-cycle Lens-2 absorption R11 sub-pattern). n=4 evidence consolidated cycles 08-11. Pilot automation script proposal explicitly retired at ratification (corpus-convergence signal · manual audit completes <30min). Content externalized — see `docs/amendment-14-patterns.md`.
+
+**Amendment 15 note**: ratified at upstream cycle-12-OPEN 2026-05-04 concurrent with n=2 firing. Single rule §TT Rule 15a — consolidation-nephew end-of-lane completion backstop with autonomy-gate (3-step backstop · 5-class autonomy taxonomy a/b/c/d/e · verdict gates · mandatory firing points · heat-check section 6 codified). Honest forward signal: ratification-before-replication-completes timing per operator pre-authorization · charter v0.1.14 named as recovery vehicle if structural gap surfaces. Content externalized — see `docs/amendment-15-patterns.md`.
+
 ## Amendment ratification
 
 An amendment goes through these states:

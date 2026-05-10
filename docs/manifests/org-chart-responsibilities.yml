@@ -140,7 +140,9 @@ pillar_emission_lanes:
         visual_stroke: dotted_1px
 
 touchpoint_contract:
-  source_pattern: agent_health_check_<agent_id>
+  # M23 fix (2026-05-10 Phase 2.1): source_pattern is short-persona form to
+  # match real EllaBot practice. metadata.agent is the long structured role-id.
+  source_pattern: agent_health_check_<persona>
   activity_code: OPS.ADMIN.PLAN
   synthesis_event_type: responsibility_check
   duration_minutes: 1
@@ -148,12 +150,23 @@ touchpoint_contract:
   billable: false
   required_metadata:
     - synthesis_event_type
-    - agent
+    - agent             # long role-id from agents[].id (e.g., front_office_director)
     - surfaces_checked
     - drift_flags
     - dacumen_canonical_version
     - check_kind
   cardinality: one_entry_per_agent_per_check
+
+# Persona ↔ role-id mapping. Source-suffix uses short persona for legibility;
+# metadata.agent value is the long role-id consumed by aggregators.
+persona_to_role_id:
+  ops: front_office_director
+  della: internal_systems_director
+  greg: workshop_foreman
+  gizmoduck: strategic_head
+  ellabot: dev_lab
+  casey: deployment_tracker
+  operator: operator
 
 drift_check:
   cadence: daily

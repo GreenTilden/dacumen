@@ -96,15 +96,29 @@ Surfaces:
 
 Rows whose `dashboard` column is `—` are non-live responsibilities (events that fire periodically, not continuously observed).
 
+## Persona ↔ role-label mapping
+
+EllaBot source identifiers use the **short persona** convention (matches existing practice for `agent_health_check_ops`, `agent_health_check_della`, etc.). The persona is a short kebab-case identifier; the role label is the human-readable title.
+
+| Persona (source-suffix) | Agent role label | Notes |
+|---|---|---|
+| `ops` | Front Office Director | DArnTech BU |
+| `della` | Internal Systems Director | DellaTech BU |
+| `greg` | Workshop Foreman | Vertical-IP system; uses `agent_health_check_checkbook` and `agent_health_check_aclu_intake` sub-source identifiers for specific workstreams |
+| `gizmoduck` | Strategic Head / CSO | Not currently emitting agent_health_check entries; reserved for future use |
+| `ellabot` | Dev Lab (Telemetry Source) | EllaBot doesn't currently self-fire; reserved |
+| `casey` | Deployment Tracker (PM) | Consumed via Casey API; doesn't currently emit agent_health_check entries |
+| `operator` | Operator | Reserved for the future `source: operator_intent` (Layer C contract, Phase 6) |
+
 ## Touchpoint contract
 
 Each agent fires one EllaBot entry per daily drift-check. The entry shape:
 
 ```json
 {
-  "source": "agent_health_check_<role_identifier>",
+  "source": "agent_health_check_<persona>",
   "activity_code": "OPS.ADMIN.PLAN",
-  "description": "Daily responsibility-drift check for <agent>. Surfaces checked: <N>. Drift flags: <M>.",
+  "description": "Daily responsibility-drift check for <persona>. Surfaces checked: <N>. Drift flags: <M>.",
   "entry_date": "YYYY-MM-DD",
   "duration_minutes": 1,
   "rd_qualifying": false,
@@ -119,6 +133,13 @@ Each agent fires one EllaBot entry per daily drift-check. The entry shape:
   }
 }
 ```
+
+Where:
+- `<persona>` is the short identifier from the Persona ↔ role-label table above (e.g., `ops`, `della`).
+- `metadata.agent` is the long role-identifier from the YAML sidecar's `agents[].id` (e.g., `front_office_director`).
+- These differ intentionally: source-suffix is short for legibility in EllaBot UI; `metadata.agent` is the structured identifier consumed by aggregators.
+
+**M23 from upstream P1 audit** resolved here: prior manifest version declared `agent_health_check_<agent_id>` (long form) which didn't match real practice. Real practice uses short persona; both forms are now formally declared.
 
 Field constraints:
 - `synthesis_event_type: "responsibility_check"` is a new metadata tag (additive; existing schema accepts any keys under `metadata`).

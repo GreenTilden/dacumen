@@ -2,6 +2,28 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.5 — second manifesto-impact entry (synthesis-event contracts) (2026-05-10)
+
+Companion to v0.2.4 org-chart manifest. Where v0.2.4 declares WHO emits Personal-pillar signal, v0.2.5 declares WHAT FIRES — the three layered sub-event types (cross-BU artifacts · continuous-learning outputs · operator piecemeal intent), their detection rules, EllaBot payload contracts, fire mechanisms, and dashboard rendering instructions.
+
+### Added
+
+- **`docs/manifests/synthesis-event-contracts.md`** — full contract spec for Layer A / Layer B / Layer C Personal-pillar emissions. Layer B has 4 sub-types (memory_authored · charter_amendment · memory_audit_fire · responsibility_check). Each layer specifies detection rule, EllaBot payload shape, fire mechanism, aggregation position.
+- **`docs/manifests/synthesis-event-contracts.yml`** — structured sidecar for Phase 2.3 post-commit hook extension + Phase 3a snapshot pipeline to consume directly. Schema-versioned, machine-typed.
+
+### Changed
+
+- Nothing in this release beyond the new files. Purely additive. The v0.2.4 manifest is unchanged structurally; this entry references it as `companion_to`.
+
+### Notes
+
+- Guardrail 3/3 passes on the new manifest content.
+- Operator-ratified shape (2026-05-10): "all three layered" — operator picked Option 4 (cross-BU + continuous-learning + operator intent layered as sub-counts on one Personal lane).
+- Implementation phases now declared per layer (2.3 for hook extensions, 3a for snapshot pipeline, 6 for operator intent skill, 4 for dashboard rendering) — gives a clear roadmap for the rest of the originating plan.
+- Convention proven: `manifesto`-impact entries can reference each other via `companion_to` frontmatter to form a tighter contract surface.
+
+---
+
 ## v0.2.4 — first manifesto-impact entry (org-chart × responsibilities × surfaces) (2026-05-10)
 
 Establishes a new convention: long-lived methodology-mirror entries housed in `docs/manifests/`. The first entry declares the agentic org chart, per-agent responsibilities, cross-surface stewardship map, daily 23:45 drift-check cadence, and EllaBot touchpoint contract as a single canonical source. Downstream surfaces (per-agent memory files, per-agent CLAUDE.md sections, primary doc surface, knowledge-management page, dashboard JSON) mirror from this manifest via a renderer; a drift detector flags any surface that diverges.

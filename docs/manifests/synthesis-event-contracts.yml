@@ -1,0 +1,171 @@
+# Structured form of docs/manifests/synthesis-event-contracts.md
+# Consumed by Phase 2.3 post-commit hook extension + Phase 3a snapshot pipeline
+# to drive detection rules + payload assembly. Companion to
+# org-chart-responsibilities.yml.
+
+schema_version: 1
+manifest_version: v0.1.0
+companion_to: org-chart-responsibilities.yml
+ratification_cycle: della-cycle-2
+ratification_loop: L00-sidebar
+ratification_date: 2026-05-10
+
+layers:
+  - id: layer_a
+    name: cross_bu_artifacts
+    visual_stroke: solid_2px
+    aggregation_position: heaviest
+    detection:
+      kind: git_commit_path_filter
+      rule: commit changed-files contain at least one path mapped to another BU
+      bu_boundary_map_template:
+        # Install-specific — actual paths configured per-install, NOT externalized
+        - origin_repo: <homelab_bu_repo>
+          target_paths:
+            - <business_bu_repo>/docs/**
+        - origin_repo: <business_bu_repo>
+          target_paths:
+            - <homelab_bu_repo>/docs/**
+        - origin_repo: any
+          target_paths:
+            - <methodology_mirror_repo>/docs/**
+    fire_mechanism:
+      kind: post_commit_hook_extension
+      phase_landed: 2.3
+    payload_contract:
+      source: git-commit
+      source_ref_template: "cross_bu_artifact:<full-commit-sha>"
+      activity_code: LIF.SELF.CREATIVE
+      duration_minutes: 0
+      rd_qualifying: false
+      billable: false
+      required_metadata:
+        - synthesis_event_type      # = "cross_bu_artifact"
+        - origin_bu                  # homelab | business
+        - target_bu                  # homelab | business
+        - artifact_paths             # array of paths
+        - commit_sha
+        - origin_repo
+        - target_repo
+
+  - id: layer_b
+    name: continuous_learning_outputs
+    visual_stroke: dashed_1_5px
+    aggregation_position: medium
+    sub_types:
+      - id: layer_b_1
+        name: memory_authored
+        detection:
+          kind: filesystem_pattern
+          rule: new file matching ~/.claude/projects/*/memory/feedback_*.md
+          combined_with: git_tracked_check
+        fire_mechanism:
+          kind: post_commit_hook_extension
+          phase_landed: 2.3
+        payload_contract:
+          source: git-commit
+          source_ref_template: "memory_authored:<commit-sha>"
+          activity_code: LIF.SELF.CREATIVE
+          required_metadata:
+            - synthesis_event_type    # = "memory_authored"
+            - memory_path
+            - memory_type             # feedback|project|reference|user
+            - commit_sha
+            - origin_repo
+      - id: layer_b_2
+        name: charter_amendment
+        detection:
+          kind: filesystem_pattern_or_cycle_json_diff
+          rule: charter-v*.md committed with new version OR pending_dacumen_syncs entry added
+        fire_mechanism:
+          kind: post_commit_hook_extension_or_snapshot_fallback
+          phase_landed: 2.3
+          fallback_phase: 3a
+        payload_contract:
+          source: git-commit
+          source_ref_template: "charter_amendment:<amendment-id>"
+          activity_code: LIF.SELF.CREATIVE
+          required_metadata:
+            - synthesis_event_type    # = "charter_amendment"
+            - amendment_id
+            - charter_version_after
+            - commit_sha
+            - origin_repo
+      - id: layer_b_3
+        name: memory_audit_fire
+        detection:
+          kind: cycle_close_ceremony_emission_or_filesystem
+          rule: cycle-close ceremony fires inline OR filesystem detects new memory-audit-{date}-cycle-close.md
+        fire_mechanism:
+          kind: cycle_close_ceremony
+          phase_landed: existing
+        payload_contract:
+          source: agent_health_check_<persona>
+          source_ref_template: "memory_audit:<cycle-id>"
+          activity_code: OPS.ADMIN.PLAN
+          required_metadata:
+            - synthesis_event_type    # = "memory_audit_fire"
+            - cycle
+            - audit_n
+            - candidates_evaluated
+            - candidates_ratified
+            - audit_kind              # cycle_close
+      - id: layer_b_4
+        name: responsibility_check
+        detection:
+          kind: daily_snapshot_pipeline_fire
+          rule: fires once per agent per day at 23:45 local
+        fire_mechanism:
+          kind: daily_snapshot_pipeline
+          phase_landed: 3a
+        payload_contract:
+          source: agent_health_check_<persona>
+          source_ref_template: null
+          activity_code: OPS.ADMIN.PLAN
+          required_metadata:
+            # See org-chart-responsibilities.md Touchpoint Contract for full spec
+            - synthesis_event_type    # = "responsibility_check"
+            - agent
+            - surfaces_checked
+            - drift_flags
+            - dacumen_canonical_version
+            - check_kind
+
+  - id: layer_c
+    name: operator_piecemeal_intent
+    visual_stroke: dotted_1px
+    aggregation_position: lightest
+    detection:
+      kind: ellabot_source_filter
+      rule: source field equals "operator_intent"
+    fire_mechanism:
+      kind: operator_skill
+      script_path: ~/.claude/skills/intent/intent.sh
+      phase_landed: 6
+    payload_contract:
+      source: operator_intent
+      source_ref_template: "intent:<timestamp-or-uuid>"
+      activity_code: OPS.ADMIN.PLAN
+      duration_minutes: 1
+      rd_qualifying: false
+      billable: false
+      required_metadata:
+        - synthesis_event_type        # = "operator_intent"
+        - intent_scope
+        - agent                       # = "operator"
+      optional_metadata:
+        - session_context
+        - active_cycle
+
+dashboard_rendering:
+  trend_lane_color: emerald_10b981
+  visual_layers:
+    - combined_total:
+        polyline: filled_area
+        opacity: 0.08
+    - layer_a: solid_2px
+    - layer_b: dashed_1_5px
+    - layer_c: dotted_1px
+  tooltip_breakdown_by_layer: true
+  click_through_filter_by_synthesis_event_type: true
+  phase_landed: 4

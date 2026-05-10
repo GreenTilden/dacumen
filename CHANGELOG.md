@@ -2,6 +2,37 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.4 — first manifesto-impact entry (org-chart × responsibilities × surfaces) (2026-05-10)
+
+Establishes a new convention: long-lived methodology-mirror entries housed in `docs/manifests/`. The first entry declares the agentic org chart, per-agent responsibilities, cross-surface stewardship map, daily 23:45 drift-check cadence, and EllaBot touchpoint contract as a single canonical source. Downstream surfaces (per-agent memory files, per-agent CLAUDE.md sections, primary doc surface, knowledge-management page, dashboard JSON) mirror from this manifest via a renderer; a drift detector flags any surface that diverges.
+
+This is **first-of-kind** for the `manifesto` impact category. Earlier `dacumen_impact: manifesto` references in `dacumen-sync-process.md` (Step 2 onward) anticipated this slot but it had not been used until now.
+
+### Added
+
+- **`docs/manifests/`** — new subdir for manifest-impact entries. Convention: kebab-case-topic.md filenames; required frontmatter shape declared in the first entry below.
+- **`docs/manifests/org-chart-responsibilities.md`** — canonical org-chart × responsibilities × surfaces declaration. Sanitized agent inventory (role-labels only — no proper-noun identities, IPs, or hostnames per the dacumen-sync-process Step 2 sanitization rules). Includes:
+  - Agent inventory + pillar-emission lane mapping (Professional/Domestic/Personal)
+  - Three-layer Personal-pillar breakdown (cross-BU artifacts · continuous-learning outputs · operator piecemeal intent updates) — operator-ratified shape
+  - Cross-surface responsibility matrix (5 mirror surfaces named explicitly)
+  - EllaBot touchpoint contract with full entry-shape spec
+  - Drift-check cadence (daily 23:45 local) + escalation rules
+  - First-of-kind notes establishing the convention for subsequent manifest-impact entries
+- **`docs/manifests/org-chart-responsibilities.yml`** — structured-form sidecar for renderer consumption. Same content as the markdown, schema-versioned, machine-typed.
+
+### Changed
+
+- Nothing in this release. Purely additive.
+
+### Notes
+
+- Guardrail 3/3 passes on the new manifest content.
+- Upstream ratification cycle: della-cycle-2 L00-sidebar (the cycle authoring this manifest entry). Originating plan: a sidebar arc within that cycle that establishes the operating-system-meta-improvement infrastructure.
+- `pending_dacumen_syncs` entries in the upstream BU cycle.json files (keyed by pivot-id `org-chart-responsibilities-manifest-v0.1`) are populated and pending; `synced_at` flips from null to a date when the renderer + drift detector ship across upstream surfaces and verification gates pass.
+- This is the first `dacumen_impact: manifesto` entry of its kind. Subsequent manifest-impact entries follow the convention declared in the new file's "First-of-kind notes" section.
+
+---
+
 ## v0.2.3 — orchestration + memory-framework topic-files (2026-04-29)
 
 Two structural additions since v0.2.2: a complete session-loop orchestration doc (the missing visual companion to the foreman manifesto) and the YAML topic-files skeleton + reference loader that completes the memory-framework's "on-demand topic detail" promise. Plus an opt-in post-commit hook that auto-pushes nephew branches to origin so the operator never has to ferry commits across the cascade by hand.

@@ -1,0 +1,198 @@
+# Structured form of docs/manifests/org-chart-responsibilities.md
+# Consumed by dacumen/scripts/render-responsibilities.sh (Phase 3b of the
+# originating plan). Sanitized form (role-labels, no proper nouns / IPs /
+# hostnames). When a renderer needs the actual agent identifiers + paths
+# for THIS install, it merges this sidecar with a private mapping file
+# (e.g., `<repo>/.foreman/agent-identity-map.yml`) that is NOT externalized.
+#
+# Companion doc: org-chart-responsibilities.md (human-readable canonical).
+
+schema_version: 1
+manifest_version: v0.1.0
+ratification_cycle: della-cycle-2
+ratification_loop: L00-sidebar
+ratification_date: 2026-05-10
+
+agents:
+  - id: front_office_director
+    role_label: Front Office Director
+    pillar_primary: professional
+    pillar_secondary: null
+    reports_to: strategic_head
+    stewards_surfaces:
+      - public_dashboard
+      - charter
+      - staff_directory
+      - brand_standards
+    responsibilities:
+      - dashboard_render
+      - charter_amendment_authorship_business
+      - memory_audit_fire_§14a
+
+  - id: internal_systems_director
+    role_label: Internal Systems Director
+    pillar_primary: domestic
+    pillar_secondary: personal
+    reports_to: strategic_head
+    stewards_surfaces:
+      - service_estate_homelab
+      - lxc_topology_homelab
+      - backup_discipline
+      - theme_system
+    responsibilities:
+      - service_deploy_maintain_homelab
+      - cross_bu_artifact_authoring_layer_a_primary
+      - memory_audit_first_fire_active_cycle
+
+  - id: workshop_foreman
+    role_label: Workshop Foreman
+    pillar_primary: professional
+    pillar_secondary: null
+    reports_to: strategic_head
+    stewards_surfaces:
+      - vertical_ip_system
+    responsibilities:
+      - rag_pattern_intelligence_safety_validation
+
+  - id: strategic_head
+    role_label: Strategic Head
+    pillar_primary: all_three
+    pillar_secondary: null
+    reports_to: operator
+    stewards_surfaces:
+      - charter_ratification
+      - portfolio_prioritization
+    responsibilities:
+      - charter_ratification_cross_bu
+      - three_pillars_enforcement
+
+  - id: dev_lab
+    role_label: Dev Lab (Telemetry Source)
+    pillar_primary: utility
+    pillar_secondary: null
+    reports_to: operator
+    stewards_surfaces:
+      - ledger_primary
+      - activity_code_taxonomy
+    responsibilities:
+      - ledger_entries_serving
+      - time_bucket_aggregations
+
+  - id: deployment_tracker
+    role_label: Deployment Tracker (PM)
+    pillar_primary: utility
+    pillar_secondary: null
+    reports_to: front_office_director
+    stewards_surfaces:
+      - deployment_phase_state
+      - reconciliation_health
+      - doc_health_snapshots
+    responsibilities:
+      - per_project_phase_tracking
+      - reconciliation_health_computation
+      - activity_logging
+
+  - id: operator
+    role_label: Operator
+    pillar_primary: all_three_via_synthesis
+    pillar_secondary: null
+    reports_to: null
+    stewards_surfaces:
+      - decision_fire
+      - plan_mode_authorship
+      - hitl_resolution
+    responsibilities:
+      - cycle_open_mode_pick
+      - hitl_resolution
+      - layer_c_piecemeal_intent_updates
+
+pillar_emission_lanes:
+  professional:
+    emission_source: business_bu
+    trend_lane: existing_primary
+    counted_as: bu_cycle_loop_closes
+  domestic:
+    emission_source: homelab_bu
+    trend_lane: parallel_secondary
+    counted_as: bu_cycle_loop_closes
+  personal:
+    emission_source: synthesis_cross_bu_plus_operator_intent
+    trend_lane: third_lane_to_ship
+    layers:
+      - id: layer_a
+        name: cross_bu_artifacts
+        detection: git_log_filter_or_ellabot_tag
+        ellabot_synthesis_event_type: cross_bu_artifact
+        visual_stroke: solid_2px
+      - id: layer_b
+        name: continuous_learning_outputs
+        detection: ellabot_tag
+        ellabot_synthesis_event_type_set:
+          - memory_authored
+          - charter_amendment
+          - memory_audit_fire
+          - responsibility_check
+        visual_stroke: dashed_1_5px
+      - id: layer_c
+        name: operator_piecemeal_intent
+        detection: ellabot_source_filter
+        ellabot_source: operator_intent
+        visual_stroke: dotted_1px
+
+touchpoint_contract:
+  source_pattern: agent_health_check_<agent_id>
+  activity_code: OPS.ADMIN.PLAN
+  synthesis_event_type: responsibility_check
+  duration_minutes: 1
+  rd_qualifying: false
+  billable: false
+  required_metadata:
+    - synthesis_event_type
+    - agent
+    - surfaces_checked
+    - drift_flags
+    - dacumen_canonical_version
+    - check_kind
+  cardinality: one_entry_per_agent_per_check
+
+drift_check:
+  cadence: daily
+  time: "23:45 local"
+  trigger: observatory_snapshot_fire
+  ordered_execution:
+    - render_from_canonical
+    - check_drift_per_surface
+    - write_snapshot
+    - fire_telemetry_per_agent
+  escalation:
+    amber_after_days: 1
+    red_after_days: 2
+    cycle_close_retrospective_after_days: 2
+
+render_targets:
+  - id: per_agent_memory
+    template: responsibilities-memory.md.tmpl
+    path_template: <auto-memory-root>/<project>/memory/responsibilities.md
+    transport: direct_write
+    section_markers: null
+  - id: per_agent_claude_md
+    template: responsibilities-claude-md-section.tmpl
+    path_template: <repo>/CLAUDE.md
+    transport: direct_edit_between_markers
+    section_marker_begin: "<!-- BEGIN auto-rendered from dacumen -->"
+    section_marker_end: "<!-- END auto-rendered from dacumen -->"
+  - id: primary_doc_surface
+    template: responsibilities-obsidian.md.tmpl
+    path_template: <vault-root>/02-Areas/Projects/<BU>/Org Chart × Responsibilities.md
+    transport: pct_push_into_reverse_proxy_lxc
+    section_markers: null
+  - id: knowledge_management_page
+    template: responsibilities-notion-blocks.tmpl
+    page_id: TBD_on_first_run
+    transport: notion_mcp_update_page
+    section_markers: null
+  - id: dashboard_json
+    template: responsibilities.json.tmpl
+    path_template: <dashboard-webroot>/observatory/data/org-chart/responsibilities.json
+    transport: scp_to_reverse_proxy_lxc
+    section_markers: null

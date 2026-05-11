@@ -11,6 +11,10 @@
 *.local.json
 *.local.sh
 
+# Renderer + drift-detector runtime cache (per-install hashes, payloads).
+# Regenerated on every fire; never canonical.
+/.render-cache/
+
 # OS
 .DS_Store
 Thumbs.db

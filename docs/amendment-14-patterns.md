@@ -59,6 +59,10 @@ Charter amendments cascade hard: a single methodology amendment can void multipl
 
 When a discovery-nephew or validation-nephew loop authors a new memory OR amends an existing memory mid-cycle, the Lens-2 absorption fires atomically with the triggering loop. Audit at cycle-close VERIFIES the absorption rather than re-discovering it.
 
+**Fires when** a mid-cycle loop produces a Lens-2 conflict — an operator directive contradicts a prior codification · mid-cycle work amends an existing memory · a loop authors content that supersedes a feedback rule's framing.
+
+**Doesn't fire when** the cycle is deterministic-execution territory — no mid-cycle directive contradicts existing memory, no mid-cycle codification overlaps an existing rule. The sub-pattern correctly stays dormant; forcing it would produce noise. The cycle-close audit still runs and confirms nothing was missed.
+
 **Why this is a sub-pattern not a separate lens**: mid-cycle absorption is Lens-2 work happening at the moment-of-triggering rather than at cycle-close batch-time. The cycle-close audit then becomes a verification gate ("did the mid-cycle absorption land cleanly?") rather than a discovery gate.
 
 **Rule**: every mid-cycle memory-edit that absorbs a Lens-2 conflict happens atomically with the triggering work. Cycle-close audit only re-verifies; it doesn't re-discover.

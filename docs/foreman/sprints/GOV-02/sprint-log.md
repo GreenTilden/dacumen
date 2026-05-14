@@ -5,7 +5,8 @@ role: governance / standalone-sprint
 cascade_mode: standalone — runs ABOVE the three-sprint cascade, not a 4th nephew
 work_locus: cross-BU (darntech · dellatech · dacumen)
 opened_at: 2026-05-14
-status: open
+closed_at: 2026-05-14
+status: closed
 charter: ../GOV-01/charter.md (inherited — the governance-thread operating model)
 ---
 

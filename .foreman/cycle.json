@@ -1,18 +1,18 @@
 {
-  "cycle_number": 2,
-  "cycle_label": "GOV-02 — governance-thread standalone sprint · cross-BU backlog sweep + process-health · runs ABOVE the three-sprint cascade",
+  "cycle_number": 3,
+  "cycle_label": "GOV-03 — governance-thread standalone sprint · fresh health-check sweep → health-refresh failure-signal gap · runs ABOVE the three-sprint cascade",
   "plain_english": {
-    "_doc": "Operator-facing summary block. /brief reads this to emit a plain-language header. The governance thread is NOT a cycle — it is a thread of standalone GOV-NN sprints. cycle_number tracks the GOV sprint number (GOV-02 = 2). Re-author this block at each GOV sprint OPEN.",
-    "summary": "The governance thread runs ABOVE the three-sprint cascade — not a 4th nephew. It scopes from a health-check sweep, takes ownerless cross-cutting work the cascade structurally can't absorb, and codifies findings to memory + DAcumen. GOV-02 swept the cycle-23/24 carryover backlog and found it was entirely rot — all 6 items already-resolved or routed elsewhere — diagnosed the casey-pipeline outage as half-landed cycle-28 RC6, and (L04) resolved the standing watch when RC6 landed but the dev pipeline still crash-looped: RC6 reconciled source + Docker image but not the dev runtime venv. GOV-02's queue AND standing watch are now fully closed; the sprint sits open at a genuine full-stop.",
+    "_doc": "Operator-facing summary block. /brief reads this to emit a plain-language header. The governance thread is NOT a cycle — it is a thread of standalone GOV-NN sprints. cycle_number tracks the GOV sprint number (GOV-03 = 3). Re-author this block at each GOV sprint OPEN.",
+    "summary": "The governance thread runs ABOVE the three-sprint cascade — not a 4th nephew. It scopes from a health-check sweep, takes ownerless cross-cutting work the cascade structurally can't absorb, and codifies findings to memory + DAcumen. GOV-02 closed fully (carryover backlog was rot + CLEARED; casey-pipeline standing watch resolved in L04). GOV-03 opened from a fresh health-check sweep (L01) and found the headline: the health-refresh cron fails silently — 6 user-crontab jobs curl into casey-pipeline :8912 with output discarded, so when the pipeline is down every refresh fails with zero signal. That is why GOV-02 found 24-day-stale health scores with nothing surfacing it. GOV-03's job is to give that refresh mechanism a failure signal.",
     "goals": [
-      "GOV-02 queue — CLOSED. Carryover-strike (L02) · tailnet LXC 151 already-enrolled (L03) · Lorna duplicate paths already-cleaned (L03) · casey-pipeline diagnosed + handed to cycle-28 RC6 (L02)",
-      "Standing watch — CLOSED (L04). RC6 landed but dev casey-pipeline still crash-looped on 'rag_core' import — GOV-shaped per the L03 fire criterion. GOV-02 L04 swapped the stale client lib in casey-junior/.venv, restarted, verified healthy.",
-      "Next — GOV-03 scopes from a fresh health-check sweep per the operating model (don't scope from a hunch; run the check first)"
+      "L01 — fresh health-check sweep. DONE. Headline: health-refresh cron has no failure signal (structural hole #3, purest form yet). Also found: project-health-reconcile.json is an orphaned artifact (24d stale, no producer).",
+      "L02 — execute queue #1: give the 6 health-refresh cron jobs a liveness/failure signal (logging wrapper, last-success healthcheck, or stop discarding non-200s). Fold in #2 verify-and-strike of the orphaned reconcile artifact.",
+      "Route-outs / watch: #3 ncaa-baseball-ingest.service failed → personal-pillar owner; #4 dellatech-rag-indexer never run → watch, re-check after first scheduled fire 05-15 02:32"
     ],
     "decisions_pending_operator": [
-      "Whether to open GOV-03 now (fresh health-check sweep) — GOV-02 is now fully closed (queue + standing watch both resolved), so there is no longer a reason to hold idle"
+      "GOV-03 L01 sweep is done and the queue is scoped — okay to proceed to L02 (execute the health-refresh failure-signal fix + verify-and-strike the orphaned reconcile artifact)?"
     ],
-    "proposed_next_action": "GOV-02 is closed at a genuine full-stop — queue cleared and the casey-pipeline standing watch resolved in L04 (RC6 landed, dev pipeline still crash-looped, GOV took the consumer-side venv reconciliation, service is healthy on :8912). Nothing mid-flight. The one open decision is GOV-03: scope it now from a fresh health-check sweep per the operating model, or hold the thread idle until the next product cycle surfaces ownerless work. Recommend opening GOV-03 with a fresh sweep — there's no pending watch left to gate on."
+    "proposed_next_action": "GOV-03 is open with a fresh-sweep-scoped queue. L01 (the sweep) is closed. Recommend proceeding to L02: execute queue #1 — give the health-refresh cron a failure signal so a dead pipeline can't silently freeze every health score again — and fold in #2, the verify-and-strike of the orphaned project-health-reconcile.json. #3 and #4 are routed/watched and need no GOV loop unless they escalate."
   },
   "pillar": "governance",
   "cycle_mode": "governance-thread-standalone",
@@ -24,18 +24,19 @@
   "opened_at": "2026-05-14",
   "work_locus": "cross-BU (darntech · dellatech · dacumen)",
   "authored_at": "2026-05-14",
-  "authored_by": "operator-direct — governance thread relocated to its own foreman-enabled workspace (was darntech/docs/foreman/sprints/GOV-0*/; GOV-01 charter Tracking section anticipated this move)",
+  "authored_by": "operator-direct — GOV-03 opened after GOV-02 closed fully (queue + casey-pipeline standing watch both resolved); scoped from a fresh health-check sweep per the operating model",
   "stakes": "The governance thread is cross-BU and standalone — nesting its sprint-logs inside one BU's foreman (darntech) stranded them when the active cycle moved, and made /brief unrunnable from the governance workspace. Its own foreman-enabled home makes the thread continuously briefable and parallel-runnable alongside whatever product cycle is active.",
-  "notes": "Relocated from darntech/docs/foreman/sprints/GOV-0*/ on 2026-05-14. GOV-01 + GOV-02 sprint-logs moved here; GOV-01 charter Tracking section updated to point at this workspace. The governance-thread workspace is a checkout of dacumen.git — governance artifacts (charter amendments, ADRs) and governance operational tracking (.foreman + GOV sprint-logs) both belong to the dacumen repo.",
+  "notes": "GOV-02 closed 2026-05-14 at a genuine full-stop — carryover backlog was entirely rot (CLEARED), casey-pipeline standing watch resolved in L04 (RC6 landed but dev venv unreconciled; GOV swapped the stale rag client). GOV-03 opened the same day from a fresh L01 health-check sweep. The governance-thread workspace is a checkout of dacumen.git — governance artifacts (charter amendments, ADRs) and governance operational tracking (.foreman + GOV sprint-logs) both belong to the dacumen repo.",
   "sprint_trio": [
     {
-      "id": "GOV-02",
+      "id": "GOV-03",
       "identity": "governance-thread",
       "role": "governance / standalone-sprint"
     }
   ],
   "carryover_decisions_at_open": {
-    "casey_pipeline_standing_watch": "RESOLVED (GOV-02 L04, 2026-05-14). Cycle-28 landed RC6 (casey-junior ca36b3b) but the dev casey-pipeline still crash-looped on 'ModuleNotFoundError: rag_core' — RC6 reconciled source + Docker image but not the dev runtime venv. By the L03 watch criterion this residual gap was GOV-shaped; GOV-02 L04 fixed it: swapped the stale darntech-rag-client 0.1.0 for the vendored rag-core-client 0.2.0 in casey-junior/.venv, restarted the service, verified healthy on :8912. Dev-only fix; prod casey-junior carries RC6 via make deploy (cascade scope).",
-    "gov_03_scoping": "GOV-03 must scope from a fresh health-check sweep per feedback_governance_thread_standalone_sprints.md — run the check first, don't scope from a hunch."
+    "ncaa_baseball_ingest_route_out": "GOV-03 L01 sweep found ncaa-baseball-ingest.service in failed state. Personal-pillar ESPN data ingest — not governance cross-cutting infra. Route to the ncaa-baseball project owner; flagged in GOV-03 L01 so it has a paper trail and doesn't vanish.",
+    "dellatech_rag_indexer_watch": "GOV-03 L01 sweep found dellatech-rag-indexer.service has never run (LAST = -). Likely just newly installed — it is static+timer-triggered, first scheduled fire Fri 2026-05-15 02:32. Re-check after that; if it still shows LAST = - it is a real finding for a later GOV loop.",
+    "gov_04_scoping": "GOV-04 must scope from a fresh health-check sweep per feedback_governance_thread_standalone_sprints.md — run the check first, don't scope from a hunch."
   }
 }

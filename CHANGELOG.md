@@ -2,6 +2,25 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.6 — surface-check ritual (between-sprint derived-view audit) (2026-05-14)
+
+Adds a new methodology ritual: a short, recurring stop fired at cascade boundaries where the operator checks **surfaces** (derived views — `/brief` output, regenerated MEMORY.md, dashboards, catalogs, rendered manifest mirrors, customer-facing pages) against the substrate they derive from. Closes a gap in the framework's observability: substrate is checked constantly, but surfaces are written once by a renderer and then trusted until they quietly drift.
+
+### Added
+
+- **`docs/surface-check-ritual.md`** — the ritual spec. Defines the substrate/surface distinction, why surface drift is silent and badly-timed, when the ritual fires (every cascade boundary, piggybacked on existing HITL/cascade-sync work), the 5-step checklist, the **surface registry** (the standing enumerated list the ritual walks), the relationship to automated drift detectors (surfaces graduate from manual ritual into automation as they earn detectors), and telemetry (`source_ref: <sprint>_l<NN>_surface_check` / `SURFACE.CHECK.<result>`).
+
+### Changed
+
+- **`docs/three-sprint-cascade.md`**, **`docs/cycle-architecture.md`**, **`docs/hitl-cadence.md`** — `See also` cross-links added to the new ritual. No structural changes.
+
+### Notes
+
+- Distinct from the cycle-open observability audit: that's heavier, substrate-focused, once-per-cycle ceremony; the surface-check is lighter, audience-focused, every-boundary. They're complementary — cycle-open confirms surfaces *read from* the canonical source, the between-sprint check confirms what they're *currently showing* is true.
+- The ritual is the human-cadence backstop; the responsibility drift detector (v0.2.x phase-3c) is the per-surface automation end of the same spectrum.
+
+---
+
 ## v0.2.5 — second manifesto-impact entry (synthesis-event contracts) (2026-05-10)
 
 Companion to v0.2.4 org-chart manifest. Where v0.2.4 declares WHO emits Personal-pillar signal, v0.2.5 declares WHAT FIRES — the three layered sub-event types (cross-BU artifacts · continuous-learning outputs · operator piecemeal intent), their detection rules, EllaBot payload contracts, fire mechanisms, and dashboard rendering instructions.

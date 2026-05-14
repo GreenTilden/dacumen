@@ -1,0 +1,42 @@
+{
+  "cycle_number": 2,
+  "cycle_label": "GOV-02 — governance-thread standalone sprint · cross-BU backlog sweep + process-health · runs ABOVE the three-sprint cascade",
+  "plain_english": {
+    "_doc": "Operator-facing summary block. /brief reads this to emit a plain-language header. The governance thread is NOT a cycle — it is a thread of standalone GOV-NN sprints. cycle_number tracks the GOV sprint number (GOV-02 = 2). Re-author this block at each GOV sprint OPEN.",
+    "summary": "The governance thread runs ABOVE the three-sprint cascade — not a 4th nephew. It scopes from a health-check sweep, takes ownerless cross-cutting work the cascade structurally can't absorb, and codifies findings to memory + DAcumen. GOV-02 swept the cycle-23/24 carryover backlog and found it was entirely rot — all 6 items already-resolved or routed elsewhere — plus diagnosed the casey-pipeline outage as half-landed cycle-28 RC6 and handed it back to the cascade. GOV-02's queue is fully closed; the sprint sits open at a clean full-stop.",
+    "goals": [
+      "GOV-02 queue — CLOSED. Carryover-strike (L02) · tailnet LXC 151 already-enrolled (L03) · Lorna duplicate paths already-cleaned (L03) · casey-pipeline diagnosed + handed to cycle-28 RC6 (L02)",
+      "Standing watch — re-check casey-pipeline once cycle-28 lands RC6; if RC6 closes and the pipeline still won't start, that residual gap is GOV-shaped",
+      "Next — GOV-03 scopes from a fresh health-check sweep per the operating model (don't scope from a hunch; run the check first)"
+    ],
+    "decisions_pending_operator": [
+      "Whether to open GOV-03 now (fresh health-check sweep) or hold the governance thread idle until cycle-28's RC6 lands and the casey-pipeline watch can be resolved",
+      "Standing watch carried from GOV-02 L02: casey-pipeline is cleanly inactive pending cycle-28 RC6's casey-junior consumer-side install — re-verify after RC6 closes"
+    ],
+    "proposed_next_action": "GOV-02 is closed at a clean full-stop — nothing mid-flight. The governance thread now runs from its own foreman-enabled workspace (governance-thread/) instead of nested in darntech/docs/foreman/sprints/. Two paths: (1) hold idle until cycle-28 lands RC6, then resolve the casey-pipeline standing watch as GOV-02's final loop or GOV-03's first; or (2) open GOV-03 now with a fresh health-check sweep. Recommend (1) — the watch is concrete and near-term, and scoping GOV-03 from a hunch violates the sweep-first operating model."
+  },
+  "pillar": "governance",
+  "cycle_mode": "governance-thread-standalone",
+  "cycle_mode_notes": "GOV sprints do not pillar-rotate and do not join the cascade. cascade_mode is standalone by design — the three-sprint cascade is capped at 3 (three is the floor AND the ceiling). GOV takes ownerless cross-cutting work, never nephew COLLECT-queue work.",
+  "structure": "Health-check sweep scopes the queue → GOV executes the ownerless backlog as a standalone sprint → findings codified to memory + DAcumen",
+  "cascade_mode": "standalone — runs ABOVE the three-sprint cascade, not a 4th nephew",
+  "charter_version": "GOV-01 charter (inherited — docs/foreman/sprints/GOV-01/charter.md)",
+  "status": "open",
+  "opened_at": "2026-05-14",
+  "work_locus": "cross-BU (darntech · dellatech · dacumen)",
+  "authored_at": "2026-05-14",
+  "authored_by": "operator-direct — governance thread relocated to its own foreman-enabled workspace (was darntech/docs/foreman/sprints/GOV-0*/; GOV-01 charter Tracking section anticipated this move)",
+  "stakes": "The governance thread is cross-BU and standalone — nesting its sprint-logs inside one BU's foreman (darntech) stranded them when the active cycle moved, and made /brief unrunnable from the governance workspace. Its own foreman-enabled home makes the thread continuously briefable and parallel-runnable alongside whatever product cycle is active.",
+  "notes": "Relocated from darntech/docs/foreman/sprints/GOV-0*/ on 2026-05-14. GOV-01 + GOV-02 sprint-logs moved here; GOV-01 charter Tracking section updated to point at this workspace. The governance-thread workspace is a checkout of dacumen.git — governance artifacts (charter amendments, ADRs) and governance operational tracking (.foreman + GOV sprint-logs) both belong to the dacumen repo.",
+  "sprint_trio": [
+    {
+      "id": "GOV-02",
+      "identity": "governance-thread",
+      "role": "governance / standalone-sprint"
+    }
+  ],
+  "carryover_decisions_at_open": {
+    "casey_pipeline_standing_watch": "GOV-02 L02 left casey-pipeline cleanly inactive — root cause is cycle-28 RC6 half-landed in casey-junior (deployments.py imports rag_core, not installed in the venv). Re-check once cycle-28 closes RC6; if the pipeline still won't start, the residual gap is GOV-shaped.",
+    "gov_03_scoping": "GOV-03 must scope from a fresh health-check sweep per feedback_governance_thread_standalone_sprints.md — run the check first, don't scope from a hunch."
+  }
+}

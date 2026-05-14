@@ -164,4 +164,5 @@ Cycle-level state changes (open / close / amendment ratification) cascade down i
 - **`charter-versioning.md`** — how methodology amendments ratify against cycle transitions
 - **`memory-framework.md`** — the Cycle Context section in MEMORY.md that mirrors cycle.json state
 - **`hitl-cadence.md`** — HITL checkpoints at cycle open are distinct from per-loop HITL
+- **`surface-check-ritual.md`** — the lighter, every-cascade-boundary counterpart to the cycle-open observability + canonical-source audits
 - **`dacumen-sync-process.md`** — the ritual for syncing methodology amendments to public distributions like this repo

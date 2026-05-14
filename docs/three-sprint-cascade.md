@@ -225,4 +225,5 @@ The three-sprint architecture is the operational path to a self-running framewor
 - **`trio-identities.md`** — naming your three sprints with Huey/Louie/Dewey or your own trio
 - **`three-pillars.md`** — the pillar test used inside the rescue protocol's charter-compliance check
 - **`hitl-cadence.md`** — HITL checkpoints are the fourth path in the rescue decision tree
+- **`surface-check-ritual.md`** — the between-sprint ritual that fires at the cascade boundaries this doc defines
 - **`scripts/cross-sprint-audit.sh`** — reference audit implementation

@@ -171,3 +171,4 @@ resolved_at: (filled in at transition)
 - **`three-sprint-cascade.md`** — HITL is the fourth path in the cross-sprint rescue decision tree
 - **`memory-framework.md`** — HITL closes are the natural point to update MEMORY.md Session Status
 - **`three-pillars.md`** — HITL checkpoints can include a three-pillars re-check when the sprint's direction meaningfully shifts
+- **`surface-check-ritual.md`** — the between-sprint surface-check piggybacks on the cascade-boundary HITL

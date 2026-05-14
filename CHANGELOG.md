@@ -2,6 +2,29 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.7 — charter-amend-16-21 compressed sync (2026-05-14)
+
+Clears the amendment-sync backlog: charter Amendments 16 through 21 (across three charter versions) externalized in one compressed-tier arc. DAcumen's amendment docs had stopped at Amendment 15; this catches the mirror up. Run as a tracked governance-thread sprint rather than the per-cycle consolidation-nephew duty — the ritual's reassignment clause, invoked because the original owning cycles had long closed unsynced.
+
+### Added
+
+- **`docs/amendment-19-patterns.md`** — Amendment 19: the cycle-OPEN ceremony proactively fast-forward-pushes every nephew remote branch before the next session activates, eliminating a reset+force-push recovery dance otherwise repeated per nephew per cycle.
+- **`docs/amendment-20-21-patterns.md`** — Amendments 20 + 21: the **garbage-collection chain** (the per-loop FIX/DO/COLLECT discipline — a base concept DAcumen lacked entirely), plus its two refinements — the COLLECT-queue ripeness target (≥10) and queue-ripeness-as-handoff-signal (stay-in-nephew until ripe).
+- **`docs/amendment-16-17-18-patterns.md`** — Amendments 16/17/18, kernel-only: BACKFILL-distinct-from-MIGRATION + the memory-rot-scoping anti-pattern (16) · the single-fire prompt cascade with five sub-modes + cross-worktree byte-identity (17) · the dual-shape cycle-mode (18). The upstream charter's project-specific apparatus was deliberately not externalized.
+
+### Changed
+
+- **`docs/amendment-14-patterns.md`** — §14.5 enriched with §14b's explicit fire / doesn't-fire conditions. §14b (the mid-cycle Lens-2 atomic-absorption sub-rule) was found ~already externalized — §14.5 had folded it in ahead of formal ratification — so only the condition delta was owed.
+- **`docs/dacumen-sync-process.md`** — lessons-learned section appended for this arc.
+
+### Notes
+
+- **Three of the six "amendments behind" weren't simple debt.** §14b was already synced; the garbage-collection chain base concept had never been synced at all (so its refinements had no parent); and the `dacumen_impact` tags were byte-identical across all three charter versions — over-declared, not per-amendment assessed. All three are symptoms of the same gap: nothing reports what DAcumen actually covers, so sync state must be re-derived by reading the docs. Captured in the `dacumen-sync-process.md` lessons-learned.
+- **Compressed tier, per the ritual's own triage discipline.** Framework-mechanics amendments (§14b/19/20/21) got full treatment; migration-project amendments (16/17/18) compressed to portable kernels. No `skill` or `skeleton` deliverables — the impact tags claimed both; the actual amendments contained neither.
+- **Version tags lapsed between v0.2.2 and v0.2.7** (CHANGELOG entries exist, tags don't). Noted, not backfilled here — a separate housekeeping task.
+
+---
+
 ## v0.2.6 — surface-check ritual (between-sprint derived-view audit) (2026-05-14)
 
 Adds a new methodology ritual: a short, recurring stop fired at cascade boundaries where the operator checks **surfaces** (derived views — `/brief` output, regenerated MEMORY.md, dashboards, catalogs, rendered manifest mirrors, customer-facing pages) against the substrate they derive from. Closes a gap in the framework's observability: substrate is checked constantly, but surfaces are written once by a renderer and then trusted until they quietly drift.

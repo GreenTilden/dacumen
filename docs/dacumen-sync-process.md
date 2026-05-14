@@ -188,3 +188,31 @@ The constraint that forces the triage (usually time-budget, occasionally real ri
 ### When the next sync fires (updated)
 
 Amendment 11 is now `RATIFIED` at v0.2.1. Next amendment's consolidation nephew reads this postmortem + follow-through + both lessons before starting their first sync.
+
+---
+
+## Lessons-learned — charter-amend-16-21 compressed sync (2026-05-14, v0.2.7)
+
+*First sync ritual since the v0.2.1 backfill, and the first run by the governance thread rather than a consolidation nephew — the reassignment clause invoked because the original owning cycles had closed unsynced. Six amendments (16-21 plus the §14b sub-rule), one compressed-tier arc.*
+
+### Read the target's coverage before scoping, not just the amendments
+
+The triage read the six amendment files and tiered them. It could not see what DAcumen *already covered* — and that mattered three times:
+
+- **§14b was already synced.** `amendment-14-patterns.md` §14.5 had folded the sub-rule in ahead of its formal ratification. Discoverable only by reading the doc. The "lead with §14b" pick turned out near-free.
+- **The garbage-collection chain base concept was missing entirely.** Amendments 20/21 *refine* it — but DAcumen had no FIX/DO/COLLECT concept at all, only the cascade-sync briefs (a different mechanism). The refinements had no parent; the combined doc had to introduce the base concept first.
+- **The `dacumen_impact` tags were over-declared.** All three charter versions carried the byte-identical string `manifesto | skill | skeleton | doc-edit` — a template default, not a per-amendment assessment. Reading the actual content: no genuine `skill`, marginal `skeleton`.
+
+**Lesson:** the triage must check the *target's coverage*, not just the source amendments. It bites both ways — completed work looks undone, and never-started base concepts hide inside an "N amendments behind" count. The deep fix is a sync-completion ledger; until that exists, every triage opens with a `grep` of `docs/` for the amendment's core concepts.
+
+### Combine tightly-coupled slates into one doc
+
+Amendments 20+21 ratified as a concurrent slate and cross-compose; 16/17/18 came from one codification batch. Externalizing each as its own thin file would have duplicated shared context. One combined doc per slate — `amendment-20-21-patterns.md`, `amendment-16-17-18-patterns.md` — is cleaner and matches the charter's own batched-ratification framing. The one-file-per-amendment-number convention is not worth a duplicated intro.
+
+### Kernel-only is a real tier and it works
+
+The migration-project amendments (16/17/18) carried genuine portable kernels buried in project-specific apparatus that doesn't externalize. "Kernel-only" — extract the portable idea, strip the specifics — kept them from either bloating the sync with un-externalizable detail or being dropped entirely. Recommend it as a standing tier option for any amendment whose value-to-sanitization ratio is poor.
+
+### When the next sync fires
+
+Charter Amendments 16-21 are synced at v0.2.7. Two notes for whoever runs the next ritual: the version tags lapsed between v0.2.2 and v0.2.7 (CHANGELOG entries exist, tags don't) — a small instance of the same lapsed-completion-tracking the first lesson names — and the first triage step is now the `grep` of `docs/`, before tiering.

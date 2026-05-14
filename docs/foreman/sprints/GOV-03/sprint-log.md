@@ -18,6 +18,7 @@ Third governance-thread standalone sprint. Operating model + scope boundaries in
 | Loop | Status | Started | Ended | Artifacts | Outcome |
 |---|---|---|---|---|---|
 | L01 | CLOSED | 2026-05-14 | 2026-05-14 | this sprint-log (fresh health-check sweep) | Fresh infra / system-health sweep — systemd `--user` services + timers, observatory data freshness, casey-pipeline trigger path, cross-BU state. **Headline: the health-refresh cron fails silently.** 6 user-crontab jobs `curl -sf … >/dev/null 2>&1` into casey-pipeline `:8912`; when the pipeline is down (as it was for ~24h+ until GOV-02 L04 restored it) every job fails with zero signal — no log, no alert. That is *why* GOV-02 found 24-day-stale health scores and nothing surfaced it. Structural hole #3 family: the refresh mechanism has no failure signal. Also found: `project-health-reconcile.json` is an orphaned artifact (24d stale, no code writes it). |
+| L02 | CLOSED | 2026-05-14 | 2026-05-14 | `~/.config/systemd/user/archived-2026-05-14/` (4 unit files) | Queue #3 — NCAA baseball archived per operator decision. Operator changed #3's disposition from route-out to archive ("don't need that in darnometer any more"). Stopped + disabled `ncaa-baseball-ingest.timer`, cleared its failed state, and moved all 4 baseball unit files (`ncaa-baseball-ingest` + `autoresearch-xgboost-ncaa-baseball`, service + timer each) into a dated archive dir. Basketball units (`autoresearch-xgboost-ncaa` / `wncaa`) untouched — different sport. darnometer's NCAA-baseball *code + postgres data* left intact (dormant, recoverable) — codebase surgery is darnometer-owned, not GOV cross-cutting scope. |
 
 ## L01 — fresh health-check sweep findings
 
@@ -57,17 +58,25 @@ This is structural hole #3 in its purest form so far: not "no completion ledger"
 - `darntech-rag-indexer` ran today (2026-05-14 02:03) — healthy.
 - `casey-pipeline` dev (`:8912`) and prod casey-junior (`:8902`) both return `{"status":"ok"}` — GOV-02 L04's fix holds.
 
+## L02 — NCAA baseball archived (operator-directed)
+
+Operator reviewed the L01 sweep and changed queue #3's disposition: not a route-out — **archive it**, "don't need that in darnometer any more." NCAA baseball had two unit pairs feeding the darnometer project: `ncaa-baseball-ingest` (ESPN data → darnometer postgres) and `autoresearch-xgboost-ncaa-baseball` (XGBoost experiments on it). The ingest had been failing since the miniconda3 path it hard-codes stopped existing — broken regardless.
+
+**Done:** stopped + disabled `ncaa-baseball-ingest.timer`, `reset-failed` on its service, moved all 4 baseball unit files (`*.service` + `*.timer` for both) into `~/.config/systemd/user/archived-2026-05-14/`, `daemon-reload`. Verified: no baseball units left loaded; basketball units (`autoresearch-xgboost-ncaa` / `wncaa` — different sport) untouched.
+
+**Deliberately not touched:** darnometer's NCAA-baseball *application code* (`ingest_ncaa_baseball.py`, `ncaa_baseball_historical.py`, refs in `ml_model.py` / `edge_registry.py`) and its *postgres data*. Ripping a feature out of darnometer's codebase + DB is darnometer-owned project surgery, not GOV cross-cutting cleanup — and "archive" means deactivate + preserve, not destroy. The dormant code/data is recoverable; if full removal is wanted, that's a darnometer-scoped task. GOV-03 archived the *operational footprint* the sweep flagged — the failed unit cluttering the health view — which is the in-scope, GOV-shaped part.
+
 ## Backlog queue (GOV-03 scope)
 
 | # | Item | Source | Shape |
 |---|---|---|---|
 | 1 | Health-refresh cron has no failure signal | L01 | **OPEN — GOV-shaped, headline.** 6 user-crontab jobs `curl -sf … >/dev/null 2>&1` into `:8912`; silent total failure when the pipeline is down. Fix shape: give the health-refresh jobs a liveness/failure signal — a logging wrapper, a "pipeline last-success" healthcheck the dashboard surfaces, or at minimum stop discarding non-200s. The execution target of GOV-03. |
 | 2 | `project-health-reconcile.json` orphaned artifact | L01 | **OPEN — GOV-shaped verify-and-strike.** 24d stale, no producer found. Confirm dead, then remove or mark deprecated; correct `observatory-data-inventory.md`. |
-| 3 | `ncaa-baseball-ingest.service` failed | L01 | **ROUTE-OUT.** Personal-pillar ingest, not governance infra — route to ncaa-baseball owner. |
+| 3 | `ncaa-baseball-ingest.service` failed | L01 | ✅ **DONE (L02).** Operator changed disposition route-out → archive. All 4 NCAA-baseball unit files archived to `~/.config/systemd/user/archived-2026-05-14/`; darnometer code + DB left intact (darnometer-owned, out of GOV scope). |
 | 4 | `dellatech-rag-indexer` never run | L01 | **WATCH.** Static+timer unit, first scheduled fire 05-15 02:32 — re-check after; act only if still `LAST = -`. |
 
 ## Next
 
 **GOV-03 opened from a fresh sweep (L01) — queue scoped, not inherited.** The headline (#1) is the sharpest articulation yet of the recurring structural-hole-#3 pattern the governance thread keeps surfacing: GOV-01 found orphaned generator scripts, GOV-02 found a phantom carryover backlog and a half-landed RC, and GOV-03 finds the *refresh mechanism itself* has no failure signal. Each is the same shape — "something that should run, isn't, and nothing says so" — and #1 is the one that, fixed, would have caught all the others.
 
-Next loop (L02) executes #1 — the health-refresh failure signal — and folds in #2's verify-and-strike. #3 and #4 are routed/watched and need no GOV loop unless they escalate.
+L02 closed queue #3 (NCAA baseball archived, operator-directed). Next loop (L03) executes #1 — the health-refresh failure signal — and folds in #2's verify-and-strike. #4 is on watch and needs no GOV loop unless it escalates.

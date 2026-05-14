@@ -6,13 +6,14 @@
     "summary": "The governance thread runs ABOVE the three-sprint cascade — not a 4th nephew. It scopes from a health-check sweep, takes ownerless cross-cutting work the cascade structurally can't absorb, and codifies findings to memory + DAcumen. GOV-02 closed fully (carryover backlog was rot + CLEARED; casey-pipeline standing watch resolved in L04). GOV-03 opened from a fresh health-check sweep (L01) and found the headline: the health-refresh cron fails silently — 6 user-crontab jobs curl into casey-pipeline :8912 with output discarded, so when the pipeline is down every refresh fails with zero signal. That is why GOV-02 found 24-day-stale health scores with nothing surfacing it. GOV-03's job is to give that refresh mechanism a failure signal.",
     "goals": [
       "L01 — fresh health-check sweep. DONE. Headline: health-refresh cron has no failure signal (structural hole #3, purest form yet). Also found: project-health-reconcile.json is an orphaned artifact (24d stale, no producer).",
-      "L02 — execute queue #1: give the 6 health-refresh cron jobs a liveness/failure signal (logging wrapper, last-success healthcheck, or stop discarding non-200s). Fold in #2 verify-and-strike of the orphaned reconcile artifact.",
-      "Route-outs / watch: #3 ncaa-baseball-ingest.service failed → personal-pillar owner; #4 dellatech-rag-indexer never run → watch, re-check after first scheduled fire 05-15 02:32"
+      "L02 — queue #3 NCAA baseball archived per operator decision. DONE. All 4 baseball unit files moved to ~/.config/systemd/user/archived-2026-05-14/; darnometer code + DB left intact (darnometer-owned, out of GOV scope).",
+      "L03 — execute queue #1: give the 6 health-refresh cron jobs a liveness/failure signal (logging wrapper, last-success healthcheck, or stop discarding non-200s). Fold in #2 verify-and-strike of the orphaned reconcile artifact.",
+      "Watch: #4 dellatech-rag-indexer never run → re-check after first scheduled fire 05-15 02:32"
     ],
     "decisions_pending_operator": [
-      "GOV-03 L01 sweep is done and the queue is scoped — okay to proceed to L02 (execute the health-refresh failure-signal fix + verify-and-strike the orphaned reconcile artifact)?"
+      "GOV-03 L03 in progress — executing the health-refresh failure-signal fix (#1) + verify-and-strike of the orphaned reconcile artifact (#2). No operator decision pending."
     ],
-    "proposed_next_action": "GOV-03 is open with a fresh-sweep-scoped queue. L01 (the sweep) is closed. Recommend proceeding to L02: execute queue #1 — give the health-refresh cron a failure signal so a dead pipeline can't silently freeze every health score again — and fold in #2, the verify-and-strike of the orphaned project-health-reconcile.json. #3 and #4 are routed/watched and need no GOV loop unless they escalate."
+    "proposed_next_action": "GOV-03 L01 (sweep) and L02 (NCAA baseball archive, operator-directed) are closed. L03 is the headline work: give the health-refresh cron a failure signal so a dead pipeline can't silently freeze every health score again, and fold in #2's verify-and-strike of the orphaned project-health-reconcile.json. #4 stays on watch."
   },
   "pillar": "governance",
   "cycle_mode": "governance-thread-standalone",
@@ -35,7 +36,6 @@
     }
   ],
   "carryover_decisions_at_open": {
-    "ncaa_baseball_ingest_route_out": "GOV-03 L01 sweep found ncaa-baseball-ingest.service in failed state. Personal-pillar ESPN data ingest — not governance cross-cutting infra. Route to the ncaa-baseball project owner; flagged in GOV-03 L01 so it has a paper trail and doesn't vanish.",
     "dellatech_rag_indexer_watch": "GOV-03 L01 sweep found dellatech-rag-indexer.service has never run (LAST = -). Likely just newly installed — it is static+timer-triggered, first scheduled fire Fri 2026-05-15 02:32. Re-check after that; if it still shows LAST = - it is a real finding for a later GOV loop.",
     "gov_04_scoping": "GOV-04 must scope from a fresh health-check sweep per feedback_governance_thread_standalone_sprints.md — run the check first, don't scope from a hunch."
   }

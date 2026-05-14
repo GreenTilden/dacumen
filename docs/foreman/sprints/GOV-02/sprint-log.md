@@ -92,3 +92,21 @@ Both remaining queue items verified — **both already resolved**:
 **GOV-02 — all queue items closed.** #1 carryover-strike (L02) · #2 tailnet (L03 — already done) · #3 Lorna paths (L03 — already done) · #4 casey-pipeline (L02 — diagnosed + handed to cycle-28 RC6). Sprint stays `open` at a clean full-stop — nothing mid-flight.
 
 The durable finding isn't any single fix — it's that the cycle-23/24 carryover backlog was **entirely rot**, and nothing strikes resolved items (structural hole #3). Standing **watch:** re-check `casey-pipeline` once cycle-28 lands RC6 — if RC6 closes and the pipeline still isn't started, that residual gap is GOV-shaped. A next GOV sprint scopes from a fresh health-check sweep per the operating model.
+
+## L04 · casey-pipeline standing watch — resolved
+
+**The standing watch fired and resolved cleanly.** Cycle-28 landed RC6 (`casey-junior` `ca36b3b` — *"rag-core-client rename + Dockerfile vendor COPY"*). Re-checked `casey-pipeline` per the L03 watch: still `inactive (dead)`, same crash — `ModuleNotFoundError: No module named 'rag_core'` at `deployments.py:20`. RC6 had **closed** and the pipeline still wouldn't start → by the L03 criterion, the residual gap is GOV-shaped. GOV-02 took it.
+
+**What RC6 did vs. what it missed.** RC6 renamed the import package (`darntech_rag` → `rag_core`), updated all source imports, repointed `requirements.txt` at `./vendor/rag-core-client`, and fixed the Dockerfile vendor `COPY`. RC6's commit note — *"vendor/ re-populated locally + `import rag_core` verified (0.2.0)"* — was true in whatever env that check ran in, but **not** the dev runtime venv. The dev `.venv` still had the old `darntech-rag-client 0.1.0` (editable install). The cascade reconciled the code and the Docker image; nobody reconciled the **dev runtime environment**. Textbook ownerless seam — exactly GOV-shaped.
+
+**The fix (dev-local, low blast radius):**
+- `pip uninstall darntech-rag-client` (stale 0.1.0) from `casey-junior/.venv`
+- `pip install ./vendor/rag-core-client` → `rag-core-client 0.2.0`, provides the `rag_core` module
+- Verified: `import rag_core`, `from rag_core import recall, cache, post_rag_recall_ledger` all resolve
+- `systemctl --user restart casey-pipeline` → `active (running)`, stable, `GET :8912/api/health` → `{"status":"ok"}`
+
+The dev casey-pipeline is back up after being down since the 05-13 reboot — the stale health scores (`project-health-reconcile.json`, 24 days stale at L01.1) will refresh on the next pipeline run. **Scope caveat preserved from L02:** this fixed the **dev** pipeline only. Prod casey-junior (Node 2 :8902) runs its own scheduling and `make deploy` will carry RC6's `requirements.txt` + Dockerfile changes — prod is cascade scope, not GOV.
+
+**The durable lesson:** a cascade RC that renames a shared package is not "landed" when source + image are reconciled — every *consumer runtime environment* (dev venvs, running services) is also part of the blast radius, and nothing in the cascade structurally checks them. This is structural hole #3 in a new costume: the rename closed in the producer's ledger, but the consumer-side install was invisible work that no nephew owned. The standing-watch mechanism is what caught it — GOV-02 L03 wrote the watch with an explicit fire criterion ("if RC6 closes and the pipeline still won't start"), and that criterion triggered exactly as designed.
+
+**GOV-02 standing watch — CLOSED.** Sprint queue fully closed, watch resolved. GOV-02 stays `open` at a genuine full-stop. GOV-03 scopes from a fresh health-check sweep per the operating model.

@@ -5,7 +5,8 @@ role: governance / standalone-sprint
 cascade_mode: standalone — runs ABOVE the three-sprint cascade, not a 4th nephew
 work_locus: cross-BU (darntech · dellatech · dacumen)
 opened_at: 2026-05-14
-status: open
+closed_at: 2026-05-14
+status: closed
 charter: ../GOV-01/charter.md (inherited — the governance-thread operating model)
 ---
 
@@ -93,10 +94,16 @@ Verified fully orphaned: no code anywhere writes it (no producer), nothing reads
 | 3 | `ncaa-baseball-ingest.service` failed | L01 | ✅ **DONE (L02).** Operator changed disposition route-out → archive. All 4 NCAA-baseball unit files archived to `~/.config/systemd/user/archived-2026-05-14/`; darnometer code + DB left intact (darnometer-owned, out of GOV scope). |
 | 4 | `dellatech-rag-indexer` never run | L01 | **WATCH.** Static+timer unit, first scheduled fire 05-15 02:32 — re-check after; act only if still `LAST = -`. |
 
-## Next
+## L04 — watches resolved · GOV-03 closed
 
-**GOV-03 opened from a fresh sweep (L01) — queue scoped, not inherited.** The headline (#1) was the sharpest articulation yet of the recurring structural-hole-#3 pattern the governance thread keeps surfacing: GOV-01 found orphaned generator scripts, GOV-02 found a phantom carryover backlog and a half-landed RC, GOV-03 found the *refresh mechanism itself* had no failure signal. Each is the same shape — "something that should run, isn't, and nothing says so" — and #1, now fixed, is the one that would have caught all the others.
+**#4 — dellatech-rag-indexer first fire. RESOLVED.** Triggered manually (operator fast-tracked to close GOV-03 before GOV-04 launches): exited 0/SUCCESS, 1.9s, indexed 33 chunks. Watch fired clean — no escalation. The unit was newly installed; now has a successful run record.
 
-**All actionable queue items closed:** #1 (L03), #2 (L03), #3 (L02). #4 (`dellatech-rag-indexer`) stays on watch — re-check after its first scheduled fire (2026-05-15 02:32); act only if it still shows `LAST = -`. GOV-03 sits `open` at a near-full-stop with that one watch outstanding.
+**Wrapper first-exercise check — health-refresh all-fresh.** Ran the checker manually: all 6 pipelines reported "last success 0h ago" (from the L03 priming, still fresh). Checker exited 0 → "all 26h-fresh". The wrapper + checker are working. (Note: tomorrow's 07:15–07:35 cron batch will be the first real *automatic* exercise — that will write new heartbeat timestamps and exercise the actual cron-drive path, not manual triggering.)
 
-**Standing watch carried forward:** `dellatech-rag-indexer` first-fire check, 2026-05-15 02:32. Also unverified: tomorrow's 07:15–07:35 cron batch is the first real-world exercise of the L03 wrapper — worth a glance at `~/.local/state/health-refresh/` after to confirm the heartbeats advance under cron (not just manual priming).
+**GOV-03 — ALL LOOPS CLOSED.** Status set to `closed`. The sprint ran clean: L01 identified the headline (health-refresh failure signal gap), L02 archived NCAA baseball (operator-directed), L03 fixed the headline + struck an orphaned artifact, L04 verified both watches green. No carryover, no escalations.
+
+## Durable findings
+
+- **Structural hole #3 (the deepest form):** a scheduled job that discards its own output (`curl -sf … >/dev/null 2>&1`) is silent on failure — indistinguishable from never running. GOV-01 found orphaned scripts, GOV-02 found a phantom backlog + half-landed RC, GOV-03 found the *refresh mechanism itself* had no signal — same shape every time. The fix: the failure lands where someone already looks (`systemctl --user --failed` is exactly what a sweep greps).
+- **Strike-ledger tombstones:** the inventory now doubles as a completion ledger (GOV-02's lesson applied) — struck items are kept with their verify result and date, not deleted.
+- **Observer-pattern checker:** daily staleness checker on a systemd `--user` timer is the reusable pattern for surfacing silent-failure problems; matches `observatory-telemetry-contract-check` convention.

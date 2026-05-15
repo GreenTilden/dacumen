@@ -1,0 +1,14 @@
+---
+name: fix-without-action-surface-reconciliation
+description: "Fixing a mechanism without updating the dashboard's action hint that prescribes the old (now wrong) fix has only half-landed — the surface keeps prescribing the discredited approach"
+metadata: 
+  node_type: memory
+  type: feedback
+  originSessionId: ed5a49b7-9e08-460f-aea7-dac9fd4b72af
+---
+
+GOV-06 L04 fixed `evidence_coverage` drift by adding `remap_git_events()` + `POST /api/reconciliation/remap` and ran it on prod (58→63). The mechanism was correct, the metric moved, the durable finding was codified to [[append-only-ingester-stale-mapping]]. But L04 left `casey-junior/app/services/process_health.py:45` still emitting *"Register unmapped repos in PROJECT_ENDPOINTS"* as the `evidence_coverage` action — the exact prescription L04 had just proved misdiagnoses the cause. The misleading hint sat in `top_actions[0]` on the prod ops dashboard for a day, ready to gaslight the next operator: "you say evidence_coverage is low, the dashboard tells me to register repos, I register repos, the score doesn't move, what now?" GOV-07 L01 fixed the action text to prescribe the honest two-step (register **AND** run remap pass) and verified `top_actions[0]` on prod.
+
+**Why:** A dashboard's `action` hint is operator instruction — it has the same authority as a runbook line. When the team learns the runbook line is wrong and writes a memory + lands the mechanism but doesn't update the hint, the dashboard is actively misdirecting. This is the consumer-reconciliation pattern of [[cascade-rc-rename-consumer-runtime-gap]] applied to the action surface: a fix isn't landed until every surface that points at the old mechanism has been reconciled. Memory codification is necessary but not sufficient — memory teaches the team, the dashboard action teaches the operator-of-the-moment, and they have to agree. Related: [[route-out-verification-gate]] (a fix isn't landed until you re-test from the next sweep) is the same closed-loop discipline applied to route-outs; this is it applied to action hints.
+
+**How to apply:** When fixing a mechanism that has a corresponding dashboard "action" / "recommendation" / "next step" surface, treat updating that text as part of the same loop, not a follow-up. Concretely, before closing the loop: grep for the old action's literal phrasing in the dashboard/service code, and either (a) update it to prescribe the new mechanism, or (b) make it conditional so it appears only when the new mechanism wouldn't help. If you can't fix it in the same loop, open the carry-forward explicitly — don't rely on the next GOV sweep to catch a half-landed fix (it will, but you're paying the cost of a sprint of misdirection). At sprint close, scan `top_actions` / `top_recommendations` / any dashboard-surfaced hint for phrases that match the *old* fix you discredited — if any survive, the loop isn't done.

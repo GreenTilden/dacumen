@@ -165,6 +165,24 @@ resolved_at: (filled in at transition)
 (Filled in at transition to `resolved`. Capture the response verbatim, then the runtime's reading of the next-loop design.)
 ```
 
+## Acceptance gates must name current consumers
+
+HITL acceptance gates should specify who is actually using the feature and what "pass" looks like for them. Two failure modes:
+
+**Aspirational user pass**: the gate names a user who doesn't exist yet ("Oliver will test the Kavita OPDS feed"). If that user isn't a current household member or isn't actually going to touch the feature this session, the gate never fires — the gate was written for future-you, not present-you.
+
+**Operator-only consumption misidentified as multi-user**: if the only real consumer of a feature right now is the operator themselves, the operator self-pass IS the real-user pass. Don't manufacture a second check for a user who hasn't shown up yet. When that user eventually shows up, add the gate then.
+
+The rule: **name a consumer who will actually do the check in this session.** If only the operator qualifies, name the operator.
+
+## Verify a guard against its stated contract, not the bug that motivated it
+
+A guard or check can succeed at its obvious job — preventing the motivating bug — while being looser than its own docstring or help text. The verification test plan should be written from the **contract** (what the guard claims to do), not from the bug (what it was built to prevent).
+
+Watch for guards that check a proxy instead of the contract itself. A guard whose help text says "same-day only" but whose implementation checks "did the resolver fall back to today?" is two different things. The bug it was built for may be prevented while the stated contract is violated.
+
+**Application**: after shipping a guard, ask "what does this guard's own documentation claim?" Then write a test that confirms *that claim* — not just "does the guard fire when the original bug is triggered?"
+
 ## See also
 
 - **`foreman-manifesto.md`** — the framework spec (§5 covers HITL as a tracking-surface propagation barrier)

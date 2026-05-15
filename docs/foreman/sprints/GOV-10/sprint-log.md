@@ -442,3 +442,32 @@ New memory: [[docker-compose-restart-doesnt-reload-env-file]] — added to MEMOR
 - ⏸ **#6 broader memory canonicalization sweep** — still open, deferred as too broad for one envelope
 
 GOV-10's reach extended via three post-close addenda: the v0.4.0 redeploy + the EnvironmentFile refactor + the token rotation + auth-enablement. Net for the day: 4 governance memory files involved (1 new + 3 extended), 1 silent-bridge-break + 1 sprint-log-stale-claim + 1 placeholder-token-anti-pattern + 1 docker-compose-restart-gotcha all surfaced and resolved.
+
+---
+
+## Post-close addendum 4 — CT 100 nginx token aligned (2026-05-15)
+
+Operator-direct: "update CT 100 nginx with the new token" (extending the rotation to the perimeter so `ops.darrenarney.com → Lorna` recovers from the addendum-3 401s).
+
+### Discovery + execution
+
+- **CT 100 currently lives on Node 2** (migrated from Node 1 in Della cycle-2 L01, 2026-05-11). N1's CT 100 shell is `stopped`. N2's CT 100 is `running`, holds the live nginx + Authelia + cert store.
+- **Lorna proxy location:** `/etc/nginx/sites-enabled/all-sites:890-896` on CT 100 — a path-routed `location /api/financials/` block proxying to `http://192.168.0.98:8901/` with a hardcoded `proxy_set_header Authorization "Bearer 51604c8df…"` line at 895. The injected token was the **historical cycle-24 hex value** (same token I found earlier in `/opt/docker/apps/lorna-financials.stale-cycle-24-2026-05-13/.env`); it had been the perimeter's injected Bearer all along — but Lorna's container had no `FINANCIALS_API_TOKEN` set until addendum 3, so the value went unverified. Once addendum 3 turned Lorna's auth on with a NEW token, this stale perimeter value started 401-ing.
+- **Replacement:** python `re.subn` (per [[feedback_sed_too_broad_on_shared_config]] — `sed -i` on shared nginx config has burned us before) with the full unique old token as the match anchor → exactly 1 replacement made → `nginx -t` clean → `nginx -s reload` clean → end-to-end probe `curl -s https://ops.darrenarney.com/api/financials/deals` returns **HTTP 200**.
+- **Backup:** `/etc/nginx/all-sites.bak-pre-lorna-token-rotation-20260515` on CT 100 (47442 bytes, rollback path).
+- **Other Bearer lines in the same nginx config** (lines 112, 487, 789) use a different token (`559e761c…`) for the cmd_api upstream and were untouched — verified via grep before + after.
+
+### Status — Lorna token rotation FULLY CLOSED across all surfaces
+
+| Surface | Token state | Verification |
+|---|---|---|
+| `/etc/casey-junior.env` (Node 2) | NEW token | `/proc/$pid/environ` confirms (addendum 2) |
+| `/opt/lorna-financials/.env` (Node 2) | NEW token | `docker exec lorna env` confirms (addendum 3, post-`up -d`) |
+| `/etc/nginx/sites-enabled/all-sites:895` on CT 100 | NEW token | nginx reload + `ops.darrenarney.com → /api/financials/deals → 200` (addendum 4) |
+| Lorna `app/auth.py` `verify_token` | enforced | no-token + wrong-token → 401, right-token → 200 (addendum 3) |
+
+### Remaining operator-handled items
+
+- **Other consumers** that may call `.98:8901` direct (cathy-bot / darntech-huey / etc) — until they're aligned, those direct callers continue to 401. Quick way to check: `grep -rE "LORNA_FINANCIALS_TOKEN|FINANCIALS_API_TOKEN" /opt/<service>/` on Node 2 for each candidate. If empty, the service doesn't call Lorna direct.
+
+The full LORNA_FINANCIALS_TOKEN rotation is now complete across all three surfaces I have authorization for: casey-junior client + Lorna server + CT 100 perimeter. Auth is genuinely enforced at the app layer; the placeholder-token anti-pattern is gone; the cycle-24 perimeter token is retired.

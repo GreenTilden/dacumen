@@ -5,8 +5,8 @@ role: governance / standalone-sprint
 cascade_mode: standalone — runs ABOVE the three-sprint cascade, not a 4th nephew
 work_locus: casey-junior (action message source) · darntech (dashboard surface, verification only)
 opened_at: 2026-05-15
-closed_at:
-status: open
+closed_at: 2026-05-15
+status: closed
 charter: ../GOV-01/charter.md (inherited — the governance-thread operating model)
 ---
 
@@ -18,7 +18,7 @@ Seventh governance-thread standalone sprint. Scoped from a fresh health-check sw
 
 | Loop | Status | Started | Ended | Artifacts | Outcome |
 |---|---|---|---|---|---|
-| L01 | OPEN | 2026-05-15 | | casey-junior `app/services/process_health.py` · memory/fix-without-action-surface-reconciliation.md (new) · this sprint-log | Fix the misleading `evidence_coverage` action message · codify the meta-finding · GOV-07 close |
+| L01 | CLOSED | 2026-05-15 | 2026-05-15 | casey-junior `app/services/process_health.py` (commit `434cab9`) · memory/fix-without-action-surface-reconciliation.md · this sprint-log · GOV-07 closed | Action text replaced with honest two-step prescription; casey-junior deployed; prod-verified `top_actions[0]` reflects the new text; meta-finding codified; **GOV-07 closed**. |
 
 ## L01 — fresh health-check sweep findings (scope origin)
 
@@ -69,6 +69,49 @@ The other three action messages (`traceability_depth` line 118, `freshness` line
 
 | # | Item | Shape | Status |
 |---|---|---|---|
-| 1 | Fix the misleading `evidence_coverage` action message at `process_health.py:45` + codify the meta-finding + close | One-line fix + deploy + memory codification | ⏳ L01 |
+| 1 | Fix the misleading `evidence_coverage` action message at `process_health.py:45` + codify the meta-finding + close | One-line fix + deploy + memory codification | ✅ DONE (L01) |
 
-Single-loop sprint. Same-day open-to-close expected. GOV-08 scopes from a fresh sweep when next scheduled.
+Single-loop sprint. Same-day open-to-close. GOV-08 scopes from a fresh sweep when next scheduled.
+
+## L01 — fix the evidence_coverage action message · GOV-07 closed
+
+### The fix (casey-junior commit `434cab9`)
+
+One-line edit at `app/services/process_health.py:45`:
+
+```diff
+- "action": "Register unmapped repos in PROJECT_ENDPOINTS" if evidence_pct < 70 else None,
++ "action": "Register unmapped repos in PROJECT_ENDPOINTS AND run remap pass (POST /api/reconciliation/remap) to re-attribute existing events" if evidence_pct < 70 else None,
+```
+
+The new text prescribes both halves of the honest fix:
+- **Register** handles genuinely-new repos outside `PROJECT_ENDPOINTS` (the 808 still-unmapped events GOV-06 L04 left as per-project follow-up are mostly this case).
+- **Run remap pass** re-attributes existing events for repos already in `PROJECT_ENDPOINTS` that got their `deployment_id` after backfill_git_history() already ingested events for them (the case L04 fixed: 111 events re-mapped across 7 repos).
+
+Either alone is incomplete — and the old single-action text picked the wrong half as the prescription.
+
+### Deploy + prod verification
+
+- `make deploy` clean: rsync pushed `app/services/process_health.py` to `/opt/casey-junior/app-src/app/services/`, `systemctl restart casey-junior` on Node 2, health check returns `{"status":"ok"}`.
+- Prod verified via `curl http://192.168.0.98:8902/api/reconciliation/health`:
+  - `dimensions.evidence_coverage.action` = the new two-step text ✓
+  - `top_actions[0]` = the new two-step text ✓
+  - `composite_score` = 59 (was 58 — small uptick from natural commit growth, not from the action change itself)
+  - `evidence_coverage.score` = 63 (was 63 — score wasn't affected by the action-text change, as expected)
+
+The discredited "Register unmapped repos in PROJECT_ENDPOINTS" phrasing no longer surfaces on prod.
+
+### Durable finding codified
+
+Wrote `memory/fix-without-action-surface-reconciliation.md` to governance memory: **fixing a mechanism without updating the dashboard's action hint that prescribes the old (now wrong) fix has only half-landed.** Memory codification is necessary but not sufficient — memory teaches the team, the dashboard action teaches the operator-of-the-moment, and the two have to agree. Same family as [[cascade-rc-rename-consumer-runtime-gap]] (config change without consumer reconciliation) applied to the action surface; same closed-loop discipline as [[route-out-verification-gate]] applied to action hints. The how-to-apply: at sprint close, grep `top_actions` / `top_recommendations` / any dashboard-surfaced hint for the literal phrasing of the *old* fix you discredited — if any survive, the loop isn't done.
+
+### GOV-07 — CLOSED
+
+Status set to `closed`. Same-day open-to-close, one loop:
+- **L01** — fixed the misleading `evidence_coverage` action message; deployed casey-junior; prod-verified; meta-finding codified.
+
+No carryover. One follow-up worth noting for the next GOV sweep: scan the other dashboard action surfaces (telemetry-contract card, agent-review card, freshness card, doc-health card) for any text that prescribes a mechanism the team has since discredited — the new memory file's discipline applies generically, GOV-07 only audited the one surface that was triggered. GOV-08 opens from a fresh sweep when next scheduled.
+
+### Durable findings (this loop)
+
+- **A fix without action-surface reconciliation has only half-landed.** Codified to `fix-without-action-surface-reconciliation.md`. Memory teaches the team; the dashboard action teaches the operator-of-the-moment; both must reflect the new mechanism in the same loop, or the next operator gets gaslit.

@@ -1,0 +1,11 @@
+[Unit]
+Description=Health-refresh staleness check — GOV-03: surfaces silently-failed casey-pipeline health-refresh crons
+Documentation=file:///home/darney/projects/governance-thread/docs/foreman/sprints/GOV-03/sprint-log.md
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/darney/projects/governance-thread/scripts/health-refresh-check.sh
+StandardOutput=journal
+StandardError=journal
+Nice=10

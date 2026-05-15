@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily health-refresh staleness check (08:10 — after the 07:15-07:35 refresh batch + 23:00 agent-review)
+
+[Timer]
+# 08:10 — runs after the morning refresh batch (07:15-07:35) so a same-morning
+# failure is caught the same day. The 23:00 agent-review pipeline is covered by
+# the 26h staleness window.
+OnCalendar=*-*-* 08:10:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

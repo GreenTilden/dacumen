@@ -3,17 +3,17 @@
   "cycle_label": "GOV-03 — governance-thread standalone sprint · fresh health-check sweep → health-refresh failure-signal gap · runs ABOVE the three-sprint cascade",
   "plain_english": {
     "_doc": "Operator-facing summary block. /brief reads this to emit a plain-language header. The governance thread is NOT a cycle — it is a thread of standalone GOV-NN sprints. cycle_number tracks the GOV sprint number (GOV-03 = 3). Re-author this block at each GOV sprint OPEN.",
-    "summary": "The governance thread runs ABOVE the three-sprint cascade — not a 4th nephew. It scopes from a health-check sweep, takes ownerless cross-cutting work the cascade structurally can't absorb, and codifies findings to memory + DAcumen. GOV-02 closed fully (carryover backlog was rot + CLEARED; casey-pipeline standing watch resolved in L04). GOV-03 opened from a fresh health-check sweep (L01) and found the headline: the health-refresh cron fails silently — 6 user-crontab jobs curl into casey-pipeline :8912 with output discarded, so when the pipeline is down every refresh fails with zero signal. That is why GOV-02 found 24-day-stale health scores with nothing surfacing it. GOV-03's job is to give that refresh mechanism a failure signal.",
+    "summary": "The governance thread runs ABOVE the three-sprint cascade — not a 4th nephew. It scopes from a health-check sweep, takes ownerless cross-cutting work the cascade structurally can't absorb, and codifies findings to memory + DAcumen. GOV-02 closed fully (carryover backlog was rot + CLEARED; casey-pipeline standing watch resolved in L04). GOV-03 opened from a fresh health-check sweep (L01) and ran its queue to a near-full-stop: L02 archived NCAA baseball (operator-directed), L03 fixed the headline — the health-refresh cron now has a failure signal (wrapper + heartbeats + a daily checker that goes systemd-failed on >26h staleness) — and struck an orphaned observatory artifact. Only a single watch is outstanding: dellatech-rag-indexer's first scheduled fire on 05-15.",
     "goals": [
       "L01 — fresh health-check sweep. DONE. Headline: health-refresh cron has no failure signal (structural hole #3, purest form yet). Also found: project-health-reconcile.json is an orphaned artifact (24d stale, no producer).",
       "L02 — queue #3 NCAA baseball archived per operator decision. DONE. All 4 baseball unit files moved to ~/.config/systemd/user/archived-2026-05-14/; darnometer code + DB left intact (darnometer-owned, out of GOV scope).",
-      "L03 — execute queue #1: give the 6 health-refresh cron jobs a liveness/failure signal (logging wrapper, last-success healthcheck, or stop discarding non-200s). Fold in #2 verify-and-strike of the orphaned reconcile artifact.",
+      "L03 — queue #1 + #2. DONE. #1: health-refresh cron given a failure signal — health-refresh-run.sh wrapper writes per-pipeline heartbeats, health-refresh-check.sh on a systemd --user timer goes `failed` on >26h staleness; 6 crontab lines rewritten; all 6 primed (200, also did the overdue refresh). #2: orphaned project-health-reconcile.json struck from darntech main (2d3a7b1), inventory row kept as a strike-ledger tombstone.",
       "Watch: #4 dellatech-rag-indexer never run → re-check after first scheduled fire 05-15 02:32"
     ],
     "decisions_pending_operator": [
-      "GOV-03 L03 in progress — executing the health-refresh failure-signal fix (#1) + verify-and-strike of the orphaned reconcile artifact (#2). No operator decision pending."
+      "GOV-03's actionable queue is fully closed (#1+#2 in L03, #3 in L02). One watch outstanding (dellatech-rag-indexer first-fire 05-15 02:32) + a glance at the L03 wrapper's first cron exercise tomorrow morning. Decision: close GOV-03 after the watch resolves, or hold open."
     ],
-    "proposed_next_action": "GOV-03 L01 (sweep) and L02 (NCAA baseball archive, operator-directed) are closed. L03 is the headline work: give the health-refresh cron a failure signal so a dead pipeline can't silently freeze every health score again, and fold in #2's verify-and-strike of the orphaned project-health-reconcile.json. #4 stays on watch."
+    "proposed_next_action": "GOV-03 L01/L02/L03 are all closed — the actionable queue is done. What remains is the dellatech-rag-indexer first-fire watch (05-15 02:32) and a confirm-glance that tomorrow's 07:15-07:35 cron batch exercises the new health-refresh wrapper correctly under cron. Recommend resolving both as GOV-03's final loop once 05-15 morning passes, then closing GOV-03; GOV-04 scopes from a fresh sweep."
   },
   "pillar": "governance",
   "cycle_mode": "governance-thread-standalone",
@@ -37,6 +37,7 @@
   ],
   "carryover_decisions_at_open": {
     "dellatech_rag_indexer_watch": "GOV-03 L01 sweep found dellatech-rag-indexer.service has never run (LAST = -). Likely just newly installed — it is static+timer-triggered, first scheduled fire Fri 2026-05-15 02:32. Re-check after that; if it still shows LAST = - it is a real finding for a later GOV loop.",
+    "health_refresh_wrapper_first_cron_exercise": "GOV-03 L03 rewrote the 6 health-refresh crontab lines to use health-refresh-run.sh and primed them manually (all 200). Tomorrow's 07:15-07:35 batch (+ 23:00 agent-review) is the first real-world exercise under cron — glance at ~/.local/state/health-refresh/ heartbeats afterward to confirm last_success timestamps advance. health-refresh-check.timer fires 08:10 and will go systemd-`failed` if any didn't.",
     "gov_04_scoping": "GOV-04 must scope from a fresh health-check sweep per feedback_governance_thread_standalone_sprints.md — run the check first, don't scope from a hunch."
   }
 }

@@ -2,6 +2,24 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.9 — rag-core ADR + n=2 implementation externalizables (2026-05-14)
+
+First payload through the H2 multi-source channel (added in v0.2.8): learnings from the second Foreman^^ implementation (DellaTech, 25 cycles) now have a formal path to the mirror.
+
+### Added
+
+- **`decisions/adr-002-rag-core-instance-architecture.md`** — ratified architecture for the core/instance split. Covers the engine/instance boundary (what belongs in `rag-core` vs what belongs in a deployment instance), the `load_corpus_config()` seam, the two inheritance mechanisms (PYTHONPATH for operator instances, vendor-copy for customer instances), and instance-#2 standup as the mechanical-ness proof (cycles 27-28).
+- **`docs/generated-artifact-safety.md`** — new doc capturing the side-effecting / generated-artifact automation hazard class. Four failure patterns: git-tracked generated data silently reverted on merge; audit scripts that auto-resolve "current cycle" undercount historical reads; `--date` on auto-deploying scripts ships wrong results for historical dates; verification greps during parallel git operations return transient false-negatives. The meta-pattern and the per-pattern fixes. Neighbour to `surface-check-ritual.md`.
+
+### Changed
+
+- **`docs/hitl-cadence.md`** — two additions: (1) acceptance gates must name a current consumer — aspirational user passes that never fire are a form of hidden HITL debt; when only the operator uses the feature, operator self-pass is correct; (2) verify a guard against its stated contract, not just the bug that motivated it — a guard can prevent the motivating failure while being looser than its own docstring.
+- **`docs/cycle-architecture.md`** — `auto-handoff` added as a fourth cascade mode. Nephew transitions fire automatically; loops requiring human action surface that action explicitly without blocking phase start. Suited to lower-stakes cycles where operator-gated phase boundaries are disproportionate overhead.
+
+### Notes
+
+The rag-core ADR (ADR-002) closes the `rag-core-extraction-cycle-27-28` entry in `pending_dacumen_syncs`. The DellaTech externalizables pass closes the H2 backlog identified in the v0.2.8 structural-holes pass. The `cross-sprint-audit.sh` bug fix owed to this repo (per the sync debt sweep) landed in v0.2.8 alongside the structural holes.
+
 ## v0.2.8 — governance-thread structural-holes pass (2026-05-14)
 
 Fixes three structural holes in the sync ritual itself — the mechanism problems that caused the v0.2.7 backlog to accumulate in the first place.

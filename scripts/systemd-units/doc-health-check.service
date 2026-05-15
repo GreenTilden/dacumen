@@ -1,0 +1,11 @@
+[Unit]
+Description=Doc-health artifact staleness check — GOV-06: surfaces a silently-stale ops-dashboard doc-health panel
+Documentation=file:///home/darney/projects/governance-thread/docs/foreman/sprints/GOV-06/sprint-log.md
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/darney/projects/governance-thread/scripts/doc-health-check.sh
+StandardOutput=journal
+StandardError=journal
+Nice=10

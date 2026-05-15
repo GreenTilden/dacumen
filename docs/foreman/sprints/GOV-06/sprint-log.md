@@ -19,7 +19,7 @@ Sixth governance-thread standalone sprint. Operator-directed scope from a target
 |---|---|---|---|---|---|
 | L01 | CLOSED | 2026-05-14 | 2026-05-14 | this sprint-log (ops-dashboard diagnostic sweep) | **Root cause found.** The `/pipeline-api/` prod proxy was deprecated 2026-05-13 (returns HTTP 404 + `{"error":"pipeline-api deprecated 2026-05-13"}`), but `DocHealth.vue` was never reconciled — it still fetches `/pipeline-api/api/pipelines/doc-health`, so the prod panel shows "Pipeline unavailable". The doc-health pipeline runs only on the **dev** pipeline (`:8912`, scans local files — 47 projects, avg 0.697); prod casey-junior has the route but returns empty. Separately: **process-health 57 is not a bug** — `/api/reconciliation/health` honestly reports `evidence_coverage 58` (1251/2166 commits mapped) + `traceability_depth 83`. GOV-06 scoped: doc-health data-path fix + freshness watch + process-health tracking pass. |
 | L02 | CLOSED | 2026-05-14 | 2026-05-14 | darntech `doc-health-snapshot.sh` + 3 systemd-unit files + `deploy-observatory-data.sh` + `DocHealth.vue` (commit `da94904`) | **Doc-health panel fixed.** New `doc-health-snapshot.sh` curls the dev pipeline → writes `observatory/data/doc-health-status.json` → deploys; nightly 23:50 systemd `--user` timer installed; `DocHealth.vue` repointed from the dead `/pipeline-api/` to the static artifact. No casey-junior change needed — the dev pipeline already serves the data. Built clean, deployed to CT 100, **verified on prod**: artifact HTTP 200 (47 projects, avg 0.697), dashboard bundle matches the dev build. |
-| L03 | OPEN | — | — | — | Doc-health freshness watch — standing checker (systemd `--user` timer) that goes `failed` if the doc-health artifact is missing/stale, same shape as `health-refresh-check` + `telemetry-contract-check`. |
+| L03 | CLOSED | 2026-05-14 | 2026-05-14 | governance-thread `doc-health-check.sh` + `doc-health-check.{service,timer}` + installer | **Freshness watch installed.** `doc-health-check.sh` tests *both* the local artifact (snapshot timer working?) and the prod copy the panel actually reads (deploy step working?) — exits non-zero if either is missing, non-JSON, or older than 26h. Daily 08:15 `--user` timer installed. Verified: passes clean on the L02-fresh artifact (rc=0), and the negative test (missing artifact → rc=1) confirms it actually fires. Service unit runs green. |
 | L04 | OPEN | — | — | — | Process-health pass + close — register unmapped repos in casey-junior `PROJECT_ENDPOINTS` to lift `evidence_coverage`; re-check the composite score; close GOV-06. |
 
 ## L01 — ops-dashboard diagnostic sweep
@@ -53,8 +53,26 @@ The canonical prod data path is a static JSON artifact under `/observatory/data/
 |---|---|---|---|
 | 1 | Diagnose the busted doc-health panel + process-health 57 | Sweep | ✅ DONE (L01) |
 | 2 | Doc-health pipeline writes `observatory/data/doc-health-status.json` + `DocHealth.vue` reads it | Fix + deploy | ✅ DONE (L02) — built, deployed, prod-verified |
-| 3 | Doc-health artifact freshness watch (standing instrument) | Instrument | ⏳ L03 |
+| 3 | Doc-health artifact freshness watch (standing instrument) | Instrument | ✅ DONE (L03) — checker + 08:15 timer, both-copy test |
 | 4 | Process-health pass — register unmapped repos in `PROJECT_ENDPOINTS` | Execution | ⏳ L04 |
+
+## L03 — doc-health artifact freshness watch
+
+L02 fixed the panel but introduced a static artifact's own silent failure mode: if the snapshot timer breaks, or the deploy step breaks, the panel keeps rendering the last good data and nothing says it has gone stale. L03 closes that loop — the same shape as GOV-03's `health-refresh-check` and the `silent-failure-refresh-mechanisms` memory.
+
+### Changes (governance-thread)
+
+- **`scripts/doc-health-check.sh`** (new) — staleness checker. Tests **both copies** of the artifact, which pinpoints the failure:
+  - the **local** artifact — is the snapshot timer still writing it?
+  - the **prod** artifact at `ops.darrenarney.com/observatory/data/doc-health-status.json` — is the deploy step still pushing it? (this is the copy the panel reads; the check also catches an HTTP-200 SPA HTML-fallback, i.e. file missing on CT 100)
+  Exits non-zero if either is missing, non-JSON, or `generated_at` older than 26h (nightly cadence + grace). Local-stale vs prod-stale tells the operator *which* half of the chain broke.
+- **`scripts/systemd-units/doc-health-check.{service,timer}`** + **`install-doc-health-check-timer.sh`** (new) — daily 08:15 `--user` timer, 5 min after the GOV health-refresh checker (08:10). When the checker exits 1 the unit goes `failed` — visible to `systemctl --user --failed`, which is exactly what a GOV health-check sweep already greps.
+
+### Verification
+
+- Runs clean on the L02-fresh artifact: both local + prod `ok`, `RESULT: fresh`, rc=0.
+- Negative test (`DOC_HEALTH_LOCAL=/tmp/nonexistent`): `STALE local — artifact missing`, rc=1 — the watch actually fires, it isn't a vague reminder (per `standing-watch-fire-criteria`).
+- Service unit runs green (`Result=success`, `ExecMainStatus=0`). Timer fires next at 2026-05-15 08:15.
 
 ## L02 — doc-health panel fix
 

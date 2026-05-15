@@ -18,7 +18,7 @@ Sixth governance-thread standalone sprint. Operator-directed scope from a target
 | Loop | Status | Started | Ended | Artifacts | Outcome |
 |---|---|---|---|---|---|
 | L01 | CLOSED | 2026-05-14 | 2026-05-14 | this sprint-log (ops-dashboard diagnostic sweep) | **Root cause found.** The `/pipeline-api/` prod proxy was deprecated 2026-05-13 (returns HTTP 404 + `{"error":"pipeline-api deprecated 2026-05-13"}`), but `DocHealth.vue` was never reconciled — it still fetches `/pipeline-api/api/pipelines/doc-health`, so the prod panel shows "Pipeline unavailable". The doc-health pipeline runs only on the **dev** pipeline (`:8912`, scans local files — 47 projects, avg 0.697); prod casey-junior has the route but returns empty. Separately: **process-health 57 is not a bug** — `/api/reconciliation/health` honestly reports `evidence_coverage 58` (1251/2166 commits mapped) + `traceability_depth 83`. GOV-06 scoped: doc-health data-path fix + freshness watch + process-health tracking pass. |
-| L02 | OPEN | 2026-05-14 | — | — | Doc-health panel fix — pipeline writes `observatory/data/doc-health-status.json`; `DocHealth.vue` reads the static artifact; deploy darntech + casey-junior; verify panel on ops.darrenarney.com. |
+| L02 | CLOSED | 2026-05-14 | 2026-05-14 | darntech `doc-health-snapshot.sh` + 3 systemd-unit files + `deploy-observatory-data.sh` + `DocHealth.vue` (commit `da94904`) | **Doc-health panel fixed.** New `doc-health-snapshot.sh` curls the dev pipeline → writes `observatory/data/doc-health-status.json` → deploys; nightly 23:50 systemd `--user` timer installed; `DocHealth.vue` repointed from the dead `/pipeline-api/` to the static artifact. No casey-junior change needed — the dev pipeline already serves the data. Built clean, deployed to CT 100, **verified on prod**: artifact HTTP 200 (47 projects, avg 0.697), dashboard bundle matches the dev build. |
 | L03 | OPEN | — | — | — | Doc-health freshness watch — standing checker (systemd `--user` timer) that goes `failed` if the doc-health artifact is missing/stale, same shape as `health-refresh-check` + `telemetry-contract-check`. |
 | L04 | OPEN | — | — | — | Process-health pass + close — register unmapped repos in casey-junior `PROJECT_ENDPOINTS` to lift `evidence_coverage`; re-check the composite score; close GOV-06. |
 
@@ -52,6 +52,23 @@ The canonical prod data path is a static JSON artifact under `/observatory/data/
 | # | Item | Shape | Status |
 |---|---|---|---|
 | 1 | Diagnose the busted doc-health panel + process-health 57 | Sweep | ✅ DONE (L01) |
-| 2 | Doc-health pipeline writes `observatory/data/doc-health-status.json` + `DocHealth.vue` reads it | Fix + deploy | ⏳ L02 |
+| 2 | Doc-health pipeline writes `observatory/data/doc-health-status.json` + `DocHealth.vue` reads it | Fix + deploy | ✅ DONE (L02) — built, deployed, prod-verified |
 | 3 | Doc-health artifact freshness watch (standing instrument) | Instrument | ⏳ L03 |
 | 4 | Process-health pass — register unmapped repos in `PROJECT_ENDPOINTS` | Execution | ⏳ L04 |
+
+## L02 — doc-health panel fix
+
+The fix follows the canonical static-artifact pattern (`telemetry-contract-status.json` → `TelemetryContractsCard.vue`): a scheduled job snapshots the pipeline output to `/observatory/data/`, the panel reads the static file, `deploy-observatory-data.sh` syncs it to prod.
+
+### Changes (darntech, commit `da94904`)
+
+- **`scripts/doc-health-snapshot.sh`** (new) — curls the dev pipeline (`:8912/api/pipelines/doc-health`), validates JSON + non-zero project count, normalizes `checked_at`→`generated_at`, writes `observatory/data/doc-health-status.json`, then runs `deploy-observatory-data.sh`. Sibling of `telemetry-contract-check-nightly.sh`; refuses to overwrite the artifact on an empty/unreachable pipeline (exit 1).
+- **`scripts/systemd-units/observatory-doc-health-snapshot.{service,timer}`** + **`install-doc-health-snapshot-timer.sh`** (new) — nightly 23:50 `--user` timer, last in the observatory chain (after the 23:47 telemetry check, so the two deploys don't race). Timer installed + enabled this loop.
+- **`scripts/deploy-observatory-data.sh`** — `doc-health-status.json` added to the prod sync allowlist.
+- **`src/components/project/DocHealth.vue`** — `fetchDocHealth()` repointed from the deprecated `/pipeline-api/api/pipelines/doc-health` to `/observatory/data/doc-health-status.json`. The artifact's shape is the raw pipeline response, so the grouping logic is unchanged. `fetchVaultPaths()` intentionally left on the dev-only pipeline — it has a static fallback and is non-critical enrichment.
+
+### Notes
+
+- **No casey-junior change needed.** The original scope assumed a pipeline-side change, but the dev pipeline already serves `/api/pipelines/doc-health` correctly — the only gap was getting that output to prod. L02 work_locus collapsed to darntech-only.
+- **The artifact is deploy-only, not git-tracked** — `doc-health-status.json` is synced via `scp`, regenerated nightly, same convention as `telemetry-contract-status.json` (verified: never committed).
+- **Verified on prod**: `https://ops.darrenarney.com/observatory/data/doc-health-status.json` returns HTTP 200 with real data (47 projects, avg 0.697); prod `index.html` references `index-Di-oHNhD.js`, matching the dev build byte-for-byte.

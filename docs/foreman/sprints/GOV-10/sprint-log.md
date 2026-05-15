@@ -404,3 +404,41 @@ Operator-direct: "persist GOVERNANCE_RAG_URL to systemd EnvironmentFile and plea
 - ⏸ **#6 broader memory canonicalization sweep** — still open, deferred as too broad for one envelope.
 
 Both items #1 and #2 from the GOV-10 carry-forward queue are now done. #3-#6 remain operator-gated. The L03 audit's value proved out across both fixes — the canonical-source-per-fact discipline named both the right end-state (env vars in a durable place) and the right verification (cross-check `/proc/$pid/environ` against the systemd unit + EnvironmentFile pattern).
+
+---
+
+## Post-close addendum 3 — LORNA token rotation + auth-enablement (2026-05-15)
+
+Operator-direct: "replace LORNA_FINANCIALS_TOKEN with the real token" → after discovering there was no real token (Lorna's `verify_token` short-circuited because `FINANCIALS_API_TOKEN` was unset on the container, so the placeholder-string Bearer header from casey-junior was just unverified) → operator chose option 2 (generate fresh token + apply both sides).
+
+### Steps executed
+
+1. Generated fresh token via `openssl rand -hex 32` (32-byte hex = 64 chars). Token shown to operator in chat; operator authorized "apply it." Token not committed to any repo; lives only in `/etc/casey-junior.env` + `/opt/lorna-financials/.env` on Node 2 + operator's chat history.
+2. **casey-junior side:** `sed -i` replaced the placeholder in `/etc/casey-junior.env`. Backup at `/etc/casey-junior.env.bak-pre-realtoken`. `systemctl restart casey-junior` — active.
+3. **Lorna side:** added `FINANCIALS_API_TOKEN=<token>` to `/opt/lorna-financials/.env`. Backup at `/opt/lorna-financials/.env.bak-pre-realtoken`. **First attempt: `docker compose restart`** — container restarted clean, but auth tests showed no-token still returning 200 (auth not enforced). Confirmed via `docker exec lorna-financials-financials-1 env | grep FINANCIALS_API_TOKEN` — var NOT in container env. **Fix: `docker compose up -d`** which recreated the container; env var now present.
+4. **Auth tests post-recreate:** no-token → **HTTP 401** ✓, wrong-token → **HTTP 401** ✓, right-token → **HTTP 200** ✓. Lorna's app-layer auth is now actually enforced.
+5. **End-to-end verification:** triggered casey-junior's `laundry-room` pipeline → 6 outbound calls to `.98:8901` (deals, followups, invoices/nudge-schedule, crm/briefing, contacts/stale, followups/snoozed) — all returned **HTTP 200 OK**. Token-rotation + auth-enablement is functionally complete.
+
+### Surfaced finding codified to memory
+
+**`docker compose restart` does NOT reload `env_file`** — only `docker compose up -d` recreates the container with new env values. The `restart` looks successful (Container Restarted, Up X seconds, service still healthy) but env changes are silently absent. Verified by `docker exec <container> env` rather than by whether the restart appeared clean.
+
+New memory: [[docker-compose-restart-doesnt-reload-env-file]] — added to MEMORY.md index. Same family as [[cascade-rc-rename-consumer-runtime-gap]] (consumer runtime didn't pick up config) and [[fix-without-action-surface-reconciliation]] (the surface that confirms the fix landed has to be the runtime, not the config). The docker compose restart gotcha is real homelab tooling debt worth codifying; it ate one wasted round-trip this session and nearly let me declare auth enforced when it wasn't.
+
+### Status
+
+- ✅ **L03 Drift C** — fully closed. GOVERNANCE_RAG_URL persisted to EnvironmentFile (addendum 2) + LORNA token rotated to a real value + Lorna app-layer auth now enforced (this addendum). The canonical-source-per-fact memory updated to record both resolutions.
+- ⏸ **CT 100 nginx + other Lorna consumers** — operator-handled (I don't have authorization scope for CT 100). Until the nginx-injected Bearer is aligned to the new token, `ops.darrenarney.com → Lorna` is 401-ing; same for any other direct caller on `.98:8901`.
+- ✅ Three new/extended governance memory artifacts since GOV-10 close: [[canonical-source-per-fact]] (NEW, L03), addendum to [[fix-without-action-surface-reconciliation]] (L02 audit), addendum to [[engine-identity-at-instance-health]] (L04 audit), now [[docker-compose-restart-doesnt-reload-env-file]] (NEW, addendum 3).
+
+### GOV-10 carry-forward queue (final state)
+
+- ✅ **#1 rag-core-client v0.4.0 redeploy** — DONE earlier this session
+- ✅ **#2 GOVERNANCE_RAG_URL persistence policy** — DONE (addendum 2)
+- ✅ **side-finding: LORNA token rotation + auth-enablement** — DONE (addendum 3); operator handles CT 100 + other consumers separately
+- ⏸ **#3 reconciler-confidence-deployment-scoped structural fix** — still open, operator review gate
+- ⏸ **#4 pending suggestions walk** — still open, operator-review work
+- ⏸ **#5 ReconciliationPanel rework retry** — still open, operator decision
+- ⏸ **#6 broader memory canonicalization sweep** — still open, deferred as too broad for one envelope
+
+GOV-10's reach extended via three post-close addenda: the v0.4.0 redeploy + the EnvironmentFile refactor + the token rotation + auth-enablement. Net for the day: 4 governance memory files involved (1 new + 3 extended), 1 silent-bridge-break + 1 sprint-log-stale-claim + 1 placeholder-token-anti-pattern + 1 docker-compose-restart-gotcha all surfaced and resolved.

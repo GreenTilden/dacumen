@@ -5,7 +5,8 @@ role: governance / standalone-sprint
 cascade_mode: standalone — runs ABOVE the three-sprint cascade, not a 4th nephew
 work_locus: cross-BU (darntech · casey-junior)
 opened_at: 2026-05-14
-status: open
+closed_at: 2026-05-14
+status: closed
 charter: ../GOV-01/charter.md (inherited — the governance-thread operating model)
 ---
 
@@ -20,7 +21,7 @@ Sixth governance-thread standalone sprint. Operator-directed scope from a target
 | L01 | CLOSED | 2026-05-14 | 2026-05-14 | this sprint-log (ops-dashboard diagnostic sweep) | **Root cause found.** The `/pipeline-api/` prod proxy was deprecated 2026-05-13 (returns HTTP 404 + `{"error":"pipeline-api deprecated 2026-05-13"}`), but `DocHealth.vue` was never reconciled — it still fetches `/pipeline-api/api/pipelines/doc-health`, so the prod panel shows "Pipeline unavailable". The doc-health pipeline runs only on the **dev** pipeline (`:8912`, scans local files — 47 projects, avg 0.697); prod casey-junior has the route but returns empty. Separately: **process-health 57 is not a bug** — `/api/reconciliation/health` honestly reports `evidence_coverage 58` (1251/2166 commits mapped) + `traceability_depth 83`. GOV-06 scoped: doc-health data-path fix + freshness watch + process-health tracking pass. |
 | L02 | CLOSED | 2026-05-14 | 2026-05-14 | darntech `doc-health-snapshot.sh` + 3 systemd-unit files + `deploy-observatory-data.sh` + `DocHealth.vue` (commit `da94904`) | **Doc-health panel fixed.** New `doc-health-snapshot.sh` curls the dev pipeline → writes `observatory/data/doc-health-status.json` → deploys; nightly 23:50 systemd `--user` timer installed; `DocHealth.vue` repointed from the dead `/pipeline-api/` to the static artifact. No casey-junior change needed — the dev pipeline already serves the data. Built clean, deployed to CT 100, **verified on prod**: artifact HTTP 200 (47 projects, avg 0.697), dashboard bundle matches the dev build. |
 | L03 | CLOSED | 2026-05-14 | 2026-05-14 | governance-thread `doc-health-check.sh` + `doc-health-check.{service,timer}` + installer | **Freshness watch installed.** `doc-health-check.sh` tests *both* the local artifact (snapshot timer working?) and the prod copy the panel actually reads (deploy step working?) — exits non-zero if either is missing, non-JSON, or older than 26h. Daily 08:15 `--user` timer installed. Verified: passes clean on the L02-fresh artifact (rc=0), and the negative test (missing artifact → rc=1) confirms it actually fires. Service unit runs green. |
-| L04 | OPEN | — | — | — | Process-health pass + close — register unmapped repos in casey-junior `PROJECT_ENDPOINTS` to lift `evidence_coverage`; re-check the composite score; close GOV-06. |
+| L04 | CLOSED | 2026-05-14 | 2026-05-14 | casey-junior `08e182b` · memory/append-only-ingester-stale-mapping.md · GOV-06 closed | **Process-health pass — the dashboard's action message misdiagnosed the gap.** Inventory: 24/28 `PROJECT_ENDPOINTS` entries already had `deployment_id`; the 4 without it accounted for ~5 commits, not 915. Real cause: `backfill_git_history()` dedups by hash and skips existing commits, so events created before a repo got `deployment_id` keep their old null attribution forever — the score drifts down as PROJECT_ENDPOINTS *improves*. Fix: new `remap_git_events()` + `POST /api/reconciliation/remap` endpoint (fill-only, idempotent), plus vocola got its missing `deployment_id`. Deployed + ran on prod: **111 events re-mapped across 7 repos** (dellatech 50, lorna-checkbook 21, gizmoduck 13, governance-thread 8, home-bar-advantage 8, olivers-garage 6, vocola 5). **evidence_coverage 58 → 63** (1257→1368 / 2176 mapped), composite 57 → 58. Durable finding codified. GOV-06 closed. |
 
 ## L01 — ops-dashboard diagnostic sweep
 
@@ -54,7 +55,44 @@ The canonical prod data path is a static JSON artifact under `/observatory/data/
 | 1 | Diagnose the busted doc-health panel + process-health 57 | Sweep | ✅ DONE (L01) |
 | 2 | Doc-health pipeline writes `observatory/data/doc-health-status.json` + `DocHealth.vue` reads it | Fix + deploy | ✅ DONE (L02) — built, deployed, prod-verified |
 | 3 | Doc-health artifact freshness watch (standing instrument) | Instrument | ✅ DONE (L03) — checker + 08:15 timer, both-copy test |
-| 4 | Process-health pass — register unmapped repos in `PROJECT_ENDPOINTS` | Execution | ⏳ L04 |
+| 4 | Process-health pass — register unmapped repos in `PROJECT_ENDPOINTS` | Execution | ✅ DONE (L04) — real cause was append-only ingester drift, fixed via remap pass; score 58→63 |
+
+## L04 — process-health pass · GOV-06 closed
+
+The dashboard's `evidence_coverage` action — *"Register unmapped repos in PROJECT_ENDPOINTS"* — turned out to misdiagnose the failure mechanism.
+
+### Inventory (which surfaced the misdiagnosis)
+
+- `PROJECT_ENDPOINTS` has 28 entries; **24 already have `deployment_id`**. The 4 without it: `LornaCo` (not a repo on disk), `bubble-watch` (not a repo on disk), `GBG_ScriptDB` (0 commits since 2026-01-01), `vocola` (5 commits, has a deployment `7074b21c`). At most **~5 commits** worth of fix on the literal "register" interpretation — not 915.
+- Local dev casey-junior's `git-events.json`: 465/468 mapped (99%). Prod's: 1257/2176 (58%). The data stores diverge — prod accumulated history; dev was cleaned 2026-04-07.
+- Read `backfill_git_history()`: dedups commits by hash and **skips existing**. So every commit ingested before its repo had a `deployment_id` keeps `deployment_id: null` forever. Adding `deployment_id` to PROJECT_ENDPOINTS doesn't backfill it onto past events. The score drifts down as the config improves — the opposite of what the action message implies.
+
+### Fix (casey-junior commit `08e182b`)
+
+- **`app/services/backfill.py`** — new `remap_git_events(dry_run=False)`. Walks every event, fills in `deployment_id` from the current `PROJECT_ENDPOINTS` mapping. **Fill-only**: never overwrites an existing non-null mapping. (Dry-run on a renamed repo showed this matters — historical `casey-jr` events would have been nulled by the current `casey-junior` rename otherwise.) Idempotent — safe to re-run anytime PROJECT_ENDPOINTS changes.
+- **`app/routers/reconciliation.py`** — `POST /api/reconciliation/remap`, body optionally `{"dry_run": true}`.
+- **`app/pipelines/sources/project_status.py`** — `vocola.deployment_id = "7074b21c"` (was null; deployment exists).
+- **Deployed prod** (`make deploy`), **ran the live remap**: 111 events re-mapped across 7 repos.
+
+### Verification
+
+- Prod baseline: composite 57, `evidence_coverage 58` (1257/2176).
+- After remap: composite **58**, `evidence_coverage 63` (1368/2176). Both via `GET /api/reconciliation/health`.
+- The remaining 808 unmapped events are commits from repos genuinely outside `PROJECT_ENDPOINTS` — a separate (and likely per-project) follow-up, not GOV-shaped pool work.
+
+### Durable finding codified
+
+`memory/append-only-ingester-stale-mapping.md` — dedup-by-hash ingesters never re-attribute existing rows when their mapping config changes; bake in a remap path from day one, and verify dashboard "action" hints actually move their metric before treating them as the fix. Same family as `[[cascade-rc-rename-consumer-runtime-gap]]` (config-changes-don't-propagate-to-existing-state) — first instance was deployed services + dev venvs; this is a data store.
+
+### GOV-06 — ALL LOOPS CLOSED
+
+Status set to `closed`. Same-day open-to-close, four loops:
+- **L01** — diagnosed the busted doc-health panel (deprecated `/pipeline-api/` stranded a consumer); separated it from the honest process-health 57 signal.
+- **L02** — repointed `DocHealth.vue` to a static artifact (`observatory/data/doc-health-status.json`); new snapshot script + nightly 23:50 timer; deployed; prod-verified.
+- **L03** — `doc-health-check.sh` + daily 08:15 checker, tests both local + prod copies; goes `failed` where a GOV sweep already greps.
+- **L04** — diagnosed the real cause of `evidence_coverage 58` (not "register repos" but append-only ingester drift); added remap pass + endpoint; deployed; ran on prod; score 58→63; durable finding codified.
+
+No carryover. GOV-07 scopes from a fresh sweep when next scheduled.
 
 ## L03 — doc-health artifact freshness watch
 

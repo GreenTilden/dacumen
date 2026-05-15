@@ -1,0 +1,13 @@
+[Unit]
+Description=Daily doc-health artifact staleness check (08:15 — after the 23:50 snapshot + deploy)
+
+[Timer]
+# 08:15 — the doc-health snapshot timer fires 23:50 and deploys; by morning the
+# artifact should be fresh on both local + prod. Fires alongside the GOV
+# health-refresh checker (08:10), offset 5 min so they don't collide. The 26h
+# staleness window covers a single missed nightly fire.
+OnCalendar=*-*-* 08:15:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

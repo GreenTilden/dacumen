@@ -305,3 +305,63 @@ These items were identified in scope but explicitly NOT executed in GOV-10 (oper
 6. **Broader memory canonicalization sweep** — "where does memory live across all projects" remains a real cross-cutting question; deferred at GOV-10 open as too broad for one envelope.
 
 GOV-11 opens from a fresh health-check sweep when next scheduled. Standing instruments unchanged.
+
+---
+
+## Post-close addendum — carry-forward #1 EXECUTED (2026-05-15)
+
+Operator-direct: "run the rag-core-client v0.4.0 redeploy."
+
+### State at start of redeploy
+
+| Surface | Version | Notes |
+|---|---|---|
+| canonical (rag-core/clients/python/pyproject.toml) | v0.4.0 | source of truth |
+| casey-junior dev vendored | **v0.3.0** | stale |
+| casey-junior dev .venv | **v0.2.0** | very stale (3 versions behind) |
+| casey-junior prod vendored | **v0.3.0** | stale |
+| casey-junior prod venv | **v0.3.0** | stale + silent bridge break per L03 Drift B |
+| lorna-financials prod container | v0.4.0 | already done (operator-led, pre-redeploy) |
+| ellabot dev vendored | v0.4.0 | already vendored but no dev runtime |
+| ellabot prod vendored | v0.4.0 | already vendored |
+| ellabot prod venv | **v0.2.0** | very stale (vendored ≠ installed — exact [[cascade-rc-rename-consumer-runtime-gap]] shape) |
+
+### Steps executed
+
+1. **casey-junior dev vendor update** — `rm -rf vendor/rag-core-client && cp -r ~/projects/rag-core/clients/python vendor/rag-core-client` (ellabot Makefile pattern). Verified v0.4.0 in pyproject.toml.
+2. **casey-junior dev venv reinstall** — `pip install --force-reinstall --no-deps ./vendor/rag-core-client`. Uninstalled 0.2.0, installed 0.4.0. Verified `from rag_core.client import recall, recall_governance` clean. Restarted `casey-pipeline` (systemctl --user) — clean uvicorn startup, healthy on :8912.
+3. **casey-junior prod deploy** — rsync vendor/rag-core-client/ to /opt/casey-junior/vendor/rag-core-client/ on Node 2. SSH'd: `cd /opt/casey-junior && venv/bin/pip install --force-reinstall --no-deps ./vendor/rag-core-client`. Uninstalled 0.3.0, installed 0.4.0. `systemctl restart casey-junior` — active. /api/health returned ok. `/proc/$pid/environ` now shows `RAG_CORE_URL=http://192.168.0.151:8000` reaching the code (v0.4.0 reads this name; **the L03 Drift B silent bridge break is closed**).
+4. **ellabot prod venv reinstall** — vendored was already v0.4.0; SSH'd: `cd /opt/ellabot && venv/bin/pip install --force-reinstall --no-deps ./vendor/rag-core-client`. Uninstalled 0.2.0, installed 0.4.0. `systemctl restart ellabot` — active. /api/health returned ok. `/proc/$pid/environ` shows `RAG_CORE_URL=...` + `RAG_CACHE_FILE=/tmp/ellabot-rag-cache.json` + `RAG_CACHE_TTL_HOURS=168` (ellabot's v0.4.0 cache features per-consumer-cache pattern n=4).
+5. **lorna-financials** — verified already on v0.4.0 inside the running container. No action needed (operator-led prior).
+
+### Final state — all surfaces aligned
+
+| Surface | Version |
+|---|---|
+| canonical · casey-junior dev · casey-junior prod · ellabot prod · lorna prod container | **v0.4.0** uniformly ✓ |
+
+### Smoke test from prod casey-junior
+
+Run via `/opt/casey-junior/venv/bin/python3` invoking `recall()` + `recall_governance()` against the live engines:
+
+- `recall("reconciliation suggestion confidence deployment-scoped", top_k=2)` against darntech-rag :8000 → **2 chunks · top score 0.732** ✓
+- `recall_governance("canonical source per fact discipline", top_k=2)` against governance-rag :8002 → **2 chunks · top score 0.653** ✓
+
+Both env-var bridges working. recall() reads `RAG_CORE_URL` (now correctly wired). recall_governance() falls back to its hardcoded default `http://192.168.0.151:8002` (GOVERNANCE_RAG_URL persistence still pending operator decision — L03 carry-forward #2 unchanged).
+
+### Drifts resolved by this redeploy
+
+- ✅ **L03 Drift A** (version source-vs-prod): canonical v0.4.0 = prod v0.4.0 on all consumers.
+- ✅ **L03 Drift B** (silent env-var bridge break on casey-junior prod): v0.4.0 code reads `RAG_CORE_URL`, systemd sets `RAG_CORE_URL`, the bridge is wired through.
+- ⏸ **L03 Drift C** (GOVERNANCE_RAG_URL persistence): unchanged — function works via hardcoded default; operator decision on whether to persist the env var to systemd EnvironmentFile is the right gate.
+
+### Net for the GOV-10 carry-forward queue
+
+- ✅ **#1 rag-core-client v0.4.0 redeploy** — DONE, all consumers verified, smoke test passes.
+- ⏸ **#2 GOVERNANCE_RAG_URL persistence policy** — still open, operator decision.
+- ⏸ **#3 reconciler-confidence-deployment-scoped structural fix** — still open, operator review gate.
+- ⏸ **#4 pending suggestions walk** — still open, operator-review work.
+- ⏸ **#5 ReconciliationPanel rework retry** — still open, operator decision.
+- ⏸ **#6 broader memory canonicalization sweep** — still open, deferred as too broad for one envelope.
+
+This addendum lives outside the GOV-10 sprint envelope (GOV-10 was closed cleanly earlier today). The redeploy demonstrates the same family pattern as [[cascade-rc-rename-consumer-runtime-gap]] — the original RC6 rename surfaced "source + image landed ≠ dev venv landed"; this redeploy reconciles a parallel hole (source + vendored landed in two consumers ≠ venvs reinstalled). The [[canonical-source-per-fact]] memory's audit pattern caught both drifts that needed addressing.

@@ -8,6 +8,8 @@
 
 ## When the ritual fires
 
+### Amendment-driven trigger (primary)
+
 The sync ritual fires when **a charter amendment lands with `dacumen_impact` non-`none`** in its frontmatter. `dacumen_impact` values that trigger a sync ritual:
 
 - `manifesto` — pattern touches the framework spec; update `foreman-manifesto.md`
@@ -19,11 +21,19 @@ The sync ritual fires when **a charter amendment lands with `dacumen_impact` non
 
 An amendment may declare multiple impacts (`dacumen_impact: manifesto | skill | skeleton`) — the sync ritual then lands multiple commits, one per impact category.
 
+### Multi-source trigger (secondary)
+
+The governance thread may also fire a sync for **externalizable learnings from non-primary Foreman^^ implementations** — portability findings, framework payoff/anti-payoff events, and methodology refinements discovered when the framework was applied in a second or third context. These don't require a charter amendment; they require the same sanitization discipline (Step 2 guardrail check) and a CHANGELOG entry. The governance sprint that runs the externalizables pass is the ritual owner for these entries.
+
+This trigger exists because the amendment-driven trigger only captures changes authored by the primary implementation. A second implementation exercising the framework under different constraints is the richest signal the framework produces — and without a dedicated intake channel, that signal has no path to the public mirror.
+
 ## Who owns the ritual
 
 The **consolidation nephew** in the ratification cycle's sprint-trio owns the sync ritual. They have the terminal cascade slot (discovery → validation → consolidation → next-cycle-kickoff), so they're positioned to absorb the amendment's scope alongside their consolidation + next-cycle-authorship workload.
 
 **Operator may reassign** the ritual to a different nephew (or to a dedicated follow-up loop) when the consolidation nephew's load is full. The reassignment is logged in the cycle's sprint-log as an explicit scope-swap.
+
+**Backstop owner**: if the ratification cycle closes without completing the ritual, ownership transfers to the **project's governance thread** — the standing maintenance sprint that handles ownerless cross-cutting work. This is the structural fix for amendment backlogs: when a ratification cycle's consolidation nephew cannot execute, the ritual doesn't simply wait for someone to notice — it has a named fallback owner who will find it in the next governance sweep.
 
 ## The ritual — 5-step sanitization + commit cycle
 
@@ -81,6 +91,14 @@ If the full sync ritual exceeds the operator's time budget for the ratification 
 4. A future-loop pointer is logged (which cycle + which nephew will finish the deferred scope)
 
 Partial ratification is preferable to indefinite contingency. The amendment's methodology is in effect; the external-sync completeness is an ongoing responsibility rather than a blocker.
+
+## Completion tracking
+
+When a sync ritual item is complete, mark the private cycle manifest's `pending_dacumen_syncs` entry with `synced_at: <ISO-date>` and `dacumen_version: <v0.N.M>`. The CHANGELOG entry for that version is the authoritative external record.
+
+Without this update, completed work looks pending indefinitely — inflating the apparent backlog and masking real debt. The first lessons-learned section below names this exact failure ("§14b was already synced — discoverable only by reading the doc"). The `synced_at` field is the fix: a sync is not done until the queue entry is struck.
+
+**For multi-source entries**: the implementation that generated the learnings should carry a corresponding "externalized at `<dacumen-version>`" note in its own record-keeping, so the governance thread doesn't re-sweep already-externalized content on the next pass.
 
 ## Exit conditions
 
@@ -216,3 +234,21 @@ The migration-project amendments (16/17/18) carried genuine portable kernels bur
 ### When the next sync fires
 
 Charter Amendments 16-21 are synced at v0.2.7. Two notes for whoever runs the next ritual: the version tags lapsed between v0.2.2 and v0.2.7 (CHANGELOG entries exist, tags don't) — a small instance of the same lapsed-completion-tracking the first lesson names — and the first triage step is now the `grep` of `docs/`, before tiering.
+
+---
+
+## Lessons-learned — governance-thread structural-holes pass (cycle-29, v0.2.8)
+
+*Appended during the governance-thread sweep that identified and fixed the three structural holes in this ritual itself. The governance thread ran as a standalone maintenance sprint rather than a consolidation nephew — the first time the multi-source trigger and backstop-owner clause were invoked (both of which were added in this same pass).*
+
+### The holes were self-documenting — but only visible in retrospect
+
+All three holes (no backstop owner, single-source intake, no completion ledger) were visible in the `pending_dacumen_syncs` audit that found six amendments queued: the six amendments accumulated *because* there was no backstop; the §14b surprise was only discoverable *because* there was no completion ledger; DellaTech's learnings had nowhere to go *because* there was no multi-source trigger. The symptoms described the bugs precisely. A governance sweep that asks "why does the backlog look like this?" is a faster diagnostic than trying to reason about the mechanism in the abstract.
+
+### Fixing the mechanism in the same pass as clearing the backlog
+
+The governance-thread sprint cleared the existing backlog (v0.2.7) and then fixed the ritual itself (this pass, v0.2.8) — in the same sprint. That ordering is right: clear first, fix second. Trying to fix the mechanism before clearing the backlog would have meant designing against a moving target, and the design decisions are better informed by having just executed the broken ritual once.
+
+### When the next sync fires
+
+Version v0.2.8 adds the three structural-hole fixes. The next ritual execution is the first one with a backstop owner (H1), a multi-source trigger (H2), and a completion-tracking discipline (H3). All three should be exercised on the DellaTech externalizables pass — that is explicitly the first payload through the H2 multi-source channel.

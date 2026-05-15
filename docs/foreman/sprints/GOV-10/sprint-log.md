@@ -365,3 +365,42 @@ Both env-var bridges working. recall() reads `RAG_CORE_URL` (now correctly wired
 - ⏸ **#6 broader memory canonicalization sweep** — still open, deferred as too broad for one envelope.
 
 This addendum lives outside the GOV-10 sprint envelope (GOV-10 was closed cleanly earlier today). The redeploy demonstrates the same family pattern as [[cascade-rc-rename-consumer-runtime-gap]] — the original RC6 rename surfaced "source + image landed ≠ dev venv landed"; this redeploy reconciles a parallel hole (source + vendored landed in two consumers ≠ venvs reinstalled). The [[canonical-source-per-fact]] memory's audit pattern caught both drifts that needed addressing.
+
+---
+
+## Post-close addendum 2 — carry-forward #2 EXECUTED (2026-05-15)
+
+Operator-direct: "persist GOVERNANCE_RAG_URL to systemd EnvironmentFile and please fix ellabot-rag" (after a brief discussion that ruled out indexing ellabot telemetry into RAG, on the call that the structured surface + recall_context-on-fetch pattern already covers ~90% of intelligence queries — see the conversation for the architecture rationale; the "fix ellabot-rag" interpretation landed on "do the parallel EnvironmentFile refactor for ellabot too").
+
+### Steps executed
+
+1. **Backed up** `/etc/systemd/system/casey-junior.service` + `ellabot.service` to `.bak-pre-envfile` on Node 2 (rollback safety).
+2. **Surfaced pre-existing finding** during state inventory: the live casey-junior systemd unit had `LORNA_FINANCIALS_TOKEN=<REDACTED-see-EnvironmentFile-or-live-unit>` literally as the value — a prior `make deploy` (timestamp 17:59 today, before this session's redeploy) overwrote the real token with the dev-source placeholder. Verified this is functionally inert: casey-junior's calls to Lorna at `.98:8901` return 200 OK because Lorna doesn't validate Bearer tokens on direct in-tree calls (per CLAUDE.md the nginx perimeter on CT 100 handles auth). Preserved the placeholder in the new EnvironmentFile to keep runtime behavior identical; flagged in this writeup so the operator knows it's not a real secret.
+3. **Created `/etc/casey-junior.env`** (mode 0600) with 8 deployment-specific env vars: LORNA_FINANCIALS_URL + LORNA_FINANCIALS_TOKEN (placeholder) + OLLAMA_URL + ELLABOT_URL + RAG_CORE_URL + RAG_CACHE_FILE + RAG_CACHE_TTL_HOURS + **GOVERNANCE_RAG_URL=http://192.168.0.151:8002** (the durably-persisted one).
+4. **Created `/etc/ellabot.env`** (mode 0644, no secrets) with 3 rag-related env vars: RAG_CORE_URL + RAG_CACHE_FILE + RAG_CACHE_TTL_HOURS.
+5. **Refactored prod `/etc/systemd/system/casey-junior.service`** — added `EnvironmentFile=/etc/casey-junior.env`, removed the 8 moved `Environment=` lines, kept the 4 code-config lines inline (CASEY_APP_ENV, CASEY_PORT, CASEY_DATA_DIR, OBSIDIAN_ENABLED). `systemctl daemon-reload && systemctl restart casey-junior` — active. /api/health ok.
+6. **Refactored prod `/etc/systemd/system/ellabot.service`** — added `EnvironmentFile=/etc/ellabot.env`, removed the 3 moved `Environment=` lines, kept the 4 code-config lines inline (ELLABOT_DATA_DIR, ELLABOT_APP_ENV, ELLABOT_PORT, CASEY_DEPLOYMENT_ID). daemon-reload + restart — active, migrations applied clean, /api/health ok.
+7. **Verified casey-junior `/proc/$pid/environ`** post-restart: 12 expected env vars all present including the newly-persisted `GOVERNANCE_RAG_URL=http://192.168.0.151:8002`.
+8. **Verified ellabot `/proc/$pid/environ`** post-restart: 7 expected env vars all present.
+9. **Smoke-tested** recall + recall_governance from prod casey-junior venv: recall() vs darntech-rag returned 2 chunks @ 0.711 top score; recall_governance() vs governance-rag returned 2 chunks @ 0.653 top score. Both engines reachable, both env-var bridges working at runtime.
+10. **Updated dev sources** — `casey-junior/deploy/casey-junior.service` committed as `e5b70b5` (now references `/etc/casey-junior.env`, dropped the redacted placeholder line entirely); `ellabot/ellabot.service` committed as `51b8022` (now references `/etc/ellabot.env`).
+
+### Drifts resolved
+
+- ✅ **L03 Drift C** (GOVERNANCE_RAG_URL persistence) — closed. Env var is now in the casey-junior service's runtime environment; the GOV-09 close note's claim is durably true going forward.
+- ✅ Side benefit: the systemd units in dev source no longer carry the redacted-placeholder anti-pattern. Both unit files are now committable cleanly.
+
+### Side-finding flagged (not in scope, recorded for operator visibility)
+
+- **The live casey-junior unit's LORNA_FINANCIALS_TOKEN had been the literal placeholder string** since a prior `make deploy` overwrote it (commit `b107750` introduced the redacted placeholder, and at least one subsequent `make deploy` shipped it to prod). The placeholder is functionally inert because Lorna doesn't validate Bearer tokens on direct in-tree calls. **Not a security issue** (the auth perimeter on CT 100 catches outside callers), but **is a latent surprise** if Lorna ever moves auth into the app layer — the placeholder is preserved in `/etc/casey-junior.env` so swapping in a real token is a one-line file edit + `systemctl restart casey-junior` away.
+
+### Net for the GOV-10 carry-forward queue
+
+- ✅ **#1 rag-core-client v0.4.0 redeploy** — DONE earlier this session.
+- ✅ **#2 GOVERNANCE_RAG_URL persistence policy** — DONE (this addendum); persisted to systemd EnvironmentFile + dev sources updated to match.
+- ⏸ **#3 reconciler-confidence-deployment-scoped structural fix** — still open, operator review gate.
+- ⏸ **#4 pending suggestions walk** — still open, operator-review work.
+- ⏸ **#5 ReconciliationPanel rework retry** — still open, operator decision.
+- ⏸ **#6 broader memory canonicalization sweep** — still open, deferred as too broad for one envelope.
+
+Both items #1 and #2 from the GOV-10 carry-forward queue are now done. #3-#6 remain operator-gated. The L03 audit's value proved out across both fixes — the canonical-source-per-fact discipline named both the right end-state (env vars in a durable place) and the right verification (cross-check `/proc/$pid/environ` against the systemd unit + EnvironmentFile pattern).

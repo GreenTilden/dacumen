@@ -5,7 +5,8 @@ role: governance / standalone-sprint
 cascade_mode: standalone — runs ABOVE the three-sprint cascade, not a 4th nephew
 work_locus: cross-BU (darntech · dellatech · dacumen)
 opened_at: 2026-05-14
-status: open
+closed_at: 2026-05-14
+status: closed
 charter: ../GOV-01/charter.md (inherited — the governance-thread operating model)
 ---
 
@@ -18,7 +19,7 @@ Fifth governance-thread standalone sprint. Scoped from a fresh health-check swee
 | Loop | Status | Started | Ended | Artifacts | Outcome |
 |---|---|---|---|---|---|
 | L01 | CLOSED | 2026-05-14 | 2026-05-14 | this sprint-log (fresh health-check sweep) | Fresh health-check sweep — **clean**. F2/F3 route-out verified **LANDED**: F2 (`observatory-telemetry-contract-check.timer` enabled + active, fires 23:47 nightly) and F3 (`telemetry-contract-status.json` 2026-05-14T21:33 — 5 pass / 0 fail / 0 warn) both resolved by the telemetry-contract surface owner, neither re-surfaced as GOV-shaped. Standing watches GREEN (dellatech-rag-indexer ran clean 20:29 · health-refresh-check ran clean 20:29, all 6 pipelines ok · darntech-rag-indexer ran 02:03). Zero failed `systemctl --user` units. casey-pipeline + prod casey-junior healthy. No new ownerless work surfaced. |
-| L02 | OPEN | 2026-05-14 | — | — | Pending — codify the route-out-verification durable finding to governance memory, then close GOV-05. |
+| L02 | CLOSED | 2026-05-14 | 2026-05-14 | memory/route-out-verification-gate.md · this sprint-log · GOV-05 closed | Codified the route-out-verification durable finding to governance memory. **GOV-05 closed** — clean sweep, route-out round-trip proven, nothing to carry. |
 
 ## L01 — fresh health-check sweep findings
 
@@ -58,3 +59,23 @@ GOV-04's `carryover_decisions_at_open` note on `gov03_dellatech_rag_indexer_watc
 | 2 | Codify the route-out-verification durable finding to governance memory | Codification | ⏳ L02 |
 
 GOV-05 carries nothing forward. GOV-06 scopes from a fresh health-check sweep when next scheduled.
+
+## L02 — codify route-out-verification finding · GOV-05 closed
+
+### Durable finding codified
+
+Wrote `route-out-verification-gate.md` to governance memory: **a GOV route-out is a closed loop, not fire-and-forget — the next GOV fresh sweep is the verification gate that confirms the owner picked the item up.** GOV-02 (dellatech-chunking), GOV-03 (NCAA-baseball) and GOV-04 (F2/F3) all routed work out with a paper trail; GOV-05's sweep is the first to run that paper trail as a closed test and confirm the resolved-by-owner outcome. The how-to-apply: write the route-out paper trail as a closed test for the next sweep (name the item, the owner/surface, and the observable that decides resolved-vs-still-ownerless) — same discipline as `standing-watch-fire-criteria`. Links to `silent-failure-refresh-mechanisms` (a route-out never re-checked has the same failure shape as a job that fails silently) and `standing-watch-fire-criteria`.
+
+### GOV-05 — ALL LOOPS CLOSED
+
+Status set to `closed`. Same-day open-to-close, two loops:
+- **L01** — fresh health-check sweep; came back clean; verified GOV-04's F2/F3 route-out landed (resolved by the telemetry-contract surface owner, neither re-surfaced as ownerless).
+- **L02** — codified the route-out-verification durable finding to governance memory; closed the sprint.
+
+No carryover, no escalations, no new ownerless work. Standing instruments (health-refresh-check, telemetry-contract checker, both rag indexers) all green and self-reporting. GOV-06 opens from a fresh sweep when next scheduled.
+
+### Durable findings (emerging across GOV-02 → GOV-05)
+
+- **Route-out is a closed loop (GOV-05)**: routing work to its natural owner only counts if the next GOV fresh sweep re-tests it. The sweep gate has two honest outcomes — owner resolved it (success), or still ownerless (now genuinely GOV-shaped). Codified to `route-out-verification-gate.md`.
+- A clean sweep is a valid sprint outcome: GOV-05 surfaced no ownerless work, and the honest sprint was a light verification + codification pass, not a manufactured backlog. Scoping from the sweep means accepting when the sweep is quiet.
+

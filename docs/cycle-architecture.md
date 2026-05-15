@@ -91,6 +91,7 @@ Consolidation nephew fires (L01)
 **Cascade alternatives**:
 - `parallel-nephew`: all three nephews fire at cycle-open concurrently. Good for rapid prototyping when roles have genuinely independent scope. Empirically validated upstream cycle-05 (compressed 36h cycle · Amendment 12 sync covers the pattern — see `amendment-12-patterns.md` "Bundled patterns" section). Works cleanly when loop-scopes partition by deliverable and non-content-dependent L01 per nephew is feasible.
 - `manual-serial`: each cascade fire is explicitly operator-gated (no auto-fire at L10). Good for HITL-heavy cycles where the operator wants to review between roles.
+- `auto-handoff`: nephew transitions fire automatically without an operator gate, but any loop requiring a human action (a commit approval, a design decision, a visible-to-others push) surfaces that action explicitly and waits. Programmatic verifications run without blocking; human-action-pending items are surfaced without blocking the phase start. Good for lower-stakes cycles where the overhead of operator-gated cascade transitions is disproportionate to the stakes of the work — the operator stays informed but isn't pulled in for every phase boundary.
 
 Operator overrides go in `cycle.json .notes` with rationale.
 

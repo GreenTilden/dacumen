@@ -20,6 +20,7 @@ Fourth governance-thread standalone sprint. Scope: establish pool telemetry patt
 |---|---|---|---|---|---|
 | L01 | CLOSED | 2026-05-14 | 2026-05-14 | this sprint-log (fresh governance-backlog sweep) | Cycle-29 governance backlog sweep — identified ownerless work from cycle-09 and carryover governance items with no natural owner. **Headline: pooled work item telemetry established.** Found: Nextcloud content-sync (WS-B2, cycle-09 deferred) and XDG portal systemd units are orphaned ownerless items. Also identified: 3 DAcumen sync-mechanism structural holes (amendment-shaped), governance-instrument gaps F2/F3/F4, DellaTech methodology externalizables. Items WS-B2 + XDG-portal selected as first test batch for L02 execution to validate pool telemetry and establish cleanup patterns. |
 | L02 | CLOSED | 2026-05-14 | 2026-05-14 | WS-B2 context note (deferred) · XDG-portal mask+archive · updated cycle-29 carryover_resolved | WS-B2 (Nextcloud content-sync auto-mirror): triaged as **DEFERRED** — valid substrate feature (3-5h estimate, folds HF-LOUIE-NCS-1/NCS-2 fixes, keyed off slug-alias-table from HF7), but been sitting 20+ cycles without owner despite being marked "pickable" in cycle-09 close. Secondary priority, no critical blocker, Nextcloud works without it. Context note written for cycle-30+ recovery path. XDG-portal units (gnome + gtk): verified **orphaned** (no code refs, no service deps, system-package units), failed 1.5 weeks (2026-05-04). Masked both units to `/dev/null`, stopping future failed restarts. Both items marked complete in cycle-29 carryover_resolved_in_cycle_29 section. Pool-telemetry validation: real-time tracking through carryover_resolved confirmed machine-readable + ergonomic. |
+| L03 | CLOSED | 2026-05-14 | 2026-05-14 | updated backlog queue (#3/#4/#5) · this finding · pushed GOV-02/03/04 to dacumen.git | **Surface-division finding.** Pushing the standalone thread's commits required reconciling against `origin/main` (dacumen.git), which had advanced 3 commits — and those commits **are** GOV-04 backlog items #3/#4-F4/#5, done by the **cycle-29 nephew trio**. Resolves cycle-29's open structure question: nephew-trio-vs-standalone-GOV was a false binary — **both ran, splitting the backlog by surface** (trio → dacumen-repo docs/ADRs/scripts; GOV thread → homelab-infra + pool telemetry), zero file collisions. GOV-04's remaining ownerless work shrinks to instrument-gaps F2/F3. Standing watches (dellatech-rag-indexer, health-refresh checker) both GREEN. |
 
 ## L01 — fresh governance-backlog sweep findings
 
@@ -105,30 +106,42 @@ Executed as designed:
 |---|---|---|---|
 | 1 | WS-B2: Nextcloud content-sync (cycle-09 deferred, no owner) | Triage + remediation | ✅ DONE (L02) — deferred, context note written |
 | 2 | XDG-portal systemd units (orphaned feature, no owner) | Triage + cleanup | ✅ DONE (L02) — masked + archived |
-| 3 | 3 DAcumen sync-mechanism structural holes (amendment-shaped) | Design + execution | QUEUED (next GOV batch) |
-| 4 | Governance-instrument gaps F2/F3/F4 (telemetry checker, audit bug, failing contracts) | Execution | QUEUED (next GOV batch) |
-| 5 | DellaTech methodology externalizables (includes cross-sprint-audit bug-fix) | Execution | QUEUED (next GOV batch) |
+| 3 | 3 DAcumen sync-mechanism structural holes (amendment-shaped) | Design + execution | ✅ DONE by cycle-29-huey L02 — dacumen v0.2.8 (`e7b19aa`): H1 backstop owner, H2 multi-source trigger, H3 completion tracking. See L03 finding. |
+| 4 | Governance-instrument gaps F2/F3/F4 (telemetry checker, audit bug, failing contracts) | Execution | ⚠️ PARTIAL — F4 cross-sprint-audit bug DONE in dacumen v0.2.8 (`3b521c5`, loop-row grep fix). F2 (telemetry-contract checker scheduling) + F3 (2 failing contracts) status unverified — carry to next GOV batch. |
+| 5 | DellaTech methodology externalizables | Execution | ✅ DONE by cycle-29 trio — dacumen v0.2.9 (`f85ad18`): first payload through the H2 multi-source channel; closed the rag-core-extraction pending_dacumen_sync. |
 
-## L03 — standing watches + cycle-29 carryover audit · SCOPED
+## L03 — cycle-29 surface-division finding + standing watches · CLOSED
 
-Per carryover_decisions_at_open, two GOV-03 standing watches remain:
+### Finding — the cycle-29 governance backlog was split by surface, not contested
 
-1. **dellatech-rag-indexer first fire (2026-05-15 02:32)**: Status resolved GREEN in GOV-03 L04 (fired successfully, 1.9s, indexed 33 chunks). No escalation.
-2. **health-refresh wrapper first cron exercise (2026-05-15 07:15-07:35 + 08:10 checker)**: Status resolved GREEN in GOV-03 L04 (manual validation passed; all 6 pipelines 26h-fresh). Waiting for tomorrow's automatic cron batch to confirm real-world exercise. Checker fires 08:10; will go systemd-`failed` if any pipeline stale. Expecting all GREEN based on L04 validation.
+Pushing the GOV-02/03/04 commits required reconciling governance-thread `main` against `origin/main` (dacumen.git), which had advanced by 3 commits while the standalone thread ran. Those 3 commits **are** GOV-04 backlog items #3, #4 (partial), and #5 — completed by the **cycle-29 nephew trio**, not the GOV thread:
 
-**L03 scope**: Glance at watches post-fire (05-15 after 08:30), verify both firing as designed, then ready for cycle-29 carryover audit + next GOV-04 batch pooling.
+- `e7b19aa` dacumen v0.2.8 — 3 sync-mechanism structural holes (H1 backstop owner / H2 multi-source trigger / H3 completion tracking). Commit message: "Identified and fixed as part of governance-thread structural-holes pass (cycle-29-huey L02)."
+- `3b521c5` dacumen v0.2.8 — cross-sprint-audit loop-row grep fix (GOV-instrument-gap F4).
+- `f85ad18` dacumen v0.2.9 — DellaTech externalizables passed through the new H2 multi-source channel; closed the rag-core-extraction `pending_dacumen_sync`.
+
+This **resolves cycle-29's open structure question** (`decisions_pending_operator`: "run as nephew trio OR as standalone GOV sprint"). The answer, observed empirically: **both ran, and they divided the backlog by surface.** The nephew trio took the **dacumen-repo governance surface** (sync-process docs, ADRs, the cross-sprint-audit script, externalizables) — work that sits naturally in their consolidation-nephew workload. The standalone GOV thread took the **homelab-infra governance surface** (health-check sweeps, systemd-unit hygiene, the health-refresh failure signal, pool-telemetry, ownerless cycle-09 items). Zero file collisions — the rebase was 100% clean across disjoint file sets. Surface-division, not contention.
+
+**Implication for GOV-04 scope**: items #3 and #5 are DONE (by the trio), #4 is partially done (F4 yes; F2/F3 unverified). GOV-04's remaining ownerless work is the F2/F3 instrument gaps — small, and a candidate for the next GOV batch or a nephew pickup.
+
+### Standing watches — both GREEN
+
+1. **dellatech-rag-indexer first fire (2026-05-15 02:32)**: resolved GREEN in GOV-03 L04 (fired successfully, 1.9s, indexed 33 chunks). No escalation.
+2. **health-refresh wrapper first cron exercise (2026-05-15 07:15-07:35 + 08:10 checker)**: resolved GREEN in GOV-03 L04 (manual validation passed; all 6 pipelines 26h-fresh). First *automatic* cron exercise is 2026-05-15 morning — `health-refresh-check.timer` fires 08:10 and goes systemd-`failed` if any pipeline is stale. The signal lands where a sweep already greps; no manual re-check scheduled — a future GOV sweep will catch a red checker if the cron path is broken. **That is the design working as intended** (the watch became a standing instrument).
 
 ## L04 (pending) — next pool batch decision
 
-After L03 watches fire clean, operator decision:
-- Pool next batch of cycle-29 governance items (3 sync-mechanism holes + instrument-gaps + externalizables)?
-- Or hold open pending something else?
+The original L04 decision ("pool the cycle-29 governance items") is **largely moot** — the nephew trio did #3/#4-F4/#5 (see L03 finding). What remains genuinely ownerless:
 
-Standing rule: GOV takes ownerless cross-cutting work, never COLLECT-queue work. If cycle-29 governance items are truly ownerless + cross-cutting, they're in scope for next GOV batch.
+- **F2** — telemetry-contract checker not scheduled (instrument gap)
+- **F3** — 2 failing telemetry contracts tracked-but-not-closed
+
+Both are small. Operator decision: pool F2/F3 as a GOV-04 L04 batch, OR let a cycle-29/30 nephew pick them up alongside the dacumen-surface work they already own. Standing rule unchanged: GOV takes ownerless cross-cutting work, never COLLECT-queue work — and F2/F3, being instrument-side, may legitimately belong to whoever owns the telemetry-contract surface.
 
 ## Durable findings (emerging from GOV-02/GOV-03/GOV-04)
 
 - **Pool telemetry pattern**: cycle.json's `carryover_resolved_in_cycle_29` section now tracks item state changes in real-time. Machine-readable tracking makes work-item progression visible for sweeps + dashboards.
 - **Ownerless-item triage shape**: when an item has no owner, the governance thread surfaces it via a fresh sweep, uses triage to decide (strike/defer/complete), and documents the decision. The pool is the surface for unclaimed work.
 - **Standing-watch + standing-pool distinction**: GOV-02/GOV-03 established standing *watches* (testable fire criteria for escalation). GOV-04 establishes standing *pools* (queues of unclaimed work identified in sweeps, triaged + executed in batches).
+- **Nephew-trio vs standalone-GOV is a false binary — they divide by surface (GOV-04 L03)**: cycle-29 opened with an unresolved structure question — run the governance backlog as a nephew trio *or* as a standalone GOV sprint. The empirical answer: both ran in parallel and split the backlog by *surface*, not by contention. The nephew trio took the dacumen-repo surface (sync-process docs, ADRs, shared scripts, externalizables) — work that sits in their consolidation-nephew workload. The standalone GOV thread took the homelab-infra surface (health sweeps, systemd hygiene, pool telemetry). Disjoint file sets, clean rebase, no collision. The lesson: don't force the structure decision up front — the two structures self-partition along the repo/infra seam.
 

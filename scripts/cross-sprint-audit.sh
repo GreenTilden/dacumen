@@ -156,7 +156,9 @@ per_sprint_json() {
     local log_data='null'
     if [ -f "$log_path" ]; then
         local loop_rows outstanding_open outstanding_closed sprint_health
-        loop_rows=$(grep -cE '^\| \*\*L[0-9]+' "$log_path" 2>/dev/null || echo 0)
+        # Match both header-style (## L01) and table-style rows with or without bold markers
+        # (| **L01** | ... and | L01 | ...) — sprint-log format varies across implementations.
+        loop_rows=$(grep -cE '^(## L[0-9]+|\| (\*\*)?L[0-9]+)' "$log_path" 2>/dev/null || echo 0)
         outstanding_open=$(grep -cE '^- \[ \]' "$log_path" 2>/dev/null || echo 0)
         outstanding_closed=$(grep -cE '^- \[x\]' "$log_path" 2>/dev/null || echo 0)
         sprint_health=$(grep -iE '^\| Sprint health \|' "$log_path" 2>/dev/null | head -1 | grep -oE '[A-Z]{4,}' | head -1)

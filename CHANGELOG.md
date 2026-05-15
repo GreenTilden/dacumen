@@ -2,6 +2,22 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.8 — governance-thread structural-holes pass (2026-05-14)
+
+Fixes three structural holes in the sync ritual itself — the mechanism problems that caused the v0.2.7 backlog to accumulate in the first place.
+
+### Changed
+
+- **`docs/dacumen-sync-process.md`** — three targeted additions:
+  - **H1 (backstop owner)**: "Who owns the ritual" now names the project's governance thread as the fallback when a ratification cycle closes unsynced. Prevents silent ownership evaporation.
+  - **H2 (multi-source trigger)**: "When the ritual fires" adds a secondary trigger for externalizable learnings from non-primary implementations. Gives second (and later) implementations a formal channel to the public mirror.
+  - **H3 (completion tracking)**: new "Completion tracking" section formalizes `synced_at` + `dacumen_version` discipline. A sync is not done until the queue entry is struck.
+- **`scripts/cross-sprint-audit.sh`** — loop-row grep bug fixed: was returning 0 for sprint-logs using standard unbold table format (`| L01 |`). Now matches both header and table formats with or without bold markers.
+
+### Notes
+
+These changes don't add new methodology — they fix the plumbing. The externalizables pass (v0.2.9 planned) is the first payload through the H2 multi-source channel.
+
 ## v0.2.7 — charter-amend-16-21 compressed sync (2026-05-14)
 
 Clears the amendment-sync backlog: charter Amendments 16 through 21 (across three charter versions) externalized in one compressed-tier arc. DAcumen's amendment docs had stopped at Amendment 15; this catches the mirror up. Run as a tracked governance-thread sprint rather than the per-cycle consolidation-nephew duty — the ritual's reassignment clause, invoked because the original owning cycles had long closed unsynced.

@@ -28,4 +28,11 @@ For consumers / operators:
 - Sanity protocol before standing up anything "missing": probe the data layer. If the data layer reports the state you'd expect from an existing deploy, the deploy almost certainly exists.
 - This is the data-layer analogue of [[route-out-verification-gate]]'s "the closed loop is verified at the next sweep" — instance identity is verified at the data layer, not the surface string.
 
-Related: rag-core ADR-002 (the core/instance split this finding generalizes from), [[fix-without-action-surface-reconciliation]], [[denormalization-staleness-pattern]], [[cascade-rc-rename-consumer-runtime-gap]].
+Related: rag-core ADR-002 (the core/instance split this finding generalizes from), [[fix-without-action-surface-reconciliation]], [[denormalization-staleness-pattern]], [[cascade-rc-rename-consumer-runtime-gap]], [[canonical-source-per-fact]] (the audit pattern that re-verified this finding's reach).
+
+**GOV-10 L04 audit (2026-05-15):** the generic-applicability question raised in the GOV-09 carryforward ("the how-to-apply applies generically to any future shared-engine pattern") was executed. Inventoried homelab shared-engine patterns: only rag-core qualifies (one engine codebase, multiple instances per ADR-002). All three current instances verified at /health 2026-05-15:
+- `:8000` → `service: darntech-rag · service_version: 0.4.1 · postgres.corpora_count: 11 · chunks_indexed: 12190+`
+- `:8001` → `service: dellatech-rag · service_version: 0.4.1 · postgres.corpora_count: smaller`
+- `:8002` → `service: governance-rag · service_version: 0.4.1 · postgres.corpora_count: 13 · chunks_indexed: 2668` (up from 2632 at GOV-09 close — indexer + governance memory writes since)
+
+Engine + instance identity correctly disambiguated at /health: `service` carries instance (correctly per the 2fdd601 fix), `service_version` carries engine version (shared across all 3, expected). Data-layer disambiguators (`corpora_count`, `chunks_indexed`) are also present and per-instance, giving consumers a second axis if needed. The fix is fully applied. **No other homelab service is a shared-engine-multi-instance pattern** — Ollama is single-instance/multi-model (different shape; model is specified per call, /api/version unambiguous by definition), casey-junior/lorna/ellabot/command-server are standalone services, Authelia + ComfyUI + faster-whisper + Piper are all single-instance. If a future engine acquires the shared-engine pattern, the how-to-apply above is the live discipline.

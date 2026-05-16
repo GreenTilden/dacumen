@@ -555,3 +555,50 @@ The exhaustive token-value sweep is running in background as I write this. Until
 ### Lesson worth codifying
 
 The name-grep-blindness pattern is generalizable beyond the LORNA token case. Any time a "fact" propagates across consumers with consumer-specific naming conventions (some say `FOO_TOKEN`, some say `FOO_API_KEY`, some say `BAR_SECRET` for the same shared secret), a name-grep cannot find them all. The value-grep is canonical. Worth a separate memory file or an extension to [[canonical-source-per-fact]] — will decide once the sweep completes and we see whether there are more naming-divergence consumers in the same footprint.
+
+---
+
+## Post-close addendum 7 — exhaustive value-grep verification, Lorna rotation TRULY fully closed (2026-05-15)
+
+The value-grep sweep promised in addendum 6 completed (after killing two slow greps that were traversing data dirs — re-ran with `--exclude-dir=data --exclude-dir=postgres-data --exclude-dir=immich` etc to skip large content stores). Results are now properly verified.
+
+### Token-VALUE sweep across Node 2 + CT 100
+
+| Surface | State |
+|---|---|
+| Old cycle-24 hex (`51604c8df…`) outside backups/stale | only `/opt/docker/apps/lorna-financials.stale-cycle-24-2026-05-13/.env` (intentional historical backup, expected) — **zero live consumers** |
+| Running docker containers with `LORNA_TOKEN` / `FINANCIALS_API_TOKEN` / `LORNA_FINANCIALS_TOKEN` env var | olivers-garage ✓ checkbook-deploy ✓ lorna-financials ✓ — **all ALIGNED** |
+| CT 100 nginx `Bearer [a-f0-9]{64}` lines | 6 total = 5x cmd_api (`559e761c…`, untouched, different upstream) + 1x Lorna (`0d28e8b0…`, line 895, **new token**) |
+
+### Lorna rotation final aligned footprint — 5 surfaces
+
+| Surface | Aligned | Verified by |
+|---|---|---|
+| `/etc/casey-junior.env` (Node 2 systemd) | ✓ | addendum 2 + `/proc/$pid/environ` |
+| `/opt/lorna-financials/.env` (Lorna server container) | ✓ | addendum 3 + auth tests 401/401/200 |
+| `/etc/nginx/sites-enabled/all-sites:895` (CT 100 perimeter) | ✓ | addendum 4 + `ops.darrenarney.com → 200` |
+| `/opt/checkbook-deploy/.env` (checkbook docker stack) | ✓ | addendum 5 + `docker exec env` |
+| `/opt/docker/apps/olivers-garage/.env` (olivers-garage docker stack) | ✓ | addendum 6 + `docker exec env` |
+
+**Lorna `app/auth.py` `verify_token` enforcement: ON** (validated at addendum 3 via 401/401/200 against no/wrong/right tokens).
+
+### Memory work completed this session
+
+| Memory | Status |
+|---|---|
+| [[canonical-source-per-fact]] | NEW (L03) + extended with the name-grep-blindness rule #5 (commit `c6f29ca`, drawn from addendum 5→6 worked example) |
+| [[fix-without-action-surface-reconciliation]] | extended with L02 audit-completion addendum (zero discredited prescriptions found) |
+| [[engine-identity-at-instance-health]] | extended with L04 audit-completion addendum (rag-core sole shared-engine pattern, fully disambiguated) |
+| [[docker-compose-restart-doesnt-reload-env-file]] | NEW from addendum 3, applied frictionlessly at addenda 5 + 6 + 7 |
+
+### GOV-10 carry-forward queue — final state
+
+- ✅ #1 rag-core-client v0.4.0 redeploy
+- ✅ #2 GOVERNANCE_RAG_URL persistence (EnvironmentFile refactor for casey-junior + ellabot)
+- ✅ side: LORNA token rotation + auth-enablement + CT 100 nginx alignment + checkbook-deploy + olivers-garage (5 surfaces)
+- ⏸ #3 reconciler-confidence-deployment-scoped structural fix (operator review)
+- ⏸ #4 pending suggestions walk (operator review)
+- ⏸ #5 ReconciliationPanel rework retry (operator decision)
+- ⏸ #6 broader memory canonicalization sweep (deferred — too broad for one envelope)
+
+GOV-10 close-out: 7 post-close addenda landed across the day, 2 governance memory files NEW + 2 extended, 5 prod-touching changes verified end-to-end across casey-junior + Lorna + ellabot + checkbook + olivers-garage + CT 100 nginx. Zero unresolved drift in the LORNA rotation thread. Items #3-#6 remain operator-gated and unchanged from GOV-10 close.

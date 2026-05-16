@@ -919,6 +919,357 @@ agents:
         first_wake: TBD (pending onboarding contract acceptance)
         introduced: 2026-04-14
 
+  # ============================================================
+  # Phase 3d — services-as-agents (6, translated from CLAUDE.md Agent Identity)
+  # ============================================================
+
+  - id: service_casey_junior
+    kind: service
+    role_label: Casey Junior — Project Manager
+    invocation_pattern: REST API at http://192.168.0.98:8902/api/* (no auth) | activity webhooks
+    description: |
+      Internal project management + deployment tracking service. Manages all
+      project deployments through Tiger Team 5-phase methodology, runs the data
+      pipelines (doc-health, vault-docs, daily-digest, standup, financial-health,
+      crm-health, pillar-health), tracks deployment activity + session lifecycle
+      across all projects, generates daily digests + standup briefings, enforces
+      phase-gate requirements for deployment advancement.
+    scope_excluded: |
+      Not the financial data store (that's Lorna). Not the activity ledger
+      (that's EllaBot). Not the LLM agent runtime (that's Claude Code). Not
+      authoritative for source code (repos own themselves) or operator priority
+      (operator owns that). Casey is project-state authority, nothing more.
+    reports_to: front_office_director
+    pillar_primary: utility
+    pillar_secondary: null
+    stewards_surfaces:
+      - deployment_registry
+      - pipeline_orchestration
+      - tiger_phase_state
+      - reconciliation_health
+    responsibilities:
+      - deployment_lifecycle_management
+      - pipeline_orchestration
+      - tiger_phase_gate_enforcement
+      - daily_digest_generation
+      - standup_briefing_generation
+      - reconciliation_signal_computation
+    endpoint: "192.168.0.98:8902"
+    deployment_id: (self — Casey holds the deployment registry; no self-entry)
+    health_check_definition: |
+      GET /api/health returns 200 with {status: ok, service: casey-junior, motto: ...};
+      /api/reconciliation/health composite_score ≥ 50; pipelines pass internal health checks.
+    vault_path: "02-Areas/Projects/Casey Junior/Casey Junior.md"
+    status: active
+    repos_owned:
+      - casey-junior
+    task_sources:
+      - label: Pipelines registry (live)
+        url: /
+        type: dashboard
+      - label: Reconciliation panel
+        url: /
+        type: dashboard
+      - label: GitHub repo (casey-junior)
+        url: /repos/casey-junior
+        type: repo
+      - label: EllaBot — agent_health_check_casey responsibility checks
+        url: http://192.168.0.98:8910/api/v2/entries?source=agent_health_check_casey
+        type: ellabot_filter
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/projects/casey-junior/CLAUDE.md
+      lifecycle:
+        introduced: 2025-12 (early build · pre-foreman)
+
+  - id: service_ellabot
+    kind: service
+    role_label: EllaBot — Atomic Ledger / Stream of Consciousness
+    invocation_pattern: REST API at http://192.168.0.98:8910/api/v2/* | dev port :8940 | activity webhook POSTs from all services
+    description: |
+      Atomic activity ledger + orchestration layer. Unified work tracking across
+      all DArnTech services. Brain-dump capture (voice, text, links), cross-
+      functional activity-code registry + R&D time classification, ChromaDB RAG
+      for personal knowledge, Obsidian vault sync, faster-whisper transcription
+      + Ollama analysis. Postgres-backed unified work ledger evolving from a
+      7-year color-coded Excel time-tracking system into an iOS-style calendar
+      frontend. Every half-hour of work, every service interaction, every commit
+      — traceable through one system.
+    scope_excluded: |
+      Not the financial data store (Lorna). Not the project management state
+      (Casey). Not the LLM agent runtime (Claude Code). EllaBot is the LEDGER —
+      everything else is a writer or reader against the ledger. Not authoritative
+      for project files, billing, or operator priority.
+    reports_to: operator
+    pillar_primary: utility
+    pillar_secondary: null
+    stewards_surfaces:
+      - ledger_primary
+      - activity_code_taxonomy
+      - chromadb_personal_knowledge
+      - obsidian_vault_sync
+      - time_bucket_aggregations
+    responsibilities:
+      - atomic_ledger_writes_serving
+      - brain_dump_capture
+      - activity_code_registry
+      - rd_time_classification
+      - cross_service_activity_aggregation
+      - faster_whisper_transcription
+      - ollama_analysis_orchestration
+    endpoint: "192.168.0.98:8910"
+    deployment_id: 4ea1a17f
+    health_check_definition: |
+      GET /api/health returns 200 with {status: ok, service: ellabot};
+      end-to-end test: GET /api/v2/entries?since=24h returns recent entries,
+      ChromaDB + Ollama + Obsidian SSH all reachable, OPS.HEALTH entry written.
+    vault_path: "02-Areas/Projects/EllaBot/EllaBot.md"
+    status: active
+    repos_owned:
+      - ellabot
+    task_sources:
+      - label: Casey deployment review — EllaBot 4ea1a17f
+        url: /review/4ea1a17f
+        type: deployment
+      - label: GitHub repo (ellabot)
+        url: /repos/ellabot
+        type: repo
+      - label: EllaBot timeline view (recent entries)
+        url: http://192.168.0.98:8910/api/v2/entries?limit=50
+        type: ellabot_filter
+      - label: EllaBot — agent_health_check_ellabot responsibility checks
+        url: http://192.168.0.98:8910/api/v2/entries?source=agent_health_check_ellabot
+        type: ellabot_filter
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/projects/ellabot/CLAUDE.md
+      lifecycle:
+        first_wake: 2026-04-11 (pre-scoping atomic-ledger evolution from timeline.json)
+
+  - id: service_lorna_financials
+    kind: service
+    role_label: Lorna — CFO / Financial Data Layer
+    invocation_pattern: REST API at http://192.168.0.98:8901/api/financials/* (Bearer auth, enforced as of 2026-05-15 GOV-10 rotation) | dev :8941
+    description: |
+      Financial data layer for DArnTech LLC. Invoice management (DARN-2026-XXX
+      series) with full lifecycle tracking, client + contact + deal CRM, revenue
+      stream forecasting with probability weighting, tax estimation (federal +
+      Indiana state + county) + quarterly payments, Section 179 / bonus / MACRS
+      asset depreciation, cashflow projection + bridge financing scenarios,
+      invoice aging analysis.
+    scope_excluded: |
+      Not the time ledger (EllaBot owns that). Not project state (Casey owns
+      that). Not the public-facing dashboard (Ops surface). Lorna is the
+      authority on dollars: anything that's NOT dollars/contracts/clients/CRM
+      is someone else's domain. CFO scope strictly.
+    reports_to: front_office_director
+    pillar_primary: utility
+    pillar_secondary: null
+    stewards_surfaces:
+      - invoice_registry
+      - crm_data_layer
+      - deal_pipeline
+      - forecast_engine
+      - tax_estimation
+      - depreciation_register
+    responsibilities:
+      - invoice_lifecycle_management
+      - client_contact_crm_writes
+      - deal_pipeline_state
+      - revenue_forecast_authoring
+      - tax_estimation_authoring
+      - asset_depreciation_tracking
+      - cashflow_projection
+    endpoint: "192.168.0.98:8901"
+    deployment_id: 65dac2cd
+    health_check_definition: |
+      Service reachable on 8901 (no /api/health endpoint — verify_token short-
+      circuits without API_TOKEN; now enforces Bearer auth as of GOV-10 token
+      rotation). End-to-end: GET /api/financials/deals with valid Bearer returns
+      200; outside-perimeter callers go through CT 100 nginx with injected token.
+    vault_path: "02-Areas/Projects/Lorna Financials/Lorna.md"
+    status: active
+    repos_owned:
+      - lorna-financials
+    task_sources:
+      - label: Casey deployment review — Lorna 65dac2cd
+        url: /review/65dac2cd
+        type: deployment
+      - label: Lorna dashboard view
+        url: /lorna
+        type: dashboard
+      - label: GitHub repo (lorna-financials)
+        url: /repos/lorna-financials
+        type: repo
+      - label: EllaBot — agent_health_check_lorna responsibility checks
+        url: http://192.168.0.98:8910/api/v2/entries?source=agent_health_check_lorna
+        type: ellabot_filter
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/projects/lorna-financials/CLAUDE.md
+      lifecycle:
+        introduced: 2026-01 (early build)
+        corrected: 2026-05-15 (LORNA token rotation GOV-10 — auth enforcement turned on)
+
+  - id: service_darnometer
+    kind: service
+    role_label: DArnometer — Data Analyst / Predictions Platform
+    invocation_pattern: REST API at http://192.168.0.98:8904/api/* | scheduled background collectors
+    description: |
+      Modular data prediction platform. Multi-sport analytics + prediction (WBC,
+      NBA, NCAA), weather data collection + prediction, pipeline health
+      monitoring + data collection patterns, scheduled background data-collection
+      services. Indianapolis-based (Meridian-Kessler location signal).
+    scope_excluded: |
+      Not the project management layer (Casey). Not financial (Lorna). Not the
+      activity ledger (EllaBot). DArnometer is data-prediction-and-collection
+      scope: anything that's not predictions, weather, sports, or scheduled
+      collection is someone else's responsibility.
+    reports_to: deployment_tracker
+    pillar_primary: utility
+    pillar_secondary: null
+    stewards_surfaces:
+      - sports_analytics_corpus
+      - weather_predictions
+      - data_collector_scheduling
+      - pipeline_health_per_collector
+    responsibilities:
+      - sport_prediction_modeling
+      - weather_data_collection
+      - scheduled_collector_orchestration
+      - pipeline_health_pattern_detection
+    endpoint: "192.168.0.98:8904"
+    deployment_id: 8c7945b5
+    health_check_definition: |
+      GET /api/health returns 200 with {status: ok, service: DArnometer, version, location: "Indianapolis, IN — Meridian-Kessler"};
+      collectors reach their data sources on schedule; predictions update within freshness budget.
+    vault_path: "02-Areas/Projects/DArnometer/DArnometer.md"
+    status: active
+    repos_owned:
+      - darnometer
+    task_sources:
+      - label: Casey deployment review — DArnometer 8c7945b5
+        url: /review/8c7945b5
+        type: deployment
+      - label: GitHub repo (darnometer)
+        url: /repos/darnometer
+        type: repo
+      - label: EllaBot — agent_health_check_darnometer responsibility checks
+        url: http://192.168.0.98:8910/api/v2/entries?source=agent_health_check_darnometer
+        type: ellabot_filter
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/projects/darnometer/CLAUDE.md
+
+  - id: service_darnbot
+    kind: service
+    role_label: Darnbot — B2B Technical Sales Companion (ESP32 + paired Claude API)
+    invocation_pattern: Physical device at client meetings (ESP32-S3 + dual GC9A01 eyes + dual OLED bar) | paired with nodemad hub for transcription + Claude API for synthesis | no LAN service endpoint
+    description: |
+      DARNTECH LLC product — B2B technical sales companion that travels with
+      the operator to client meetings. Captures meeting audio, transcribes via
+      faster-whisper on the paired nodemad hub, summarizes via Claude API (Opus
+      4.7), and emails meeting reviews to attendees. Also functions as a real-
+      time deal Q&A interface (Casey Jr + Lorna integration via tool use) and
+      a personality companion (Echo-Dot-bar use case secondary).
+    scope_excluded: |
+      Not a LAN service — it's a physical device. Not the financial layer
+      (Lorna). Not the project state layer (Casey). Not the activity ledger
+      (EllaBot — though Darnbot WRITES to EllaBot). Scope: in-meeting capture +
+      synthesis + Q&A, nothing else. Primary product framing pivoted 2026-04-25
+      from DIY consumer to B2B sales tool.
+    reports_to: front_office_director
+    pillar_primary: professional
+    pillar_secondary: null
+    stewards_surfaces:
+      - in_meeting_audio_capture
+      - meeting_review_email_authoring
+      - real_time_deal_qa_interface
+    responsibilities:
+      - meeting_audio_capture
+      - faster_whisper_transcription_via_nodemad
+      - claude_api_synthesis
+      - meeting_review_email_generation
+      - real_time_deal_qa_via_casey_lorna_tool_use
+    endpoint: (no LAN endpoint — physical device)
+    deployment_id: eb57b57e
+    health_check_definition: |
+      ESP32 reachable via paired nodemad hub; faster-whisper + Ollama + Claude
+      API all healthy on the hub side; ops dashboard project page returns
+      device-state telemetry.
+    vault_path: "02-Areas/Projects/Darnbot/Darnbot.md"
+    status: bootstrapping
+    repos_owned:
+      - nodemad/darnbot (lives under nodemad)
+    task_sources:
+      - label: Casey deployment review — Darnbot eb57b57e
+        url: /review/eb57b57e
+        type: deployment
+      - label: Darnbot project page
+        url: /projects/darnbot
+        type: dashboard
+      - label: Darnbot wiring page
+        url: /projects/darnbot/wiring
+        type: dashboard
+      - label: EllaBot — agent_health_check_darnbot responsibility checks
+        url: http://192.168.0.98:8910/api/v2/entries?source=agent_health_check_darnbot
+        type: ellabot_filter
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/projects/nodemad/darnbot/CLAUDE.md
+      lifecycle:
+        corrected: 2026-04-25 (primary product framing pivoted from DIY consumer to B2B SKU)
+
+  - id: service_cathy_bot
+    kind: service
+    role_label: Cathy-Bot — Bluesky Scraper + Comic Poster (script-driven)
+    invocation_pattern: Cron-driven scripts under /opt/cathy-bot on Node 2 | no service endpoint
+    description: |
+      Script-driven Bluesky integration — runs a scraper to gather comic content
+      and a poster to publish to Bluesky (handle aaaaaack.bsky.social). Cron-
+      orchestrated, not a long-running service. Calls into the command-server on
+      CT 100 (:5001) for some operations via Bearer token. Thin agent footprint
+      compared to the other services.
+    scope_excluded: |
+      Not a service in the REST API sense — no /api/health endpoint, no
+      sustained process. Not the comic content authority (the source repos are).
+      Not authoritative for Bluesky engagement metrics (that lives upstream at
+      Bluesky). Strictly the cron-script integration layer between local comic
+      pipeline and Bluesky.
+    reports_to: internal_systems_director
+    pillar_primary: domestic
+    pillar_secondary: personal
+    stewards_surfaces:
+      - bluesky_account_aaaaaack
+      - comic_post_scheduling
+    responsibilities:
+      - bluesky_comic_scraping
+      - bluesky_post_publishing
+      - command_server_integration_for_post_orchestration
+    endpoint: (no LAN endpoint — cron scripts)
+    deployment_id: null
+    health_check_definition: |
+      Cron jobs fire on schedule and write to logs/; Bluesky API auth via
+      BLUESKY_HANDLE + BLUESKY_APP_PASSWORD (Node 2 /opt/cathy-bot/.env);
+      command-server token reachable from CT 100.
+    vault_path: null
+    status: dormant
+    repos_owned:
+      - cathy-bot (lives at /opt/cathy-bot, not git-tracked centrally)
+    task_sources:
+      - label: Cathy-bot working dir (Node 2)
+        url: "ssh://root@192.168.0.98/opt/cathy-bot/"
+        type: repo
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: /opt/cathy-bot/ (no CLAUDE.md — thin card by design)
+
   - id: nephew_dewey
     kind: nephew
     role_label: Dewey — Consolidation Thread Agent

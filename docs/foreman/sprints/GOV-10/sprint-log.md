@@ -528,3 +528,30 @@ Remaining GOV-10 carry-forward (operator-gated):
 - ⏸ #4 pending suggestions walk
 - ⏸ #5 ReconciliationPanel rework retry
 - ⏸ #6 broader memory canonicalization sweep
+
+---
+
+## Post-close addendum 6 — olivers-garage rotated + the name-grep-blindness lesson (2026-05-15)
+
+Addendum 5 claimed "Lorna-rotation footprint FULLY CLOSED." It wasn't. The follow-up exhaustive sweep (initiated alongside the addendum-5 commit) surfaced a second missed consumer: **`/opt/docker/apps/olivers-garage/`** — a running docker container that POSTs to `${LORNA_URL}/api/financials/expenses` from `app/routers/costs.py:185` and `app/routers/expenses.py:29`. Its `.env` held the old cycle-24 token.
+
+### Why I missed it in addendum 5
+
+My consumer-sweep regex was `LORNA_FINANCIALS_TOKEN|FINANCIALS_API_TOKEN|192\.168\.0\.98:8901|localhost:8901`. olivers-garage's `app/config.py` uses **different env-var names**: `LORNA_URL` + `LORNA_TOKEN` (no "FINANCIALS" suffix). The `.env` line is `LORNA_TOKEN=51604c8d…`, which my regex didn't match. The `.98:8901` regex would have matched at runtime — but olivers-garage's code constructs the URL from `LORNA_URL` which is also a different name, so the IP literal doesn't appear in the source either.
+
+This is a real extension of [[canonical-source-per-fact]]: **when the same value lives under different identifier names across consumers, name-grep misses; value-grep is the only reliable canonical-source check.** The earlier sweep should have grepped the token VALUE (or the literal IP), not the variable name. The exhaustive sweep that immediately followed addendum-5's commit used `grep -rEl "51604c8df…"` (the token value) and surfaced olivers-garage on the first hit.
+
+### Rotation execution (olivers-garage)
+
+1. Backup `/opt/docker/apps/olivers-garage/.env` → `.env.bak-pre-realtoken-20260515`.
+2. python `re.subn` block-anchored on `LORNA_TOKEN=51604c8d…` → exactly 1 replacement.
+3. `docker compose up -d` (the [[docker-compose-restart-doesnt-reload-env-file]] discipline applied again — third invocation today, frictionless now).
+4. `docker exec olivers-garage env | grep LORNA_TOKEN` → new token confirmed in container env.
+
+### Status: ROTATED but NOT yet claiming "fully closed"
+
+The exhaustive token-value sweep is running in background as I write this. Until it completes + returns zero hits for the old cycle-24 hex outside of backups/stale dirs, I will not repeat the "FULLY CLOSED" claim from addendum 5. If more surfaces turn up, they get their own addenda.
+
+### Lesson worth codifying
+
+The name-grep-blindness pattern is generalizable beyond the LORNA token case. Any time a "fact" propagates across consumers with consumer-specific naming conventions (some say `FOO_TOKEN`, some say `FOO_API_KEY`, some say `BAR_SECRET` for the same shared secret), a name-grep cannot find them all. The value-grep is canonical. Worth a separate memory file or an extension to [[canonical-source-per-fact]] — will decide once the sweep completes and we see whether there are more naming-divergence consumers in the same footprint.

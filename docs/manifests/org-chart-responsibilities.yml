@@ -779,6 +779,173 @@ agents:
       ratification_cycle: gov-10
       source_path: ~/.claude/plugins/frontend-design/ (plugin-namespaced)
 
+  # ============================================================
+  # Phase 3c — cascade nephews (translated from foreman/agents/<name>.md frontmatter)
+  # The three thread agents in the foreman cascade. Already canonically defined
+  # in their per-repo .md files; this section mirrors that canonical content
+  # into the v0.2.0 card schema so they surface alongside business_roles +
+  # subagents + skills in the unified org chart.
+  # ============================================================
+
+  - id: nephew_huey
+    kind: nephew
+    role_label: Huey — Discovery Thread Agent
+    invocation_pattern: Wakes per cascade rotation in darntech-huey worktree (or operator-direct via /hi-huey style)
+    description: |
+      DArnTech's discovery-layer thread agent. The firstborn DuckTales nephew —
+      front-runner, leading edge, the one that goes first. Fires novel research
+      spikes, builds bleeding-edge product features, handles customer-technical
+      work, runs 2+ loops ahead of the rest of the cascade per manifesto §9.
+      Firstborn but not the leader — has seniority in ordering but commands no
+      hierarchical authority over Louie or Dewey; the three are peers.
+    scope_excluded: |
+      Not Louie's lane (public-facing validation product work, DWAVE) nor Dewey's
+      lane (consolidation + pattern-baking work, N0D3MAD). Not business strategy
+      + customer strategy calls (Gizmoduck persona). Nothing outside the
+      construction-vertical customer context.
+    reports_to: operator
+    pillar_primary: professional
+    pillar_secondary: null
+    stewards_surfaces:
+      - ddann_01_sprint_log
+      - discovery_layer_research_substrate
+      - foreman_sp_v1_ingest_layer
+      - dan_moesta_partnership_technical_deliverables
+    responsibilities:
+      - discovery_thread_loop_authoring
+      - novel_classifier_experiments
+      - entity_alias_audit
+      - litigation_scraper_development
+      - foreman_sp_v1_ingest_layer_authorship
+      - dan_moesta_partnership_deliverables
+    sprint_mapping: DDANN-01
+    memory_store_path: ~/.claude/projects/-home-darney-projects-darntech/memory/
+    repos_owned:
+      - darntech (monorepo, primary)
+      - foreman-sp-v1 (standalone extracted 2026-04-14 for Dan handoff)
+    commit_prefix_convention: "feat(ddann-01-l<NN>): / docs(ddann-01-l<NN>):"
+    source_ref_prefix: "ddann_01_l<NN>_<phase> (optional identity suffix: ddann_01_l<NN>_huey_<phase>)"
+    reporting_cadence: Every loop close + cascade_health check on every wake (per DDANN-01 L58 cross-sprint-sync design)
+    deployment_id: huey-monitor-01 (historical) | be099f1c (MISC LLC DDANN-01 research substrate)
+    provenance:
+      authored_at: 2026-04-14
+      ratification_cycle: della-cycle-2
+      source_path: darntech-huey/docs/foreman/agents/huey.md
+      lifecycle:
+        first_wake: 2026-04-12
+        introduced: 2026-04-14
+        corrected: 2026-04-15
+
+  - id: nephew_louie
+    kind: nephew
+    role_label: Louie — Validation Thread Agent
+    invocation_pattern: Wakes per cascade rotation in darntech-louie worktree (or operator-direct)
+    description: |
+      DArnTech's validation-layer thread agent. Practical / opportunistic energy
+      in the DuckTales canon — finds the clever angle, looks for leverage. In
+      Foreman^^ context: stress-tests framework primitives against a maximally-
+      orthogonal vertical (music archive + public internet, via DWAVE / Barry's
+      Championship Vinyl) vs Dewey's construction-vertical customer work. If a
+      pattern lands clean in Louie's lane, it's portable; if it doesn't, Dewey
+      discovered something that's not actually reusable yet.
+    scope_excluded: |
+      Not Dewey's lane (discovery-layer novel research, DDANN-01 — wait, actually
+      Huey's — and consolidation work, Dewey's N0D3MAD). Not construction-vertical
+      customer work (Dewey via MISC LLC). Not cross-thread synthesis (Huey).
+      Not business strategy + pricing (Gizmoduck persona).
+    reports_to: operator
+    pillar_primary: personal
+    pillar_secondary: professional
+    stewards_surfaces:
+      - dtape_01_sprint_log
+      - dwave_repo_public_internet_surface
+      - barry_championship_vinyl_product
+      - net_zero_donation_surface
+      - archive_org_today_in_history_pipeline
+    responsibilities:
+      - validation_thread_loop_authoring
+      - dwave_product_build
+      - webamp_substrate_integration
+      - today_in_history_archive_org_pipeline
+      - barrytone_pixel_tour
+      - barry_voice_blurb_authoring
+      - net_zero_donation_surface_authorship
+      - compliance_feasibility_memo_iteration
+      - public_internet_launch_playbook
+    sprint_mapping: DTAPE-01
+    memory_store_path: "(to be declared on first wake; likely ~/.claude/projects/-home-darney-projects-dwave/memory/)"
+    repos_owned:
+      - dwave (primary)
+      - darntech (secondary — sprint artifacts live there)
+    commit_prefix_convention: "feat(dtape-01-l<NN>): / docs(dtape-01-l<NN>):"
+    source_ref_prefix: "louie_dtape_01_l<NN>_<phase>  OR  dtape_01_l<NN>_<phase> (sprint-native preferred)"
+    reporting_cadence: Every loop close + public_surface_state check on every wake (required because Louie owns the public-facing risk surface)
+    deployment_id: dwave-dtape-01
+    provenance:
+      authored_at: 2026-04-14
+      ratification_cycle: della-cycle-2
+      source_path: darntech-louie/docs/foreman/agents/louie.md
+      lifecycle:
+        first_wake: TBD (pending onboarding contract acceptance)
+        introduced: 2026-04-14
+
+  - id: nephew_dewey
+    kind: nephew
+    role_label: Dewey — Consolidation Thread Agent
+    invocation_pattern: Wakes per cascade rotation in darntech-dewey worktree (or operator-direct)
+    description: |
+      DArnTech's consolidation-layer thread agent. The methodology agent that
+      bakes patterns at high rep count, owns the Foreman^^ framework's
+      observability + audit substrate (cross-sprint-audit + tempo-pane +
+      homelab-monitor + daily-audit snapshot + systemd timer), maintains the
+      DAcumen public kit, and authors charter amendments codifying methodology
+      learnings (v0.1.2 / v0.1.3 / v0.1.4 all shipped from N0D3MAD loops).
+      Also handles Phase B hardware bring-up (currently physical-world blocked).
+    scope_excluded: |
+      Not Louie's lane (public-facing validation product work, DWAVE). Not
+      Huey's lane (customer-facing discovery research, DDANN). Not business
+      strategy + customer comms (Gizmoduck persona). MUST NOT ship DAcumen
+      v0.2+ breaking changes without operator HITL review.
+    reports_to: operator
+    pillar_primary: all_three
+    pillar_secondary: null
+    stewards_surfaces:
+      - n0d3mad_01_sprint_log
+      - charter_amendment_authoring_methodology
+      - cross_sprint_audit_pipeline
+      - tempo_pane_observability_surface
+      - homelab_monitor_observatory_surface
+      - daily_audit_snapshot_pipeline
+      - dacumen_public_kit
+      - session_handoff_authoring
+    responsibilities:
+      - consolidation_thread_loop_authoring
+      - pattern_baking_high_rep_count
+      - cross_sprint_audit_maintenance
+      - daily_audit_snapshot_pipeline_authorship
+      - dacumen_kit_releases
+      - charter_amendment_authorship_methodology
+      - session_handoff_authoring
+      - proxy_cascade_sync_brief_authorship_when_peers_dormant
+      - phase_b_hardware_bring_up (currently blocked)
+    sprint_mapping: N0D3MAD-01
+    memory_store_path: ~/.claude/projects/-home-darney-projects-darntech/memory/
+    repos_owned:
+      - darntech (shared, N0D3MAD sprint home)
+      - dacumen (primary — public Foreman^^ starter kit)
+    commit_prefix_convention: "feat(n0d3mad-01-l<NN>): / docs(n0d3mad-01-l<NN>):"
+    source_ref_prefix: "n0d3mad_01_l<NN>_<phase> (optional identity suffix: n0d3mad_01_l<NN>_dewey_<phase> · out-of-band numeric-offset range L40+ used throughout dev-week)"
+    reporting_cadence: Every loop close + cascade-sync brief authoring when cross-thread drift is surfaced by the daily audit
+    deployment_id: "(TBD — Phase B hardware bring-up loop will register one; current out-of-band work fires without a dedicated casey deployment)"
+    provenance:
+      authored_at: 2026-04-14
+      ratification_cycle: della-cycle-2
+      source_path: darntech-dewey/docs/foreman/agents/dewey.md
+      lifecycle:
+        first_wake: 2026-04-12
+        introduced: 2026-04-14
+        corrected: 2026-04-15
+
 pillar_emission_lanes:
   professional:
     emission_source: business_bu

@@ -36,7 +36,7 @@ DARNTECH_ROOT="${DARNTECH_ROOT:-$HOME/projects/darntech}"
 DELLATECH_ROOT="${DELLATECH_ROOT:-$HOME/projects/dellatech}"
 MEMORY_ROOT="${MEMORY_ROOT:-$HOME/.claude/projects}"
 ELLABOT_URL="${ELLABOT_URL:-http://192.168.0.98:8910}"
-CT100_HOST="${CT100_HOST:-root@192.168.0.99}"  # via Proxmox host, pct exec 100
+CT100_HOST="${CT100_HOST:-root@192.168.0.98}"  # CT 100 migrated to Node 2 in Della cycle-2 L01 (2026-05-11); pct exec via Node 2 Proxmox host
 VAULT_ROOT_IN_CT100="${VAULT_ROOT_IN_CT100:-/opt/obsidian-vault/Obsidian Vault}"
 
 CANONICAL_MD="$DACUMEN_ROOT/docs/manifests/org-chart-responsibilities.md"

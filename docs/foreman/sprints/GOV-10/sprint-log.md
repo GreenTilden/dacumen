@@ -471,3 +471,60 @@ Operator-direct: "update CT 100 nginx with the new token" (extending the rotatio
 - **Other consumers** that may call `.98:8901` direct (cathy-bot / darntech-huey / etc) — until they're aligned, those direct callers continue to 401. Quick way to check: `grep -rE "LORNA_FINANCIALS_TOKEN|FINANCIALS_API_TOKEN" /opt/<service>/` on Node 2 for each candidate. If empty, the service doesn't call Lorna direct.
 
 The full LORNA_FINANCIALS_TOKEN rotation is now complete across all three surfaces I have authorization for: casey-junior client + Lorna server + CT 100 perimeter. Auth is genuinely enforced at the app layer; the placeholder-token anti-pattern is gone; the cycle-24 perimeter token is retired.
+
+---
+
+## Post-close addendum 5 — Lorna consumer sweep + checkbook-deploy rotated (2026-05-15)
+
+Operator-direct: "check the other lorna consumers" → discovered one additional active consumer holding the old cycle-24 token; rotated it.
+
+### Sweep methodology
+
+`grep -rEl "LORNA_FINANCIALS_TOKEN|FINANCIALS_API_TOKEN|192\.168\.0\.98:8901|localhost:8901"` across `/opt/*/` on Node 2 plus a per-running-docker-container `docker exec env | grep` pass, filtered for non-backup non-stale-cycle-24 matches.
+
+### Findings
+
+| Consumer | Type | Token state pre-sweep | Action |
+|---|---|---|---|
+| casey-junior | systemd service (Node 2 .98:8902) | new token (addendum 3) | none — already aligned |
+| Lorna (server) | docker container | new token (addendum 3) | none — already aligned |
+| CT 100 nginx perimeter | nginx config | new token (addendum 4) | none — already aligned |
+| **checkbook-deploy** | **docker container, port 8907, behind Authelia** | **OLD cycle-24 hex `51604c8df…`** | **ROTATED (this addendum)** |
+| ellabot | systemd service | n/a — only doc references to Lorna in `/opt/ellabot/docs/`; no app code calls `.98:8901`, no token in `/etc/ellabot.env` | none |
+| cathy-bot | dotfile only; not active Lorna consumer | `.env` has no Lorna refs | none |
+| darntech-huey | not on Node 2 prod (dev workspace) | n/a | none |
+| stale-cycle-24 backup at `/opt/docker/apps/lorna-financials.stale-cycle-24-2026-05-13/` | not running | historical | none — backup, ignored |
+
+**One previously-unknown direct Lorna consumer surfaced: `checkbook-deploy`** at `/opt/checkbook-deploy/` — Docker stack on port 8907, behind Authelia perimeter. Calls Lorna at `http://192.168.0.98:8901` in three places in `app/services/forecast.py` (household-cashflow + operator-private forecast endpoints), passing `Authorization: Bearer ${FINANCIALS_API_TOKEN}`. Its `.env` held the cycle-24 hex token — same value that was in CT 100 nginx (addendum 4 source) and `/opt/docker/apps/lorna-financials.stale-cycle-24-2026-05-13/.env` (the leak surface).
+
+### Rotation execution (checkbook-deploy)
+
+1. Backup `/opt/checkbook-deploy/.env` → `.env.bak-pre-realtoken-20260515` (mode 0600, 568 bytes).
+2. python `re.subn` block-anchored on the full unique old-token string (per [[feedback_sed_too_broad_on_shared_config]]) → exactly 1 replacement.
+3. `docker compose up -d` (NOT `restart` — applied the [[docker-compose-restart-doesnt-reload-env-file]] lesson from addendum 3) → container `Recreated` + `Started`.
+4. `docker exec checkbook-deploy-checkbook-1 env | grep FINANCIALS_API_TOKEN` → new token confirmed in container env.
+5. End-to-end test of `/api/forecast/household-cashflow` blocked by Authelia from the dev VM (`{"detail":"Authelia auth required"}`); functional correctness verified by construction (container env matches Lorna's enforced token).
+
+### Full aligned-state table
+
+| Surface | Aligned to new token | Verified by |
+|---|---|---|
+| `/etc/casey-junior.env` (Node 2 systemd) | ✓ | addendum 2 + `/proc/$pid/environ` |
+| `/opt/lorna-financials/.env` (Lorna server container) | ✓ | addendum 3 + `docker exec env` |
+| `/etc/nginx/sites-enabled/all-sites:895` (CT 100 perimeter) | ✓ | addendum 4 + `ops.darrenarney.com → 200` |
+| `/opt/checkbook-deploy/.env` (checkbook docker stack) | ✓ | addendum 5 + `docker exec env` |
+| Lorna `app/auth.py` `verify_token` enforcement | ON | addendum 3 (401/401/200 tests) |
+
+### Codified pattern reuse
+
+This addendum is also a worked example of [[docker-compose-restart-doesnt-reload-env-file]] applied immediately after codification: I used `docker compose up -d` from the start instead of `restart`, picked up the env change first try, and saved the wasted-round-trip cost that addendum 3 paid. The memory is paying its keep within an hour of being written.
+
+### GOV-10 carry-forward queue — Lorna-token rotation: FULLY CLOSED
+
+All 4 direct-Lorna-consumer surfaces I have authorization for + the perimeter + the server are aligned. The Lorna token rotation thread that started as a side-finding in addendum 2 is now closed across the entire footprint.
+
+Remaining GOV-10 carry-forward (operator-gated):
+- ⏸ #3 reconciler-confidence-deployment-scoped structural fix
+- ⏸ #4 pending suggestions walk
+- ⏸ #5 ReconciliationPanel rework retry
+- ⏸ #6 broader memory canonicalization sweep

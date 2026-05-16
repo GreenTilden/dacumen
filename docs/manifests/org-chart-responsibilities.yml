@@ -114,6 +114,19 @@ agents:
       - service_deploy_maintain_homelab
       - cross_bu_artifact_authoring_layer_a_primary
       - memory_audit_first_fire_active_cycle
+    task_sources:
+      - label: Repos index (homelab + DellaTech service estate)
+        url: /repos
+        type: dashboard
+      - label: Projects index (DellaTech projects view)
+        url: /projects
+        type: dashboard
+      - label: EllaBot — agent_health_check_della responsibility checks
+        url: http://192.168.0.98:8910/api/v2/entries?source=agent_health_check_della
+        type: ellabot_filter
+      - label: DellaTech vault note
+        url: "obsidian://vault/02-Areas/Projects/DellaTech/DellaTech.md"
+        type: vault_note
     provenance:
       authored_at: 2026-05-15
       ratification_cycle: della-cycle-2
@@ -140,6 +153,16 @@ agents:
       - vertical_ip_system
     responsibilities:
       - rag_pattern_intelligence_safety_validation
+    task_sources:
+      - label: Intelligence page (vertical-IP quality view)
+        url: /intelligence
+        type: dashboard
+      - label: GBGreg repo (vertical-IP system substrate)
+        url: /repos/gbgreg
+        type: repo
+      - label: EllaBot — agent_health_check_greg responsibility checks
+        url: http://192.168.0.98:8910/api/v2/entries?source=agent_health_check_greg
+        type: ellabot_filter
     provenance:
       authored_at: 2026-05-15
       ratification_cycle: della-cycle-2
@@ -168,6 +191,19 @@ agents:
     responsibilities:
       - charter_ratification_cross_bu
       - three_pillars_enforcement
+    task_sources:
+      - label: Charter page (ratification surface)
+        url: /charter
+        type: dashboard
+      - label: Projects index (portfolio prioritization view)
+        url: /projects
+        type: dashboard
+      - label: EllaBot — agent_health_check_gizmoduck responsibility checks
+        url: http://192.168.0.98:8910/api/v2/entries?source=agent_health_check_gizmoduck
+        type: ellabot_filter
+      - label: Cross-sprint audit observatory (cross-BU oversight surface)
+        url: /
+        type: observatory
     provenance:
       authored_at: 2026-05-15
       ratification_cycle: della-cycle-2
@@ -196,6 +232,16 @@ agents:
     responsibilities:
       - ledger_entries_serving
       - time_bucket_aggregations
+    task_sources:
+      - label: EllaBot timeline (live ledger view)
+        url: http://192.168.0.98:8910/api/v2/entries?limit=50
+        type: ellabot_filter
+      - label: EllaBot — agent_health_check_ellabot responsibility checks
+        url: http://192.168.0.98:8910/api/v2/entries?source=agent_health_check_ellabot
+        type: ellabot_filter
+      - label: EllaBot service card (service-side implementation)
+        url: /agents#service_ellabot
+        type: dashboard
     provenance:
       authored_at: 2026-05-15
       ratification_cycle: della-cycle-2
@@ -227,6 +273,19 @@ agents:
       - per_project_phase_tracking
       - reconciliation_health_computation
       - activity_logging
+    task_sources:
+      - label: Casey Junior deployments registry (live)
+        url: http://192.168.0.98:8902/api/deployments
+        type: dashboard
+      - label: Ops dashboard (project phase + reconciliation health surfaces)
+        url: /
+        type: dashboard
+      - label: EllaBot — agent_health_check_casey responsibility checks
+        url: http://192.168.0.98:8910/api/v2/entries?source=agent_health_check_casey
+        type: ellabot_filter
+      - label: Casey Junior service card (service-side implementation)
+        url: /agents#service_casey_junior
+        type: dashboard
     provenance:
       authored_at: 2026-05-15
       ratification_cycle: della-cycle-2
@@ -257,6 +316,19 @@ agents:
       - cycle_open_mode_pick
       - hitl_resolution
       - layer_c_piecemeal_intent_updates
+    task_sources:
+      - label: HITL checkpoints (across foreman tree)
+        url: /repos
+        type: dashboard
+      - label: EllaBot — operator_intent Layer-C entries (piecemeal intent updates)
+        url: http://192.168.0.98:8910/api/v2/entries?source=operator_intent
+        type: ellabot_filter
+      - label: Plan-mode authorship (~/.claude/plans/)
+        url: "obsidian://vault/02-Areas/Plans/"
+        type: vault_note
+      - label: Cycle-OPEN mode-picks (cycle.json across foreman repos)
+        url: /repos
+        type: dashboard
     provenance:
       authored_at: 2026-05-15
       ratification_cycle: della-cycle-2

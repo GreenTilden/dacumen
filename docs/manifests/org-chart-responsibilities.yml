@@ -67,6 +67,16 @@ agents:
       - dashboard_render
       - charter_amendment_authorship_business
       - memory_audit_fire_§14a
+    task_sources:
+      - label: Dashboard (the surface this role stewards)
+        url: /
+        type: dashboard
+      - label: Charter
+        url: /charter
+        type: dashboard
+      - label: EllaBot — agent_health_check_ops responsibility checks
+        url: http://192.168.0.98:8910/api/v2/entries?source=agent_health_check_ops
+        type: ellabot_filter
     provenance:
       authored_at: 2026-05-15
       ratification_cycle: della-cycle-2
@@ -827,6 +837,16 @@ agents:
     source_ref_prefix: "ddann_01_l<NN>_<phase> (optional identity suffix: ddann_01_l<NN>_huey_<phase>)"
     reporting_cadence: Every loop close + cascade_health check on every wake (per DDANN-01 L58 cross-sprint-sync design)
     deployment_id: huey-monitor-01 (historical) | be099f1c (MISC LLC DDANN-01 research substrate)
+    task_sources:
+      - label: Casey deployment — MISC LLC (DDANN-01 substrate)
+        url: /review/be099f1c
+        type: deployment
+      - label: DDANN-01 sprint log (open + closed loops)
+        url: /repos/darntech-huey/blob/main/docs/foreman/sprints/DDANN-01/sprint-log.md
+        type: sprint_log
+      - label: EllaBot — ddann_01 sprint-coded entries
+        url: http://192.168.0.98:8910/api/v2/entries?sprint_code=ddann_01
+        type: ellabot_filter
     provenance:
       authored_at: 2026-04-14
       ratification_cycle: della-cycle-2
@@ -881,6 +901,16 @@ agents:
     source_ref_prefix: "louie_dtape_01_l<NN>_<phase>  OR  dtape_01_l<NN>_<phase> (sprint-native preferred)"
     reporting_cadence: Every loop close + public_surface_state check on every wake (required because Louie owns the public-facing risk surface)
     deployment_id: dwave-dtape-01
+    task_sources:
+      - label: Casey deployment — DWAVE DTAPE-01
+        url: /review/dwave-dtape-01
+        type: deployment
+      - label: DTAPE-01 sprint log (open + closed loops)
+        url: /repos/darntech-louie/blob/main/docs/foreman/sprints/DTAPE-01/sprint-log.md
+        type: sprint_log
+      - label: EllaBot — dtape_01 sprint-coded entries
+        url: http://192.168.0.98:8910/api/v2/entries?sprint_code=dtape_01
+        type: ellabot_filter
     provenance:
       authored_at: 2026-04-14
       ratification_cycle: della-cycle-2
@@ -937,6 +967,19 @@ agents:
     source_ref_prefix: "n0d3mad_01_l<NN>_<phase> (optional identity suffix: n0d3mad_01_l<NN>_dewey_<phase> · out-of-band numeric-offset range L40+ used throughout dev-week)"
     reporting_cadence: Every loop close + cascade-sync brief authoring when cross-thread drift is surfaced by the daily audit
     deployment_id: "(TBD — Phase B hardware bring-up loop will register one; current out-of-band work fires without a dedicated casey deployment)"
+    task_sources:
+      - label: N0D3MAD-01 sprint log (open + closed loops)
+        url: /repos/darntech-dewey/blob/main/docs/foreman/sprints/N0D3MAD-01/sprint-log.md
+        type: sprint_log
+      - label: DAcumen kit (Dewey's primary repo)
+        url: /repos/dacumen
+        type: repo
+      - label: EllaBot — n0d3mad_01 sprint-coded entries
+        url: http://192.168.0.98:8910/api/v2/entries?sprint_code=n0d3mad_01
+        type: ellabot_filter
+      - label: Cross-sprint-audit observatory (Dewey-owned surface)
+        url: /
+        type: observatory
     provenance:
       authored_at: 2026-04-14
       ratification_cycle: della-cycle-2
@@ -1044,7 +1087,7 @@ render_targets:
     applies_to_kinds: [business_role, nephew, service]
   - id: knowledge_management_page
     template: responsibilities-notion-blocks.tmpl
-    page_id: TBD_on_first_run
+    page_id: 35c81502-3a6c-81c9-ab70-c94e21a80b9e  # captured 2026-05-16 on first MCP push (replace_content); Notion path: Work Notes > DArnTech LLC > Org Chart & Staff Directory > Org Chart × Responsibilities Manifest
     transport: notion_mcp_update_page
     section_markers: null
     applies_to_kinds: [business_role, nephew, service]

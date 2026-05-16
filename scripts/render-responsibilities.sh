@@ -36,7 +36,7 @@ DARNTECH_ROOT="${DARNTECH_ROOT:-$HOME/projects/darntech}"
 DELLATECH_ROOT="${DELLATECH_ROOT:-$HOME/projects/dellatech}"
 MEMORY_ROOT="${MEMORY_ROOT:-$HOME/.claude/projects}"
 ELLABOT_URL="${ELLABOT_URL:-http://[redacted-internal-ip]:[redacted-port]}"
-[redacted-container]_HOST="${[redacted-container]_HOST:-root@[redacted-internal-ip]}"  # via Proxmox host, pct exec 100
+[redacted-container]_HOST="${[redacted-container]_HOST:-root@[redacted-internal-ip]}"  # [redacted-container] migrated to Node 2 in Della cycle-2 L01 (2026-05-11); pct exec via Node 2 Proxmox host
 VAULT_ROOT_IN_[redacted-container]="${VAULT_ROOT_IN_[redacted-container]:-/opt/obsidian-vault/Obsidian Vault}"
 
 CANONICAL_MD="$DACUMEN_ROOT/docs/manifests/org-chart-responsibilities.md"

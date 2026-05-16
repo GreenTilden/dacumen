@@ -175,24 +175,49 @@ DASH_PAYLOAD=$(echo "$MANIFEST_JSON" | jq \
     --arg ver "$DACUMEN_VER" \
     '{
         generated_at: $gen,
+        schema_version: (.schema_version // 1),
         manifest_version: .manifest_version,
         dacumen_canonical_version: $ver,
         dacumen_source_path: "dacumen/docs/manifests/org-chart-responsibilities.md",
         ratification_cycle: .ratification_cycle,
         ratification_loop: .ratification_loop,
+        v0_2_extension: (.v0_2_extension // null),
+        kinds: (.kinds // ["business_role"]),
         agents: (.agents | map({
             id: .id,
+            kind: (.kind // "business_role"),
             role_label: .role_label,
-            pillar_primary: .pillar_primary,
-            pillar_secondary: .pillar_secondary,
-            reports_to: .reports_to,
-            stewards_surfaces: .stewards_surfaces,
-            responsibilities: .responsibilities
+            invocation_pattern: (.invocation_pattern // null),
+            description: (.description // null),
+            scope_excluded: (.scope_excluded // null),
+            pillar_primary: (.pillar_primary // null),
+            pillar_secondary: (.pillar_secondary // null),
+            reports_to: (.reports_to // null),
+            stewards_surfaces: (.stewards_surfaces // []),
+            responsibilities: (.responsibilities // []),
+            tools_allow_list: (.tools_allow_list // []),
+            dependencies: (.dependencies // []),
+            inputs: (.inputs // null),
+            outputs: (.outputs // null),
+            schedule: (.schedule // null),
+            endpoint: (.endpoint // null),
+            deployment_id: (.deployment_id // null),
+            health_check_definition: (.health_check_definition // null),
+            vault_path: (.vault_path // null),
+            status: (.status // null),
+            sprint_mapping: (.sprint_mapping // null),
+            repos_owned: (.repos_owned // []),
+            memory_store_path: (.memory_store_path // null),
+            commit_prefix_convention: (.commit_prefix_convention // null),
+            source_ref_prefix: (.source_ref_prefix // null),
+            reporting_cadence: (.reporting_cadence // null),
+            provenance: (.provenance // null)
         })),
         pillar_emission_lanes: .pillar_emission_lanes,
         touchpoint_contract: .touchpoint_contract,
         persona_to_role_id: .persona_to_role_id,
-        drift_check: .drift_check
+        drift_check: .drift_check,
+        render_targets: (.render_targets // null)
     }')
 
 write_if_changed() {

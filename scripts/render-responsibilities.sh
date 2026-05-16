@@ -211,6 +211,7 @@ DASH_PAYLOAD=$(echo "$MANIFEST_JSON" | jq \
             commit_prefix_convention: (.commit_prefix_convention // null),
             source_ref_prefix: (.source_ref_prefix // null),
             reporting_cadence: (.reporting_cadence // null),
+            task_sources: (.task_sources // []),
             provenance: (.provenance // null)
         })),
         pillar_emission_lanes: .pillar_emission_lanes,

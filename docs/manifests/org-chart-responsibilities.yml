@@ -55,6 +55,12 @@ agents:
       Public-facing business operations. Owns the public dashboard, charter
       amendment authorship for business-side topics, brand standards, and the
       §14a memory-audit fire. Primary surface for external visitors + stakeholders.
+    scope_excluded: |
+      Not the internal infrastructure layer (that's Internal Systems Director).
+      Not the vertical-IP system (Workshop Foreman). Not cross-BU strategic
+      ratification (Strategic Head). Not financial bookkeeping (Lorna service).
+      Front Office is the perimeter — outward-facing presentation + charter
+      maintenance for business-side topics, nothing internal.
     pillar_primary: professional
     pillar_secondary: null
     reports_to: strategic_head
@@ -90,6 +96,12 @@ agents:
       Homelab + DellaTech infrastructure ownership. Service deploy + maintenance,
       LXC topology decisions, backup discipline, theme system. Primary Layer A
       cross-BU artifact emitter per `feedback_land_cross_bu_artifacts.md`.
+    scope_excluded: |
+      Not the public-facing dashboard (Front Office Director owns that). Not
+      the vertical-IP system (Workshop Foreman). Not direct customer comms
+      (Strategic Head + Front Office handle outward business). Not financial
+      bookkeeping (Lorna). Strictly the homelab + service deploy + Della-side
+      cross-BU artifact authoring; outward-facing surfaces are someone else's.
     pillar_primary: domestic
     pillar_secondary: personal
     reports_to: strategic_head
@@ -115,6 +127,12 @@ agents:
       Vertical-IP system intelligence. Owns RAG pattern intelligence + safety
       validation for the vertical-IP corpus. Surface for prosecution-grade
       retrieval quality.
+    scope_excluded: |
+      Not the consumer-facing dashboard (Front Office Director). Not homelab
+      infrastructure (Internal Systems Director). Not general-purpose RAG
+      retrieval (rag-core engine instances handle that). Strictly the
+      vertical-IP RAG patterns + safety validation lane — quality of the
+      retrieval/synthesis layer for prosecution-grade work.
     pillar_primary: professional
     pillar_secondary: null
     reports_to: strategic_head
@@ -135,6 +153,12 @@ agents:
       Cross-BU strategic decision authority. Ratifies charters, prioritizes the
       portfolio across all three pillars, enforces the three-pillars principle.
       Reports directly to operator.
+    scope_excluded: |
+      Not day-to-day execution per BU (each BU director runs their own lane).
+      Not financial bookkeeping (Lorna). Not project state (Casey). Not the
+      ledger (EllaBot). Strictly cross-BU strategic ratification + portfolio
+      prioritization + three-pillars enforcement — discrete decisions, not
+      continuous oversight.
     pillar_primary: all_three
     pillar_secondary: null
     reports_to: operator
@@ -157,6 +181,12 @@ agents:
       Telemetry substrate role. EllaBot ledger backing — serves entries, owns
       the activity-code taxonomy, aggregates time buckets. Pure utility-pillar
       service to the rest of the org.
+    scope_excluded: |
+      Not analytical interpretation of the ledger (downstream consumers do
+      that). Not financial state (Lorna). Not project state (Casey). Not
+      brain-dump intake from the operator — that's EllaBot service-side.
+      The role is strictly: serve ledger entries + own activity-code taxonomy
+      + aggregate time buckets. Pure substrate, no interpretation.
     pillar_primary: utility
     pillar_secondary: null
     reports_to: operator
@@ -179,6 +209,13 @@ agents:
       Per-project phase tracking + reconciliation health computation + activity
       logging. Backed by Casey Junior service. Surface for project-state queries
       across all BUs.
+    scope_excluded: |
+      Not the financial layer (Lorna service). Not the activity ledger
+      (EllaBot — the deployment_tracker role surfaces deployment state, not
+      operator activity). Not the LLM agent runtime. Not strategic prioritization
+      (Strategic Head). Strictly project-state + Tiger phase + reconciliation
+      health computation — a derived view, not the source of truth on anything
+      else.
     pillar_primary: utility
     pillar_secondary: null
     reports_to: front_office_director
@@ -203,6 +240,12 @@ agents:
       Human operator role at the top of the hierarchy. Fires cycle-open decisions,
       resolves HITL checkpoints, authors Layer C piecemeal intent updates. The
       ultimate source-of-truth for ratification decisions.
+    scope_excluded: |
+      Not execution work (delegates to BU directors + cascade nephews + LLM
+      agents). Not real-time operations (each agent runs autonomously per its
+      lane). Not continuous oversight of every running service. Operator scope
+      is strategic + discrete — HITL resolutions, cycle-OPEN mode picks, Layer C
+      piecemeal intent updates. Anything continuous belongs to a sub-agent.
     pillar_primary: all_three_via_synthesis
     pillar_secondary: null
     reports_to: null

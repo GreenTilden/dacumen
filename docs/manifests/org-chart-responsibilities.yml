@@ -7,15 +7,54 @@
 #
 # Companion doc: org-chart-responsibilities.md (human-readable canonical).
 
-schema_version: 1
-manifest_version: v0.1.0
+schema_version: 2          # bumped from 1 for v0.2.0 — adds `kind` discriminator + new agent kinds
+manifest_version: v0.2.0   # bumped from v0.1.0 (see v0_2_extension block below)
 ratification_cycle: della-cycle-2
 ratification_loop: L00-sidebar
 ratification_date: 2026-05-10
 
+# v0.2.0 extension — generalized the schema beyond org-roles to cover all
+# 11 agent kinds discovered during the agent-card-research pass. Backward
+# compatible per P3 bilateral leniency (v0.1.0 readers ignore unknown fields;
+# v0.2.0 readers default missing `kind` to `business_role`).
+v0_2_extension:
+  ratification_cycle: gov-10
+  ratification_loop: post-close-addendum-7-followup
+  ratification_date: 2026-05-16
+  scope: extend with kind discriminator + universal fields + new agent tiers (subagent, skill — 4 exemplars in phase-3a; bulk authoring of remaining ~18 in phase-3b)
+  references:
+    - governance-thread/docs/agent-card-research/01-field-inventory.md
+    - governance-thread/docs/agent-card-research/02-schema-design.md
+    - governance-thread/docs/agent-card-research/03-impact-analysis.md
+
+# Valid kind enum values (discriminator for v0.2.0+ cards). Cards missing `kind`
+# default to `business_role` at render time per the bilateral-leniency policy.
+kinds:
+  - business_role     # existing 7 entries default here
+  - subagent          # Claude Code subagents (Plan/Explore/general-purpose/etc)
+  - skill             # User-invocable skills (/brief, /loop, /schedule, etc)
+  - mcp_tool          # MCP-provided tools (reference-only per P2 — points at upstream MCP server schema)
+  - nephew            # Cascade thread agents (Huey/Louie/Dewey)
+  - service           # Services-as-agents (casey-junior, ellabot, lorna, darnbot, etc)
+  - pipeline          # casey-junior pipelines (laundry-room, doc-health, etc)
+  - timer             # User-systemd timers
+  - routine           # Scheduled remote routines (/schedule cron agents)
+  - hook              # settings.json hooks (SessionStart, SessionEnd, etc)
+  - project_endpoint  # casey-junior PROJECT_ENDPOINTS registry entries
+
 agents:
+  # ============================================================
+  # business_role kind — the original 7 entries (pre-v0.2.0)
+  # ============================================================
+
   - id: front_office_director
+    kind: business_role
     role_label: Front Office Director
+    invocation_pattern: Strategic-head delegation; per-sprint role assignment
+    description: |
+      Public-facing business operations. Owns the public dashboard, charter
+      amendment authorship for business-side topics, brand standards, and the
+      §14a memory-audit fire. Primary surface for external visitors + stakeholders.
     pillar_primary: professional
     pillar_secondary: null
     reports_to: strategic_head
@@ -28,9 +67,19 @@ agents:
       - dashboard_render
       - charter_amendment_authorship_business
       - memory_audit_fire_§14a
+    provenance:
+      authored_at: 2026-05-15
+      ratification_cycle: della-cycle-2
+      source_path: dacumen/docs/manifests/org-chart-responsibilities.md
 
   - id: internal_systems_director
+    kind: business_role
     role_label: Internal Systems Director
+    invocation_pattern: Strategic-head delegation; homelab + DellaTech infrastructure ownership
+    description: |
+      Homelab + DellaTech infrastructure ownership. Service deploy + maintenance,
+      LXC topology decisions, backup discipline, theme system. Primary Layer A
+      cross-BU artifact emitter per `feedback_land_cross_bu_artifacts.md`.
     pillar_primary: domestic
     pillar_secondary: personal
     reports_to: strategic_head
@@ -43,9 +92,19 @@ agents:
       - service_deploy_maintain_homelab
       - cross_bu_artifact_authoring_layer_a_primary
       - memory_audit_first_fire_active_cycle
+    provenance:
+      authored_at: 2026-05-15
+      ratification_cycle: della-cycle-2
+      source_path: dacumen/docs/manifests/org-chart-responsibilities.md
 
   - id: workshop_foreman
+    kind: business_role
     role_label: Workshop Foreman
+    invocation_pattern: Strategic-head delegation; vertical-IP system ownership
+    description: |
+      Vertical-IP system intelligence. Owns RAG pattern intelligence + safety
+      validation for the vertical-IP corpus. Surface for prosecution-grade
+      retrieval quality.
     pillar_primary: professional
     pillar_secondary: null
     reports_to: strategic_head
@@ -53,9 +112,19 @@ agents:
       - vertical_ip_system
     responsibilities:
       - rag_pattern_intelligence_safety_validation
+    provenance:
+      authored_at: 2026-05-15
+      ratification_cycle: della-cycle-2
+      source_path: dacumen/docs/manifests/org-chart-responsibilities.md
 
   - id: strategic_head
+    kind: business_role
     role_label: Strategic Head
+    invocation_pattern: Operator escalation for cross-BU decisions; charter ratification fire
+    description: |
+      Cross-BU strategic decision authority. Ratifies charters, prioritizes the
+      portfolio across all three pillars, enforces the three-pillars principle.
+      Reports directly to operator.
     pillar_primary: all_three
     pillar_secondary: null
     reports_to: operator
@@ -65,9 +134,19 @@ agents:
     responsibilities:
       - charter_ratification_cross_bu
       - three_pillars_enforcement
+    provenance:
+      authored_at: 2026-05-15
+      ratification_cycle: della-cycle-2
+      source_path: dacumen/docs/manifests/org-chart-responsibilities.md
 
   - id: dev_lab
+    kind: business_role
     role_label: Dev Lab (Telemetry Source)
+    invocation_pattern: Continuous telemetry emission via EllaBot; no explicit invocation
+    description: |
+      Telemetry substrate role. EllaBot ledger backing — serves entries, owns
+      the activity-code taxonomy, aggregates time buckets. Pure utility-pillar
+      service to the rest of the org.
     pillar_primary: utility
     pillar_secondary: null
     reports_to: operator
@@ -77,9 +156,19 @@ agents:
     responsibilities:
       - ledger_entries_serving
       - time_bucket_aggregations
+    provenance:
+      authored_at: 2026-05-15
+      ratification_cycle: della-cycle-2
+      source_path: dacumen/docs/manifests/org-chart-responsibilities.md
 
   - id: deployment_tracker
+    kind: business_role
     role_label: Deployment Tracker (PM)
+    invocation_pattern: Casey Junior REST API + activity webhooks; project-state delegation from Front Office
+    description: |
+      Per-project phase tracking + reconciliation health computation + activity
+      logging. Backed by Casey Junior service. Surface for project-state queries
+      across all BUs.
     pillar_primary: utility
     pillar_secondary: null
     reports_to: front_office_director
@@ -91,9 +180,19 @@ agents:
       - per_project_phase_tracking
       - reconciliation_health_computation
       - activity_logging
+    provenance:
+      authored_at: 2026-05-15
+      ratification_cycle: della-cycle-2
+      source_path: dacumen/docs/manifests/org-chart-responsibilities.md
 
   - id: operator
+    kind: business_role
     role_label: Operator
+    invocation_pattern: Direct interaction (chat sessions, HITL checkpoints, plan-mode authorship)
+    description: |
+      Human operator role at the top of the hierarchy. Fires cycle-open decisions,
+      resolves HITL checkpoints, authors Layer C piecemeal intent updates. The
+      ultimate source-of-truth for ratification decisions.
     pillar_primary: all_three_via_synthesis
     pillar_secondary: null
     reports_to: null
@@ -105,6 +204,120 @@ agents:
       - cycle_open_mode_pick
       - hitl_resolution
       - layer_c_piecemeal_intent_updates
+    provenance:
+      authored_at: 2026-05-15
+      ratification_cycle: della-cycle-2
+      source_path: dacumen/docs/manifests/org-chart-responsibilities.md
+
+  # ============================================================
+  # subagent kind — Claude Code subagents (4 exemplars in phase-3a)
+  # Bulk-author remaining ~2 in phase-3b: general-purpose, claude-code-guide,
+  # statusline-setup, frontend-design.
+  # ============================================================
+
+  - id: subagent_explore
+    kind: subagent
+    role_label: Explore — Fast Read-Only Search
+    invocation_pattern: Agent tool with subagent_type=Explore
+    description: |
+      Fast read-only search agent for locating code. Use it to find files by
+      pattern (e.g. "src/components/**/*.tsx"), grep for symbols or keywords
+      (e.g. "API endpoints"), or answer "where is X defined / which files
+      reference Y." Specify search breadth at invocation: "quick" / "medium" /
+      "very thorough".
+    scope_excluded: |
+      Not for code review, design-doc auditing, cross-file consistency checks,
+      or open-ended analysis — Explore reads excerpts rather than whole files
+      and will miss content past its read window. For those use Plan or
+      general-purpose subagents instead.
+    reports_to: operator
+    inputs: A search prompt + an explicit breadth hint (quick/medium/very thorough)
+    outputs: Concise report of where the searched-for entity lives, with file paths + line numbers
+    tools_allow_list:
+      - All tools except Agent, ExitPlanMode, Edit, Write, NotebookEdit
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/CLAUDE.md (runtime-registered)
+
+  - id: subagent_plan
+    kind: subagent
+    role_label: Plan — Implementation Architect
+    invocation_pattern: Agent tool with subagent_type=Plan
+    description: |
+      Software architect agent for designing implementation plans. Use this
+      when you need to plan the implementation strategy for a task. Returns
+      step-by-step plans, identifies critical files, and considers architectural
+      trade-offs.
+    scope_excluded: |
+      Not for code writing (no Edit/Write access). Not for execution. Not for
+      open-ended research (use general-purpose). Not for code search (use
+      Explore — Plan is for synthesis once relevant code is identified, not for
+      locating code).
+    reports_to: operator
+    inputs: A task description + relevant codebase context (file paths, prior research)
+    outputs: Step-by-step implementation plan with critical files + architectural tradeoff analysis
+    tools_allow_list:
+      - All tools except Agent, ExitPlanMode, Edit, Write, NotebookEdit
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/CLAUDE.md (runtime-registered)
+
+  # ============================================================
+  # skill kind — User-invocable skills (2 exemplars in phase-3a)
+  # Bulk-author remaining ~14 in phase-3b: pre-brief, batch-brief, intent,
+  # recall, tock, /schedule, /update-config, /init, /review, /security-review,
+  # /simplify, /fewer-permission-prompts, /claude-api, /keybindings-help.
+  # ============================================================
+
+  - id: skill_brief
+    kind: skill
+    role_label: /brief — Session Briefing
+    invocation_pattern: /brief in chat (or auto-fires on SessionStart hook)
+    description: |
+      Pulls cycle/sprint/loop state from .foreman + observatory + EllaBot
+      ledger. Read-only session briefing — emits a structured /brief block
+      showing current cycle status, latest sprint loop, EllaBot ledger tail,
+      proposed next action.
+    scope_excluded: |
+      Does not modify state — purely a read pass. Does not poll continuously
+      (use /loop for that). Does not author plans (use /pre-brief for
+      incoming-nephew readiness checks or /batch-brief for batch readiness).
+      Does not execute work — emits state, operator picks next action.
+    reports_to: operator
+    inputs: None (reads from local .foreman + remote casey-junior + ellabot endpoints)
+    outputs: Markdown /brief block rendered into chat with cycle header + sprint state + ledger tail + proposed_next_action
+    dependencies:
+      - service_casey_junior
+      - service_ellabot
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/brief/brief.sh
+
+  - id: skill_loop
+    kind: skill
+    role_label: /loop — Recurring Task Runner
+    invocation_pattern: /loop <interval> <skill-or-prompt> (e.g. /loop 5m /brief)
+    description: |
+      Runs a prompt or slash command on a recurring interval. Omit the interval
+      to let the model self-pace ("dynamic mode"). Use for recurring tasks,
+      polling for status, or watching a condition. The harness fires the loop
+      iterations on schedule and tracks until /loop stop or model decides to end.
+    scope_excluded: |
+      Not for one-off tasks. Not for scheduling REMOTE recurring agents (that
+      is /schedule). Not for sleeping in the middle of other work (use Bash
+      with run_in_background instead). The dynamic mode (no interval) is for
+      when the model itself paces — not for fire-and-forget polling.
+    reports_to: operator
+    inputs: An interval (e.g. "5m") OR dynamic mode + a prompt/slash-command to run each tick
+    outputs: Per-tick execution of the supplied prompt; loop continues until model exits or user stops
+    schedule: dynamic (per-tick scheduled via ScheduleWakeup) OR fixed-interval (cron-style)
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/loop/ (runtime-registered via plugin)
 
 pillar_emission_lanes:
   professional:
@@ -188,24 +401,29 @@ render_targets:
     path_template: <auto-memory-root>/<project>/memory/responsibilities.md
     transport: direct_write
     section_markers: null
+    applies_to_kinds: [business_role, nephew, service]  # v0.2.0 — kinds without per-install mapping are skipped
   - id: per_agent_claude_md
     template: responsibilities-claude-md-section.tmpl
     path_template: <repo>/CLAUDE.md
     transport: direct_edit_between_markers
     section_marker_begin: "<!-- BEGIN auto-rendered from dacumen -->"
     section_marker_end: "<!-- END auto-rendered from dacumen -->"
+    applies_to_kinds: [business_role, nephew, service]
   - id: primary_doc_surface
     template: responsibilities-obsidian.md.tmpl
     path_template: <vault-root>/02-Areas/Projects/<BU>/Org Chart × Responsibilities.md
     transport: pct_push_into_reverse_proxy_lxc
     section_markers: null
+    applies_to_kinds: [business_role, nephew, service]
   - id: knowledge_management_page
     template: responsibilities-notion-blocks.tmpl
     page_id: TBD_on_first_run
     transport: notion_mcp_update_page
     section_markers: null
+    applies_to_kinds: [business_role, nephew, service]
   - id: dashboard_json
     template: responsibilities.json.tmpl
     path_template: <dashboard-webroot>/observatory/data/org-chart/responsibilities.json
     transport: scp_to_reverse_proxy_lxc
     section_markers: null
+    applies_to_kinds: all  # v0.2.0 — dashboard JSON includes ALL kinds (subagent/skill/etc) for full org-chart visibility

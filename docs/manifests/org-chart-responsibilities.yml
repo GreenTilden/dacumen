@@ -1340,6 +1340,461 @@ agents:
         introduced: 2026-04-14
         corrected: 2026-04-15
 
+  # ============================================================
+  # Phase 3e — remaining 6 kinds (mcp_tool · pipeline · timer · routine · hook · project_endpoint)
+  # Completes the v0.2.0 schema coverage. Routines: zero active locally —
+  # the kind stays in the enum for future remote-cron agents.
+  # ============================================================
+
+  # ---- MCP TOOL ROLLUPS (4 — per-provider, per P2 reference-not-mirror) ----
+
+  - id: mcp_tool_gmail
+    kind: mcp_tool
+    role_label: Gmail MCP — 12 tool surface
+    invocation_pattern: mcp__claude_ai_Gmail__<tool> (Claude Code MCP tool surface)
+    description: |
+      Gmail integration via MCP. 12 tools spanning draft creation, label
+      management, message + thread search/labeling, thread retrieval, draft
+      listing. Reference-only card per P2 — upstream schema is canonical.
+    scope_excluded: |
+      Not for sending email directly (only create_draft + manual user send via
+      Gmail UI). Not for non-Gmail providers. Not for calendar / drive / notion
+      (those are separate MCP providers).
+    reports_to: operator
+    inputs:
+      available_tools:
+        - create_draft
+        - create_label
+        - delete_label
+        - get_thread
+        - label_message
+        - label_thread
+        - list_drafts
+        - list_labels
+        - search_threads
+        - unlabel_message
+        - unlabel_thread
+        - update_label
+      reference: upstream MCP server schema (claude_ai_Gmail) — fetch with ToolSearch
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: Claude Code MCP runtime registry (upstream provider claude_ai_Gmail)
+
+  - id: mcp_tool_google_calendar
+    kind: mcp_tool
+    role_label: Google Calendar MCP — 8 tool surface
+    invocation_pattern: mcp__claude_ai_Google_Calendar__<tool>
+    description: |
+      Google Calendar via MCP. 8 tools: event create/get/update/delete, list,
+      respond_to_event, suggest_time, list_calendars. Reference-only per P2.
+    scope_excluded: |
+      Not for Outlook / iCal / other calendars. Not for time-tracking entries
+      (that's EllaBot). Not for sprint scheduling (that's foreman framework).
+    reports_to: operator
+    inputs:
+      available_tools:
+        - create_event
+        - delete_event
+        - get_event
+        - list_calendars
+        - list_events
+        - respond_to_event
+        - suggest_time
+        - update_event
+      reference: upstream MCP server schema (claude_ai_Google_Calendar)
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: Claude Code MCP runtime registry
+
+  - id: mcp_tool_google_drive
+    kind: mcp_tool
+    role_label: Google Drive MCP — 7 tool surface
+    invocation_pattern: mcp__claude_ai_Google_Drive__<tool>
+    description: |
+      Google Drive via MCP. 7 tools: file create/read/download/copy, metadata,
+      permissions, list_recent, search. Reference-only per P2.
+    scope_excluded: |
+      Not for Obsidian (that's pct push to CT 100). Not for git-tracked files
+      (use Edit/Write). Not for SharePoint / Dropbox / iCloud.
+    reports_to: operator
+    inputs:
+      available_tools:
+        - copy_file
+        - create_file
+        - download_file_content
+        - get_file_metadata
+        - get_file_permissions
+        - list_recent_files
+        - read_file_content
+        - search_files
+      reference: upstream MCP server schema (claude_ai_Google_Drive)
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: Claude Code MCP runtime registry
+
+  - id: mcp_tool_notion
+    kind: mcp_tool
+    role_label: Notion MCP — 14 tool surface
+    invocation_pattern: mcp__claude_ai_Notion__<tool>
+    description: |
+      Notion via MCP. 14 tools across pages, databases, comments, users, teams,
+      data sources, search, views, duplication, move. Used in this session for
+      the agent-card-research Notion page updates (page_id 35c81502-3a6c-81c9...).
+    scope_excluded: |
+      Not for non-Notion knowledge bases. Not for Obsidian (separate provider).
+      Not for live database queries — fetches at MCP call time, not real-time sync.
+    reports_to: operator
+    inputs:
+      available_tools:
+        - notion-create-comment
+        - notion-create-database
+        - notion-create-pages
+        - notion-create-view
+        - notion-duplicate-page
+        - notion-fetch
+        - notion-get-comments
+        - notion-get-teams
+        - notion-get-users
+        - notion-move-pages
+        - notion-search
+        - notion-update-data-source
+        - notion-update-page
+        - notion-update-view
+      reference: upstream MCP server schema (claude_ai_Notion)
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: Claude Code MCP runtime registry
+
+  # ---- PIPELINES (10 — casey-junior pipelines) ----
+
+  - id: pipeline_doc_health
+    kind: pipeline
+    role_label: doc-health pipeline
+    invocation_pattern: "POST /api/pipelines/doc-health/run on casey-junior"
+    description: Per-project CLAUDE.md + MEMORY.md health scoring across the project tree.
+    scope_excluded: Not for code coverage. Not for runtime health (use /api/reconciliation/health).
+    reports_to: service_casey_junior
+    inputs: { sources: [memory-files, claude-docs] }
+    outputs: { steps: [run_doc_health_check], emits: doc-health-status.json }
+    dependencies: [service_casey_junior]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: casey-junior/app/pipelines/doc_health.py }
+
+  - id: pipeline_memory_index
+    kind: pipeline
+    role_label: memory-index pipeline
+    invocation_pattern: "POST /api/pipelines/memory-index/run on casey-junior"
+    description: Index per-project MEMORY.md files for cross-project recall and stewardship tracking.
+    scope_excluded: Not for RAG indexing (that's rag-core-indexer timers). Not for code search.
+    reports_to: service_casey_junior
+    inputs: { sources: [memory-files] }
+    outputs: { steps: [], emits: memory-index.json }
+    dependencies: [service_casey_junior]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: casey-junior/app/pipelines/memory_index.py }
+
+  - id: pipeline_vault_docs
+    kind: pipeline
+    role_label: vault-docs pipeline
+    invocation_pattern: "POST /api/pipelines/vault-docs/run on casey-junior"
+    description: Generate per-project Obsidian vault notes from project-status + memory + claude-docs sources.
+    scope_excluded: Not for the org-chart Obsidian render (that's render-responsibilities.sh). Not for non-vault outputs.
+    reports_to: service_casey_junior
+    inputs: { sources: [project-status, memory-files, claude-docs] }
+    outputs: { steps: [generate_vault_docs], emits: vault docs via pct push to CT 100 }
+    dependencies: [service_casey_junior, service_lorna_financials]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: casey-junior/app/pipelines/vault_docs.py }
+
+  - id: pipeline_daily_digest
+    kind: pipeline
+    role_label: daily-digest pipeline
+    invocation_pattern: "POST /api/pipelines/daily-digest/run on casey-junior"
+    description: Daily digest summary across work-events + project-status (markdown output).
+    scope_excluded: Not for sprint-specific briefing (that's /brief). Not for standup-style (that's pipeline_standup).
+    reports_to: service_casey_junior
+    inputs: { sources: [work-events, project-status] }
+    outputs: { steps: [generate_daily_digest], emits: daily-digest-YYYY-MM-DD.md }
+    dependencies: [service_casey_junior, service_ellabot]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: casey-junior/app/pipelines/daily_digest.py }
+
+  - id: pipeline_standup
+    kind: pipeline
+    role_label: standup pipeline
+    invocation_pattern: "POST /api/pipelines/standup/run on casey-junior"
+    description: Standup briefing — yesterday/today/blockers shape derived from EllaBot ledger + project state.
+    scope_excluded: Not the same as /brief (sprint-level) or /pre-brief (incoming-nephew). Standup is operator-daily.
+    reports_to: service_casey_junior
+    inputs: { sources: [standup] }
+    outputs: { steps: [generate_standup], emits: standup briefing }
+    dependencies: [service_casey_junior, service_ellabot]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: casey-junior/app/pipelines/standup.py }
+
+  - id: pipeline_financial_health
+    kind: pipeline
+    role_label: financial-health pipeline
+    invocation_pattern: "POST /api/pipelines/financial-health/run on casey-junior"
+    description: Aggregates Lorna financial state (deals + invoices + cashflow + tax estimates) into a daily health view.
+    scope_excluded: Not for Lorna writes (Lorna owns those). Not for forecast modeling (Lorna's forecast engine).
+    reports_to: service_casey_junior
+    inputs: { sources: [financial-health] }
+    outputs: { steps: [], emits: financial-health snapshot }
+    dependencies: [service_casey_junior, service_lorna_financials]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: casey-junior/app/pipelines/sources/financial_health.py }
+
+  - id: pipeline_crm_health
+    kind: pipeline
+    role_label: crm-health pipeline
+    invocation_pattern: "POST /api/pipelines/crm-health/run on casey-junior"
+    description: CRM health (deals + contacts + follow-ups + briefings) aggregated from Lorna.
+    scope_excluded: Not for client-facing CRM writes. Not for prospect research (that's Huey's lane).
+    reports_to: service_casey_junior
+    inputs: { sources: [crm-health] }
+    outputs: { steps: [], emits: crm-health snapshot }
+    dependencies: [service_casey_junior, service_lorna_financials]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: casey-junior/app/pipelines/sources/crm_health.py }
+
+  - id: pipeline_pillar_health
+    kind: pipeline
+    role_label: pillar-health pipeline
+    invocation_pattern: "POST /api/pipelines/pillar-health/run on casey-junior"
+    description: Three-pillars balance check (professional / personal / domestic) + swap/add/unclassified/stale suggestions.
+    scope_excluded: Not for cycle-level decisions (operator-pick). Strictly the balance-suggestion surface.
+    reports_to: service_casey_junior
+    inputs: { sources: [pillar-health] }
+    outputs: { steps: [generate_pillar_health], emits: pillar-health.json with suggestions }
+    dependencies: [service_casey_junior, service_ellabot]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: casey-junior/app/pipelines/steps/pillar_health.py }
+
+  - id: pipeline_laundry_room
+    kind: pipeline
+    role_label: laundry-room pipeline
+    invocation_pattern: "POST /api/pipelines/laundry-room/run on casey-junior"
+    description: Aggregates Lorna deals + followups + invoices + crm/briefing + contacts/stale into one "laundry to fold" actionable view.
+    scope_excluded: Not for actually executing the actions (operator does that). Not for prospecting (Huey's lane).
+    reports_to: service_casey_junior
+    inputs: { sources: [laundry-room] }
+    outputs: { steps: [], emits: laundry-room aggregation }
+    dependencies: [service_casey_junior, service_lorna_financials]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: casey-junior/app/pipelines/sources/laundry_room.py }
+
+  - id: pipeline_agent_review
+    kind: pipeline
+    role_label: agent-review pipeline
+    invocation_pattern: "POST /api/pipelines/agent-review/run on casey-junior"
+    description: Per-agent review aggregation surface — pulls activity + responsibility checks + cross-references for operator review.
+    scope_excluded: Not for live agent identity (use this v0.2.0 manifest). Not for the agent-card-research substrate (that's render-responsibilities).
+    reports_to: service_casey_junior
+    inputs: { sources: [agent-review] }
+    outputs: { steps: [], emits: agent-review snapshot per agent }
+    dependencies: [service_casey_junior, service_ellabot]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: casey-junior/app/pipelines/sources/agent_review.py }
+
+  # ---- TIMERS (14 — user-systemd) ----
+
+  - id: timer_doc_health_check
+    kind: timer
+    role_label: doc-health-check.timer
+    invocation_pattern: "systemctl --user — OnCalendar=*-*-* 08:15:00"
+    description: Morning doc-health check; runs casey-junior's doc-health pipeline + verifies prod artifact freshness.
+    schedule: "*-*-* 08:15:00"
+    dependencies: [service_casey_junior, pipeline_doc_health]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.config/systemd/user/doc-health-check.timer }
+
+  - id: timer_observatory_doc_health_snapshot
+    kind: timer
+    role_label: observatory-doc-health-snapshot.timer
+    invocation_pattern: "systemctl --user — OnCalendar=*-*-* 23:50:00"
+    description: Nightly doc-health snapshot — writes observatory/data/doc-health-status.json (47 projects average score).
+    schedule: "*-*-* 23:50:00"
+    dependencies: [service_casey_junior]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.config/systemd/user/observatory-doc-health-snapshot.timer }
+
+  - id: timer_governance_rag_indexer
+    kind: timer
+    role_label: governance-rag-indexer.timer
+    invocation_pattern: "systemctl --user — OnCalendar=*-*-* 02:30:00"
+    description: Nightly indexer for governance-rag instance (.151:8002) — picks up new memory/sprint-log changes.
+    schedule: "*-*-* 02:30:00"
+    dependencies: [project_governance_rag]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.config/systemd/user/governance-rag-indexer.timer }
+
+  - id: timer_darntech_rag_indexer
+    kind: timer
+    role_label: darntech-rag-indexer.timer
+    invocation_pattern: "systemctl --user — OnCalendar=*-*-* 02:00:00"
+    description: Nightly indexer for darntech-rag instance (.151:8000) — re-chunks framework substrate.
+    schedule: "*-*-* 02:00:00"
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.config/systemd/user/darntech-rag-indexer.timer }
+
+  - id: timer_dellatech_rag_indexer
+    kind: timer
+    role_label: dellatech-rag-indexer.timer
+    invocation_pattern: "systemctl --user — OnCalendar=*-*-* 02:30:00"
+    description: Nightly indexer for dellatech-rag instance (.151:8001) — household-ops corpus refresh.
+    schedule: "*-*-* 02:30:00"
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.config/systemd/user/dellatech-rag-indexer.timer }
+
+  - id: timer_health_refresh_check
+    kind: timer
+    role_label: health-refresh-check.timer
+    invocation_pattern: "systemctl --user — OnCalendar=*-*-* 08:10:00"
+    description: Morning multi-source health refresh check — verifies 6 source endpoints reachable + fresh.
+    schedule: "*-*-* 08:10:00"
+    dependencies: [service_casey_junior]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.config/systemd/user/health-refresh-check.timer }
+
+  - id: timer_observatory_daily_audit
+    kind: timer
+    role_label: observatory-daily-audit.timer
+    invocation_pattern: "systemctl --user — OnCalendar=*-*-* 23:45:00"
+    description: Nightly cross-sprint observatory audit for darntech BU — snapshots sprint state, fires telemetry.
+    schedule: "*-*-* 23:45:00"
+    dependencies: [service_ellabot, service_casey_junior]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.config/systemd/user/observatory-daily-audit.timer }
+
+  - id: timer_observatory_daily_audit_dellatech
+    kind: timer
+    role_label: observatory-daily-audit-dellatech.timer
+    invocation_pattern: "systemctl --user — OnCalendar=*-*-* 23:45:00"
+    description: Nightly cross-sprint observatory audit for DellaTech BU (parallel to darntech audit).
+    schedule: "*-*-* 23:45:00"
+    dependencies: [service_ellabot, service_casey_junior]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.config/systemd/user/observatory-daily-audit-dellatech.timer }
+
+  - id: timer_observatory_daily_audit_synthesis
+    kind: timer
+    role_label: observatory-daily-audit-synthesis.timer
+    invocation_pattern: "systemctl --user — OnCalendar=*-*-* 23:46:00"
+    description: Personal-pillar synthesis daily audit — Layer A/B/C event counting.
+    schedule: "*-*-* 23:46:00"
+    dependencies: [service_ellabot]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.config/systemd/user/observatory-daily-audit-synthesis.timer }
+
+  - id: timer_observatory_telemetry_contract_check
+    kind: timer
+    role_label: observatory-telemetry-contract-check.timer
+    invocation_pattern: "systemctl --user — OnCalendar=*-*-* 23:47:00"
+    description: Nightly verification that EllaBot telemetry contracts (synthesis-event-contracts.yml) are honored across emitters.
+    schedule: "*-*-* 23:47:00"
+    dependencies: [service_ellabot]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.config/systemd/user/observatory-telemetry-contract-check.timer }
+
+  - id: timer_intelligence_quality_snapshot
+    kind: timer
+    role_label: intelligence-quality-snapshot.timer
+    invocation_pattern: "systemctl --user — OnCalendar=*-*-* 03:35:00"
+    description: Quality snapshot for intelligence pipelines (pattern quality, RAG retrieval accuracy).
+    schedule: "*-*-* 03:35:00"
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.config/systemd/user/intelligence-quality-snapshot.timer }
+
+  - id: timer_monday_briefing
+    kind: timer
+    role_label: monday-briefing.timer
+    invocation_pattern: "systemctl --user — Monday weekly briefing"
+    description: Weekly Monday-morning briefing across all BUs — aggregated state from prior week.
+    schedule: weekly (Mon)
+    dependencies: [service_casey_junior, service_ellabot, service_lorna_financials]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.config/systemd/user/monday-briefing.timer }
+
+  - id: timer_notion_dashboard_push
+    kind: timer
+    role_label: notion-dashboard-push.timer
+    invocation_pattern: "systemctl --user — scheduled Notion dashboard push"
+    description: Scheduled push of dashboard snapshots to Notion pages — keeps Notion mirrors fresh.
+    dependencies: [mcp_tool_notion]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.config/systemd/user/notion-dashboard-push.timer }
+
+  - id: timer_repo_triage
+    kind: timer
+    role_label: repo-triage.timer
+    invocation_pattern: "systemctl --user — scheduled repo triage check"
+    description: Periodic repo-triage — surfaces repos with uncommitted changes / behind main / failing builds.
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.config/systemd/user/repo-triage.timer }
+
+  # ---- HOOKS (2 — settings.json) ----
+
+  - id: hook_session_start
+    kind: hook
+    role_label: SessionStart hook
+    invocation_pattern: "settings.json hooks.SessionStart (fires on every Claude Code session open)"
+    description: Fires casey-junior's claude-session-hook.sh with 'start' arg — logs session_start event to EllaBot.
+    inputs: SessionStart event payload (sessionId, workingDirectory)
+    outputs: EllaBot entry written (source=claude-code, action=session_start)
+    dependencies: [service_ellabot, service_casey_junior]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.claude/settings.json }
+
+  - id: hook_session_end
+    kind: hook
+    role_label: SessionEnd hook
+    invocation_pattern: "settings.json hooks.SessionEnd (fires on every Claude Code session close)"
+    description: Fires casey-junior's claude-session-hook.sh with 'end' arg — logs session_end event + computes session duration.
+    inputs: SessionEnd event payload (sessionId, exitCode)
+    outputs: EllaBot entry written (source=claude-code, action=session_end, duration_minutes)
+    dependencies: [service_ellabot, service_casey_junior]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/.claude/settings.json }
+
+  # ---- PROJECT_ENDPOINTS (6 selective — non-service, non-already-carded) ----
+
+  - id: project_governance_rag
+    kind: project_endpoint
+    role_label: governance-rag — rag-core instance #3 (governance meta-layer)
+    invocation_pattern: HTTP GET/POST http://192.168.0.151:8002/recall (or via rag-core-client recall_governance)
+    description: Third rag-core instance (post-darntech-rag + dellatech-rag standup). Governance meta-layer corpus — sprint logs, memory files, charter docs, dacumen.
+    endpoint: "192.168.0.151:8002"
+    vault_path: "02-Areas/Projects/governance-rag/governance-rag.md"
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/projects/governance-rag/ }
+
+  - id: project_lorna_checkbook
+    kind: project_endpoint
+    role_label: Lorna Checkbook — household forecast endpoint (separate from Lorna Financials)
+    invocation_pattern: HTTP GET http://192.168.0.98:8907/api/forecast/* (behind Authelia)
+    description: Household + operator-private cashflow forecast service. Calls Lorna for source data, computes forecasts, returns via auth-gated dashboard pages.
+    endpoint: "192.168.0.98:8907"
+    deployment_id: caaef3e3
+    vault_path: "02-Areas/Projects/Lorna Checkbook/Lorna Checkbook.md"
+    status: active
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/projects/checkbook-deploy/ }
+
+  - id: project_governance_thread
+    kind: project_endpoint
+    role_label: governance-thread — GOV workspace + agent-card-research home
+    invocation_pattern: git workspace at ~/projects/governance-thread (foreman-enabled)
+    description: Cross-BU governance thread workspace. Houses GOV-NN sprints, memory files, and the agent-card-research substrate.
+    endpoint: (no HTTP — git workspace)
+    vault_path: "02-Areas/Projects/Governance/Governance Thread.md"
+    repos_owned: [governance-thread]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/projects/governance-thread/ }
+
+  - id: project_sprite_forge
+    kind: project_endpoint
+    role_label: Sprite Forge — ComfyUI + Ollama pgvector RAG sprite gen
+    invocation_pattern: HTTP at http://localhost:8903 (dev) | (prod TBD)
+    description: Express/TS sprite generation pipeline. ComfyUI + Ollama + pgvector RAG for sprite-pattern retrieval.
+    endpoint: "localhost:8903"
+    vault_path: "02-Areas/Projects/Sprite Forge/Sprite Forge Status.md"
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/projects/sprite-forge/ }
+
+  - id: project_proxmox_homelab
+    kind: project_endpoint
+    role_label: Proxmox Homelab — Vue dashboard for service monitoring
+    invocation_pattern: git workspace at ~/projects/proxmox-homelab + service monitoring scripts
+    description: Vue dashboard + Prometheus + service monitoring for the 4-node homelab.
+    endpoint: (TBD)
+    vault_path: "02-Areas/Homelab/Proxmox Homelab.md"
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/projects/proxmox-homelab/ }
+
+  - id: project_nodemad
+    kind: project_endpoint
+    role_label: Nodemad — Portable DeskMini hub (faster-whisper + Ollama + Piper)
+    invocation_pattern: physical device (DeskMini B660) + paired services
+    description: Portable mini-PC hub for voice transcription + LLM + TTS. Paired with Darnbot fleet for B2B sales companion use case.
+    endpoint: (TBD per-device)
+    vault_path: "02-Areas/Projects/Nodemad/Nodemad.md"
+    repos_owned: [nodemad]
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/projects/nodemad/ }
+
 pillar_emission_lanes:
   professional:
     emission_source: business_bu

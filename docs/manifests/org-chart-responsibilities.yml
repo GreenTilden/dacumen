@@ -319,6 +319,466 @@ agents:
       ratification_cycle: gov-10
       source_path: ~/.claude/skills/loop/ (runtime-registered via plugin)
 
+  # ============================================================
+  # Phase 3b — bulk authoring (2026-05-16)
+  # Remaining 4 subagents + 12 harness-listed skills + 3 local-only skills.
+  # Drafted from system-prompt subagent descriptions + skill .sh script
+  # headers + harness's available-skills runtime registry.
+  # ============================================================
+
+  - id: subagent_general_purpose
+    kind: subagent
+    role_label: general-purpose — Multi-Step Researcher + Executor
+    invocation_pattern: Agent tool with subagent_type=general-purpose
+    description: |
+      General-purpose agent for researching complex questions, searching for
+      code, and executing multi-step tasks. Use when searching for a keyword
+      or file and not confident the first few tries will hit, or for any
+      open-ended workflow that doesn't match a more specialized subagent.
+    scope_excluded: |
+      Not for read-only quick lookups (Explore is faster + lighter). Not for
+      pure plan authorship (use Plan). Not for trivial single-step tasks
+      better handled inline. Has full tool access — use the narrower subagent
+      kinds when their scope matches to keep context tight.
+    reports_to: operator
+    inputs: A task description + optional context; can be open-ended
+    outputs: A concise report of work performed + findings; may include file edits if the task warranted them
+    tools_allow_list:
+      - "*"
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/CLAUDE.md (runtime-registered)
+
+  - id: subagent_claude_code_guide
+    kind: subagent
+    role_label: claude-code-guide — Claude Code/SDK/API Q&A
+    invocation_pattern: Agent tool with subagent_type=claude-code-guide
+    description: |
+      Use when the user asks "Can Claude...", "Does Claude...", "How do I..."
+      questions about Claude Code (CLI), Claude Agent SDK (building custom
+      agents), or Claude API (Anthropic SDK usage, tool use, model versions).
+      Check for already-running instances and continue via SendMessage before
+      spawning a new one.
+    scope_excluded: |
+      Not for general programming questions (use general-purpose). Not for
+      code search (use Explore). Not for active implementation work (use Plan
+      or general-purpose). Strictly Q&A about Anthropic products.
+    reports_to: operator
+    inputs: A natural-language question about Claude Code / SDK / API
+    outputs: Concise answer with documentation citations
+    tools_allow_list:
+      - Bash
+      - Read
+      - WebFetch
+      - WebSearch
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/CLAUDE.md (runtime-registered)
+
+  - id: subagent_claude
+    kind: subagent
+    role_label: claude — Catch-All (FleetView Default)
+    invocation_pattern: Agent tool with subagent_type=claude (or FleetView default when no agent name typed)
+    description: |
+      Catch-all subagent for any task that doesn't fit a more specific agent.
+      FleetView's default when no agent name is typed. Has full tool access.
+    scope_excluded: |
+      Prefer a more specific subagent when one fits — claude is the fallback,
+      not the first choice. Using a specialized subagent (Explore for search,
+      Plan for design, claude-code-guide for SDK Q&A) keeps context tighter
+      and produces sharper outputs.
+    reports_to: operator
+    inputs: Any task description that doesn't match a more specific subagent
+    outputs: Varies by task; same shape as the operator-level agent
+    tools_allow_list:
+      - "*"
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/CLAUDE.md (runtime-registered)
+
+  - id: subagent_statusline_setup
+    kind: subagent
+    role_label: statusline-setup — Status Line Configurator
+    invocation_pattern: Agent tool with subagent_type=statusline-setup
+    description: |
+      Configure the Claude Code status line setting. Narrow-purpose agent
+      with minimal tool access (Read + Edit only).
+    scope_excluded: |
+      Not for general settings.json work (use /update-config). Not for any
+      other configuration task — status line only.
+    reports_to: operator
+    inputs: A status line configuration request (theme, layout, etc.)
+    outputs: Updated settings.json with status line block modified
+    tools_allow_list:
+      - Read
+      - Edit
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/CLAUDE.md (runtime-registered)
+
+  - id: skill_pre_brief
+    kind: skill
+    role_label: /pre-brief — Incoming Nephew Readiness Check
+    invocation_pattern: /pre-brief in chat
+    description: |
+      Pre-fire readiness check for the INCOMING nephew — predecessor activity +
+      handoff status + clear-to-fire verdict. Run before a nephew wakes to verify
+      the cascade is in a clean state for the next fire.
+    scope_excluded: |
+      Not for general session briefing (use /brief). Not for batch readiness
+      across multiple nephews (use /batch-brief). Not for active sprint work —
+      this is a pre-condition check, not work itself.
+    reports_to: operator
+    inputs: Optional --sprint-id; defaults to detection from cwd
+    outputs: Clear-to-fire | needs-attention verdict + predecessor activity summary + handoff status
+    dependencies:
+      - service_casey_junior
+      - service_ellabot
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/pre-brief/pre-brief.sh
+
+  - id: skill_batch_brief
+    kind: skill
+    role_label: /batch-brief — Incoming-Batch Readiness for Receiving Nephew
+    invocation_pattern: /batch-brief in chat
+    description: |
+      Single-screen incoming-batch readiness for receiving nephew — handoff scan +
+      pool/forward-scope + acceptance gates + charter cites + verdict. Used when
+      multiple work items are queued for one nephew and they need to be evaluated
+      as a batch before fire.
+    scope_excluded: |
+      Not for single-item readiness (use /pre-brief). Not for session-level state
+      (use /brief). Not for actually doing the work — pure pre-fire evaluation.
+    reports_to: operator
+    inputs: Optional --receiving-nephew (huey | louie | dewey); defaults from cwd
+    outputs: Batch readiness verdict + per-item gate status + charter cites + handoff scan
+    dependencies:
+      - service_casey_junior
+      - service_ellabot
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/batch-brief/batch-brief.sh
+
+  - id: skill_intent
+    kind: skill
+    role_label: /intent — EllaBot Layer-C Operator-Intent Tag
+    invocation_pattern: /intent "<one-line summary>" (with optional --code / --duration / --dry-run)
+    description: |
+      Fires an EllaBot Layer-C operator-intent entry — the "right thing to do
+      here is X" piecemeal intent / aside / planning thought that doesn't fit
+      a loop close or memory authoring. Auto-augments with cycle context from
+      cwd .foreman/cycle.json.
+    scope_excluded: |
+      Not for sprint-loop closes (those fire via loop-close discipline). Not
+      for memory authoring (that fires its own EllaBot entry via the memory
+      framework). Strictly the piecemeal-intent lane (Layer C of the Personal-
+      pillar synthesis triad).
+    reports_to: operator
+    inputs: A one-line summary string + optional activity_code override + optional duration
+    outputs: EllaBot entry fired (or printed in --dry-run mode); metadata.synthesis_event_type=operator_intent
+    dependencies:
+      - service_ellabot
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/intent/intent.sh
+
+  - id: skill_recall
+    kind: skill
+    role_label: /recall — Query darntech-rag for Framework Substrate
+    invocation_pattern: /recall <query> (with --k / --corpus / --no-context / --raw flags)
+    description: |
+      Queries the darntech-rag service (192.168.0.151:8000 by default) for
+      relevant chunks from the framework substrate — memory files, sprint
+      logs, charter docs, commit bodies. Auto-detects cycle context from cwd
+      .foreman/cycle.json and caller_role from git branch.
+    scope_excluded: |
+      Not for governance-rag queries (use rag-core-client's recall_governance
+      from code, not /recall). Not for keyword-only search (use Grep or
+      ripgrep). The framework substrate is what's indexed — content outside
+      that (live code, current state) is better served by direct tools.
+    reports_to: operator
+    inputs: A natural-language query + optional k (max 50) + optional corpus filters
+    outputs: Pretty-markdown formatted chunks (or raw JSON if --raw) with score + source_uri per hit
+    dependencies:
+      - service_darntech_rag
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/recall/recall.sh
+
+  - id: skill_tock
+    kind: skill
+    role_label: /tock — End-of-Tick Handoff Suggester + Close-Side Mutation
+    invocation_pattern: /tock (read-only) | /tock --auto-close (close-event mutation, fired by post-commit hook)
+    description: |
+      Cascade-nephew tick management. Read-only mode (default) briefs lane
+      summary + pool view + recommended next direction + handoff doc skeleton.
+      Mutation mode (--auto-close) is fired by post-commit hook on close-shaped
+      commits — writes close-event to pool-events.jsonl, recomputes pool-state,
+      posts OPS.ORCH_TICK.CLOSE to EllaBot. Idempotent.
+    scope_excluded: |
+      Not for cross-cascade audit (use cross-sprint-audit.sh). Not for non-
+      nephew worktrees (cascade-specific tooling). Not for ad-hoc handoff
+      authoring — the recommended direction is a heuristic, not a decision.
+    reports_to: operator
+    inputs: None (read-only) | --sprint --loop --commit (auto-close mode)
+    outputs: Read-only briefing OR close-event written + EllaBot fire OR no-op (idempotent)
+    dependencies:
+      - service_ellabot
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/tock/tock.sh
+
+  - id: skill_schedule
+    kind: skill
+    role_label: /schedule — Manage Scheduled Remote Routines
+    invocation_pattern: /schedule <subcommand> (create | update | list | run | delete)
+    description: |
+      Create, update, list, or run scheduled remote agents (routines) that
+      execute on a cron schedule. Use for recurring REMOTE work or one-time
+      scheduled runs ("run this once at 3pm", "remind me to check X tomorrow").
+    scope_excluded: |
+      Not for LOCAL recurring loops (use /loop instead). Not for systemd timers
+      (those are managed via systemctl --user). Routines run on a remote
+      cron-style infrastructure, not in this Claude Code session.
+    reports_to: operator
+    inputs: A subcommand + parameters (cron expression, prompt template, etc.)
+    outputs: Routine created/updated/listed/run/deleted; confirmation in chat
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/schedule/ (harness-managed, runtime-registered)
+
+  - id: skill_update_config
+    kind: skill
+    role_label: /update-config — Configure Claude Code Harness (settings.json)
+    invocation_pattern: /update-config in chat
+    description: |
+      Configure the Claude Code harness via settings.json. Required for any
+      AUTOMATED behavior — hooks, permission rules, env vars. "From now on
+      when X" / "each time X" / "whenever X" / "before/after X" behaviors must
+      be implemented as harness hooks; cannot be addressed via memory or
+      preferences alone.
+    scope_excluded: |
+      Not for memory work (that's separate). Not for skill authoring (skills
+      live in ~/.claude/skills/). Not for keybindings (use /keybindings-help).
+      Simple model/theme settings should suggest the /config command instead.
+    reports_to: operator
+    inputs: A description of the desired automated behavior or setting change
+    outputs: Updated settings.json + brief explanation of what fires when
+    tools_allow_list:
+      - Read
+      - Edit
+      - Write
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/update-config/ (harness-managed)
+
+  - id: skill_keybindings_help
+    kind: skill
+    role_label: /keybindings-help — Customize Keyboard Shortcuts
+    invocation_pattern: /keybindings-help in chat
+    description: |
+      Customize keyboard shortcuts, rebind keys, add chord bindings, or modify
+      ~/.claude/keybindings.json. Use for any keymap change in Claude Code.
+    scope_excluded: |
+      Not for general settings (use /update-config). Not for skill or agent
+      configuration. Strictly keybindings.
+    reports_to: operator
+    inputs: A keybinding change request (rebind X, add chord Y, etc.)
+    outputs: Updated ~/.claude/keybindings.json + confirmation of new binding
+    tools_allow_list:
+      - Read
+      - Edit
+      - Write
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/keybindings-help/ (harness-managed)
+
+  - id: skill_simplify
+    kind: skill
+    role_label: /simplify — Review Changed Code for Reuse + Quality
+    invocation_pattern: /simplify in chat
+    description: |
+      Review changed code for reuse, quality, and efficiency, then fix any
+      issues found. Catches unnecessary abstractions, missed reuse
+      opportunities, and verbose patterns that have shorter equivalents.
+    scope_excluded: |
+      Not for code review of someone else's PR (use /review). Not for security
+      issues (use /security-review). Not for new feature work — strictly a
+      quality + simplification pass on already-changed code.
+    reports_to: operator
+    inputs: None (reviews currently-changed files in working tree)
+    outputs: List of identified issues + applied fixes; before/after diffs
+    tools_allow_list:
+      - Read
+      - Edit
+      - Bash
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/simplify/ (harness-managed)
+
+  - id: skill_fewer_permission_prompts
+    kind: skill
+    role_label: /fewer-permission-prompts — Build Bash/MCP Allowlist
+    invocation_pattern: /fewer-permission-prompts in chat
+    description: |
+      Scans your transcripts for common read-only Bash and MCP tool calls,
+      then adds a prioritized allowlist to project .claude/settings.json to
+      reduce permission prompts.
+    scope_excluded: |
+      Not for granting write access to anything (allowlist is read-only by
+      design). Not for adding hooks (use /update-config). The allowlist is
+      scoped to the current project unless explicitly moved to user settings.
+    reports_to: operator
+    inputs: None (analyzes existing transcripts in cwd)
+    outputs: Updated .claude/settings.json with allowlist additions + summary of what's now auto-approved
+    tools_allow_list:
+      - Read
+      - Edit
+      - Write
+      - Bash
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/fewer-permission-prompts/ (harness-managed)
+
+  - id: skill_init
+    kind: skill
+    role_label: /init — Initialize New CLAUDE.md
+    invocation_pattern: /init in a fresh repo
+    description: |
+      Initialize a new CLAUDE.md file with codebase documentation. Use when
+      bootstrapping a new repo to give future Claude sessions immediate
+      context on what the project is, architecture, and conventions.
+    scope_excluded: |
+      Not for updating an existing CLAUDE.md (just edit directly). Not for
+      memory authoring. Not for skill or agent authoring — strictly CLAUDE.md
+      bootstrap for a new repo.
+    reports_to: operator
+    inputs: None (reads the cwd repo)
+    outputs: New CLAUDE.md authored with project identity + architecture + conventions
+    tools_allow_list:
+      - Read
+      - Write
+      - Bash
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/init/ (harness-managed)
+
+  - id: skill_review
+    kind: skill
+    role_label: /review — Review a Pull Request
+    invocation_pattern: /review <PR-number-or-URL>
+    description: |
+      Review a pull request — fetches the PR diff + context + linked issues
+      and produces structured review feedback (correctness, design,
+      testability, security).
+    scope_excluded: |
+      Not for code-quality passes on local working tree (use /simplify). Not
+      for security-focused review (use /security-review). Strictly PR-shaped
+      review with structured output.
+    reports_to: operator
+    inputs: A GitHub PR number or full PR URL
+    outputs: Structured review with per-file comments + overall verdict; optionally posts to GitHub
+    tools_allow_list:
+      - Bash
+      - Read
+      - WebFetch
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/review/ (harness-managed)
+
+  - id: skill_security_review
+    kind: skill
+    role_label: /security-review — Security Review of Pending Changes
+    invocation_pattern: /security-review in chat
+    description: |
+      Complete a security review of the pending changes on the current branch.
+      Looks for OWASP-top-10-style issues, credential handling, input
+      validation, auth-perimeter assumptions.
+    scope_excluded: |
+      Not a substitute for a full security audit (this is per-change scope).
+      Not for review of someone else's PR (use /review with security framing).
+      Not for runtime/operational security (network, perimeter, secrets
+      management) — focuses on code-level issues in pending changes.
+    reports_to: operator
+    inputs: None (analyzes pending changes on current branch)
+    outputs: List of identified security concerns with severity + remediation guidance
+    tools_allow_list:
+      - Read
+      - Bash
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/security-review/ (harness-managed)
+
+  - id: skill_claude_api
+    kind: skill
+    role_label: /claude-api — Build/Debug Claude API + Anthropic SDK Apps
+    invocation_pattern: /claude-api in chat (or auto-triggers on Anthropic SDK import detection)
+    description: |
+      Build, debug, and optimize Claude API / Anthropic SDK apps. Apps built
+      with this skill should include prompt caching. Also handles migrating
+      existing Claude API code between Claude model versions (e.g., 4.5 → 4.6
+      → 4.7, retired-model replacements).
+    scope_excluded: |
+      Not for OpenAI SDK or other-provider apps (file imports `openai`/etc).
+      Not for filename-based generic apps (e.g., *-openai.py / *-generic.py).
+      Not for general programming/ML questions unrelated to the Anthropic SDK.
+    reports_to: operator
+    inputs: A Claude API / SDK code task (build new, debug, migrate model version, tune caching)
+    outputs: Code edits or new files implementing the requested capability with caching defaults
+    tools_allow_list:
+      - Read
+      - Edit
+      - Write
+      - Bash
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/skills/claude-api/ (harness-managed)
+
+  - id: skill_frontend_design
+    kind: skill
+    role_label: frontend-design — Create Distinctive Production-Grade Frontends
+    invocation_pattern: /frontend-design (plugin-namespaced as frontend-design:frontend-design)
+    description: |
+      Create distinctive, production-grade frontend interfaces with high design
+      quality. Use when the user asks to build web components, pages, or
+      applications. Generates creative, polished code that avoids generic AI
+      aesthetics.
+    scope_excluded: |
+      Not for backend work. Not for accessibility audit alone (treats a11y as
+      part of polish, not the sole focus). Not for design-system theming
+      changes — this generates net-new design, not theme modifications.
+    reports_to: operator
+    inputs: A description of the UI / page / component to build
+    outputs: Frontend code (HTML / CSS / JS / Vue / React) with distinctive design choices + polish
+    tools_allow_list:
+      - Read
+      - Write
+      - Edit
+      - Bash
+    provenance:
+      authored_at: 2026-05-16
+      ratification_cycle: gov-10
+      source_path: ~/.claude/plugins/frontend-design/ (plugin-namespaced)
+
 pillar_emission_lanes:
   professional:
     emission_source: business_bu

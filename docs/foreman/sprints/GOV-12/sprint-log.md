@@ -20,6 +20,7 @@ Twelfth governance-thread standalone sprint. Operator-fired immediately after GO
 |---|---|---|---|---|---|
 | L01 | CLOSED | 2026-05-17 | 2026-05-17 | this sprint-log L01 section | Sweep clean (0 failed user units, all standing timers green); GOV-11 carryforward drifts re-checked (3 stable + 1 drifting WORSE — git-commit sprint_code FAILs went 133→135 in ~2h); D-CFG-1 first-pair pre-verified to surface real drift (canonical-23 ↔ value-bucket-config has 3 inconsistencies — 2 codes added to taxonomy never propagated + 1 retired code still present). Pick: bundle **D-DOC-1 + D-CFG-1-first-pair** for L02 — both have validated real-drift findings, different check_fn shapes, both directly automate [[canonical-source-per-fact]] discipline. Defer D-STALE-* (zero open HITLs + no overdue cycles today) and D-META-1 (largest scope, deserves its own loop after the smaller wins validate the pattern). |
 | L02 | CLOSED | 2026-05-17 | 2026-05-17 | `darntech/scripts/telemetry-contract-check.sh` (+2 check_fn + 2 dispatch cases + 8 resolution heuristics inside `check_docs_references_resolve` + active-doc filter) · `darntech/observatory/data/telemetry-contracts.json` (+2 contract entries; manifest now 12 contracts) · this sprint-log L02 section | Two new contracts authored + live-validated end-to-end. Full 12-contract run: **5 pass · 7 fail · 0 warn**. Both new contracts dispatched correctly and surfaced real findings. **D-CFG-1 (HIGH severity)**: surgical 3-item drift report exactly as L01 pre-verified — missing `LIF.FAM.CARE` + `LIF.SELF.CREATIVE`, extra `OPS.MEMORY.AUDIT`. **D-DOC-1 (LOW severity · broad-surface)**: 1053 unresolved refs / 6025 checked / 449 active-doc files. Took 5 tuning rounds in-loop to bring noise from 13800 initial → 1053 final: (1) 6 resolution heuristics added inline (claude/ → ~/.claude/; home-darney-projects-X/ → ~/.claude/projects/-X/; foreman/ hidden-dir-strip; observatory/data/ synthetic prefix for cycles/+history/; sibling-sprint shorthand; strip-leading-project-name); (2) tightened scope (dropped nephew worktree duplicates + CLAUDE.md, added /home/darney + /home/darney/projects roots); (3) wikilink-set build switched from `find -type f` to shell glob (sandbox-portable); (4) active-doc filter (frontmatter status: closed OR mtime >30d). Residue is honest baseline — template placeholders (XXX, XX-XX, YYYY-MM-DD), historical cycle reports with mtime touched by branch ops, references to removed `darntech-foreman` project. Detector ratchets down via operator triage rounds. |
+| L03 | CLOSED | 2026-05-17 | 2026-05-17 | `darntech/scripts/value-bucket-config.json` (5-line edit — +`LIF.FAM.CARE` +`LIF.SELF.CREATIVE` with bucket=meta · −`OPS.MEMORY.AUDIT`) · this sprint-log L03 section | **D-CFG-1 first-pair drift fix — operator-direct, FAIL → PASS in one round.** L01 pre-verified + L02 surfaced exactly 3 inconsistencies; L03 applies the surgical edit + re-runs the contract suite to verify the flip. Pre-edit: `canonical-23-matches-value-bucket-config` FAIL (canonical_size 23 · derived_size 22 · missing 2 · extra 1). Post-edit: PASS, `code_to_bucket` now 23 keys. Full 12-contract run: **6 pass · 6 fail · 0 warn** (was 5 · 7 · 0). The D-CFG-1 detector's actionability is now validated end-to-end (FAIL → operator-edit → PASS) — first GOV-12 contract to ship + flip + green within the same sprint. Drift carriers preserved: `drift_codes_observed_cycle_20` historical observation block left intact (snapshot, not canonical mapping). Carryforward drifts re-checked at L03 fire: git-commit `sprint_code` violations 135 → 136 (continues drifting worse, ~+1/loop), doc-refs 1053 → 1060 (active-doc filter is mtime-sensitive to branch ops; expected churn), other 3 stable. No GOV-12 scope expansion — those remain GOV-11 carryforward + operator-direct. |
 
 ## L01 — sweep + carryforward re-check + L02 pick
 
@@ -149,6 +150,82 @@ pre-verification (D-CFG-1: 3 inconsistencies named in L01; D-DOC-1:
 Detail in governance-thread/docs/foreman/sprints/GOV-12/sprint-log.md.
 ```
 
+## L03 — D-CFG-1 first-pair drift fix
+
+Operator-direct fix loop. L02 surfaced the drift, L03 strikes it. Smallest possible loop shape: 1 file · 5 lines · 1 contract flip.
+
+### The edit
+
+`darntech/scripts/value-bucket-config.json` `code_to_bucket`:
+
+```diff
+     "OPS.TELEMETRY.GEN": "framework",
+-    "OPS.MEMORY.AUDIT": "framework",
+     "LIF.FAM.HOME": "meta",
++    "LIF.FAM.CARE": "meta",
+     "LIF.FAM.DADMIN": "meta",
++    "LIF.SELF.CREATIVE": "meta",
+     "LIF.PERSONAL": "meta",
+     "UNCLASSIFIED": "meta"
+```
+
+Bucket assignments:
+- `LIF.FAM.CARE` → `meta` (consistent with existing `LIF.FAM.HOME` + `LIF.FAM.DADMIN` family time)
+- `LIF.SELF.CREATIVE` → `meta` (consistent with existing `LIF.PERSONAL` self-time)
+- `OPS.MEMORY.AUDIT` removed (retired 2026-05-11 cycle-22-louie L-FIX-2 · taxonomy notes "memory-audit firings continue using OPS.ADMIN.PLAN per convention")
+
+`drift_codes_observed_cycle_20` historical-observation block left intact — it's a frozen snapshot of cycle-20 ledger drift, not part of the canonical mapping.
+
+### Verification
+
+```
+[  PASS] canonical-23-matches-value-bucket-config
+totals: 6 pass · 6 fail · 0 warn
+```
+
+VBC `code_to_bucket` key count: **23** (matches canonical-23 exactly).
+
+`canonical-23-matches-value-bucket-config` flipped FAIL → PASS in one round. The D-CFG-1 detector's full author-to-fix loop now demonstrated end-to-end:
+
+1. **GOV-12 L01**: pre-verify drift exists (3 inconsistencies)
+2. **GOV-12 L02**: ship contract, FAIL surfaces drift with exact missing/extra lists
+3. **GOV-12 L03**: operator-direct surgical edit, PASS
+
+This is the [[canonical-source-per-fact]] discipline mechanized at the config layer, full-cycle.
+
+### Carryforward drift re-check (at L03 fire)
+
+| Contract | Result | Now | At L02 close (~hours ago) | Evolution |
+|---|---|---|---|---|
+| `ellabot-entries-have-project-slug` (GOV-11) | FAIL | 101/108 NULL (93.5%) | 91/98 NULL | shifted slightly (rolling 7-day window — entry totals change as old entries age out); composition stable: della 91 · swarm_audit 6 · ops 4 |
+| `ellabot-sprint-code-lowercase-all-sources` (GOV-11) | FAIL | **136** git-commit violations | 135 | **drifting WORSE (+1)** — hook continues emitting scope-derived names |
+| `observatory-data-orphaned-files` (GOV-11) | FAIL | 2 | 2 | stable |
+| `cycle-state-no-tbd-labels` (GOV-11) | FAIL | 1/2 (dellatech) | 1/2 | stable |
+| `ellabot-loop-format-canonical-or-subtag` (pre-GOV-11) | FAIL | 5 | 5 | stable |
+| `docs-references-resolve` (GOV-12) | FAIL | **1060** / 6014 / 448 active | 1053 / 6025 / 449 | minor churn (active-doc filter is mtime-sensitive to branch ops; expected) |
+
+No carryforward drift self-resolved or improved. Git-commit hook continues drifting worse — operator-route item, not GOV-12 scope.
+
+### No new artifacts in darntech beyond the VBC edit
+
+Script + manifest are unchanged from L02 close. No new check_fn, no new contract entry. L03 is a pure data-edit loop that exercises the L02-shipped detector.
+
+### Commit shape (recommended)
+
+```
+fix(value-bucket-config): GOV-12 L03 — strike D-CFG-1 first-pair drift
+
+Propagate cycle-22-huey taxonomy additions (LIF.FAM.CARE,
+LIF.SELF.CREATIVE → meta) and remove cycle-22-louie retired code
+(OPS.MEMORY.AUDIT). Flips D-CFG-1
+`canonical-23-matches-value-bucket-config` FAIL → PASS in the next
+nightly contract run; live-verified 6 pass · 6 fail · 0 warn (was 5 · 7
+· 0).
+
+Closes GOV-12 backlog item #9. Detail in
+governance-thread/docs/foreman/sprints/GOV-12/sprint-log.md L03.
+```
+
 ## Backlog queue (GOV-12 scope · post-L02)
 
 | # | Item | Source | Status |
@@ -161,7 +238,7 @@ Detail in governance-thread/docs/foreman/sprints/GOV-12/sprint-log.md.
 | 6 | GOV-11 carryforward — verify-and-strike 2 D-OBS-1 orphans + fix git-commit hook + DellaTech cycle_label backfill + project_slug backfill | GOV-11 close | **OPEN** (operator-route or future GOV) |
 | 7 | Verify `reconciliation_signal: null` change since GOV-10 — API shape change vs. real degradation | L01 sweep observation | **OPEN** (operator-direct; not GOV-shaped) |
 | 8 | D-DOC-1 triage round 1: strike `darntech-foreman/*` refs (renamed/removed project), purge template placeholders, decide on `scripts/memory-audit.sh` (author or strike) | L02 D-DOC-1 first-fire | **OPEN** (operator-route or future GOV loop · directly ratchets D-CFG-1's 1053 baseline down) |
-| 9 | D-CFG-1 first-pair drift fix: update `scripts/value-bucket-config.json code_to_bucket` (add `LIF.FAM.CARE` + `LIF.SELF.CREATIVE` with bucket=meta · remove `OPS.MEMORY.AUDIT`) | L02 D-CFG-1 first-fire | **OPEN** (operator-direct · 5-line edit · turns the FAIL into a PASS) |
+| 9 | D-CFG-1 first-pair drift fix: update `scripts/value-bucket-config.json code_to_bucket` (add `LIF.FAM.CARE` + `LIF.SELF.CREATIVE` with bucket=meta · remove `OPS.MEMORY.AUDIT`) | L02 D-CFG-1 first-fire | ✅ **DONE (L03)** — 5-line edit shipped; contract flipped FAIL → PASS (verified 6 pass · 6 fail · 0 warn). |
 
 ## Standing watches
 
@@ -169,9 +246,10 @@ Detail in governance-thread/docs/foreman/sprints/GOV-12/sprint-log.md.
 
 ## Operator decision points
 
-- **Approve L02 bundle pick** (D-DOC-1 + D-CFG-1-first-pair)? Or change scope?
+- **L04 scope pick OR close GOV-12** — backlog items #3-8 remain (D-CFG-1 remaining 3 pairs · D-STALE trio · D-META-1 · D-DOC-1 triage · GOV-11 carryforward fixes). Highest-leverage next: (a) D-DOC-1 triage round 1 (operator-direct strike of `darntech-foreman/*` refs + template placeholders, ratchets 1060 baseline down meaningfully), (b) D-CFG-1 second-pair (Casey deployment-names ↔ darntech composables — similar shape to first-pair, builds toward generalized `check_canonical_set_matches_derived` dispatch), (c) close GOV-12 with the L03 win as the closer (3 loops, full author-to-fix cycle demonstrated, GOV-13 substrate carries forward unauthored candidates).
 - **Carryforward #7** — surface `reconciliation_signal: null` to operator (different surface; not GOV-12 work, but worth flagging the change-since-GOV-10).
+- **Git-commit hook drift trending** — 133 (GOV-11 L02) → 135 (GOV-12 L01) → 135 (GOV-12 L02) → 136 (GOV-12 L03). Detector working; the fix (hook scope-derivation refactor) is the missing follow-up.
 
 ---
 
-_L02 closed 2026-05-17 — 2 new contracts authored + live-validated; manifest now 12 contracts; D-DOC-1 needed 5 in-loop tuning rounds (13800 → 1053) to bring noise floor to actionable level, shipped at severity LOW with operator-triage carryforward; D-CFG-1 surgical with surfaced 3-item drift matching L01 pre-verification. Sprint remains OPEN — operator pick on L03 (D-CFG-1 remaining 3 pairs · D-STALE trio · D-META-1 · D-DOC-1 triage)._
+_L03 closed 2026-05-17 — surgical 5-line VBC edit struck D-CFG-1 first-pair drift; `canonical-23-matches-value-bucket-config` flipped FAIL → PASS in one round; full 12-contract run now 6 pass · 6 fail · 0 warn (was 5 · 7 · 0). The D-CFG-1 detector's full author-to-fix loop demonstrated end-to-end: L01 pre-verify → L02 contract surfaces drift → L03 operator-direct fix → PASS. Sprint remains OPEN — operator pick on L04 (more contracts · operator triage · close GOV-12)._

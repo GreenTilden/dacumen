@@ -5,9 +5,11 @@ role: governance / standalone-sprint
 cascade_mode: standalone — runs ABOVE the three-sprint cascade, not a 4th nephew
 work_locus: canonical darntech (scripts/telemetry-contract-check.sh · observatory/data/telemetry-contracts.json) — extending the GOV-11 contract framework
 opened_at: 2026-05-17
-status: open
+closed_at: 2026-05-17
+status: closed
 charter: ../GOV-01/charter.md (inherited)
 substrate: ./substrate.md (authored at GOV-11 close — 4 pattern-extension detector candidates queued from L02 surface findings)
+successor_substrate: ../GOV-13/substrate.md (authored at GOV-12 close — unauthored candidates carry forward: D-CFG-1 pairs 2-4, D-STALE trio, D-META-1, D-DOC-1 triage rounds)
 ---
 
 # GOV-12 — governance-thread standalone sprint · pattern-extension detector pass
@@ -246,10 +248,64 @@ governance-thread/docs/foreman/sprints/GOV-12/sprint-log.md L03.
 
 ## Operator decision points
 
-- **L04 scope pick OR close GOV-12** — backlog items #3-8 remain (D-CFG-1 remaining 3 pairs · D-STALE trio · D-META-1 · D-DOC-1 triage · GOV-11 carryforward fixes). Highest-leverage next: (a) D-DOC-1 triage round 1 (operator-direct strike of `darntech-foreman/*` refs + template placeholders, ratchets 1060 baseline down meaningfully), (b) D-CFG-1 second-pair (Casey deployment-names ↔ darntech composables — similar shape to first-pair, builds toward generalized `check_canonical_set_matches_derived` dispatch), (c) close GOV-12 with the L03 win as the closer (3 loops, full author-to-fix cycle demonstrated, GOV-13 substrate carries forward unauthored candidates).
+- **L04 scope pick OR close GOV-12** — backlog items #3-8 remain (D-CFG-1 remaining 3 pairs · D-STALE trio · D-META-1 · D-DOC-1 triage · GOV-11 carryforward fixes). Highest-leverage next: (a) D-DOC-1 triage round 1 (operator-direct strike of `darntech-foreman/*` refs + template placeholders, ratchets 1060 baseline down meaningfully), (b) D-CFG-1 second-pair (Casey deployment-names ↔ darntech composables — similar shape to first-pair, builds toward generalized `check_canonical_set_matches_derived` dispatch), (c) close GOV-12 with the L03 win as the closer (3 loops, full author-to-fix cycle demonstrated, GOV-13 substrate carries forward unauthored candidates). → **OPERATOR PICK: (c) close GOV-12.**
 - **Carryforward #7** — surface `reconciliation_signal: null` to operator (different surface; not GOV-12 work, but worth flagging the change-since-GOV-10).
 - **Git-commit hook drift trending** — 133 (GOV-11 L02) → 135 (GOV-12 L01) → 135 (GOV-12 L02) → 136 (GOV-12 L03). Detector working; the fix (hook scope-derivation refactor) is the missing follow-up.
 
+## Close — sprint-end summary
+
+**Status**: CLOSED 2026-05-17 (same day as OPEN). Three loops, full author-to-fix arc demonstrated end-to-end.
+
+### Arc shape (the 3-loop demo)
+
+| Loop | Role | Output |
+|---|---|---|
+| **L01** | scope-pick + drift pre-verify | Sweep clean; D-CFG-1 first-pair drift pre-verified (3 inconsistencies); bundle picked (D-DOC-1 + D-CFG-1-first-pair). |
+| **L02** | detector authoring | 2 new contracts shipped to canonical darntech (commit `beedb30`); manifest grew 10 → 12 contracts; D-DOC-1 needed 5 in-loop tuning rounds (13800 → 1053 unresolved baseline); D-CFG-1 surgical with 3-item drift matching L01 pre-verification. |
+| **L03** | operator-direct drift fix | 5-line VBC edit (commit darntech `45bd920`) struck the drift D-CFG-1 surfaced; `canonical-23-matches-value-bucket-config` FAIL → PASS in one round; full 12-contract run flipped to 6 pass · 6 fail · 0 warn. |
+
+This is the **canonical detector lifecycle** the GOV-NN sprint thread is designed to produce: substrate evidence → contract shipped → contract surfaces drift → operator strikes drift → contract reports PASS. All four steps inside one sprint, with the loop-numbered separation enforcing accountability at each boundary.
+
+### Contracts shipped (manifest growth)
+
+| Phase | Manifest size | Contracts added |
+|---|---|---|
+| Pre-GOV-11 | 5 | (baseline) |
+| GOV-11 L02 | 10 | +5 (D-ELLA-1, D-ELLA-2-fix, D-ELLA-3, D-OBS-1, D-OBS-2) |
+| **GOV-12 L02** | **12** | **+2 (D-DOC-1, D-CFG-1-first-pair)** |
+
+GOV-12 ratio is 2 contracts in 1 sprint vs. GOV-11's 5 contracts in 1 sprint — smaller batch by design (D-DOC-1's tuning surface ate ~half the loop; D-CFG-1 was surgical). Total telemetry contract suite has grown 2.4× since GOV-10 close.
+
+### Drift outcomes
+
+| Drift | Status at GOV-12 close | Disposition |
+|---|---|---|
+| **D-CFG-1 first-pair** (VBC ↔ canonical-23) | ✅ **STRUCK** (PASS) | Fixed in L03. The only drift fully closed inside the sprint. |
+| **D-DOC-1 baseline** (1060 unresolved doc refs) | 🟡 SURFACED, OPEN | Carried forward to GOV-13 substrate (triage rounds). Detector is the right floor — ratchets via operator strikes. |
+| **GOV-11 carryforward** (5 drifts) | 🟡 STABLE / WORSENING | Same 5 FAILs surfacing nightly. git-commit hook drift +3 over the sprint (133 → 136); operator-route fix. All 4 GOV-11 carryforward items remain queued for operator-direct or future GOV scope. |
+| **L01 sweep observation** (`reconciliation_signal: null` since GOV-10) | 🟡 OPEN | Operator-direct verification (API shape change vs. real degradation); not GOV-shaped. |
+
+### Standing-instrument state at close
+
+All green. No new systemd units added — both new contracts ride the existing `observatory-telemetry-contract-check.timer` @ 23:47 nightly. The **2026-05-17 23:47 fire** will be the first cron-driven 12-contract run; D-CFG-1 first-pair will report PASS (verified by L03 manual run).
+
+### Carryforward to GOV-13 substrate
+
+`governance-thread/docs/foreman/sprints/GOV-13/substrate.md` authored at close. Contains:
+
+- **D-CFG-1 pairs 2-4** (3 unauthored pairs · Casey deployment-names ↔ darntech composables · PROJECT_ENDPOINTS ↔ vaultNoteMap · taxonomy buckets ↔ VBC values · all ride the same `check_canonical_set_matches_derived` dispatch shape that L02 established)
+- **D-STALE-1/2/3 trio** (overdue cycles · abandoned HITL · stale open sprints · single shared check_fn parameterized 3 ways; defer if still zero findings at next L01)
+- **D-META-1** (auto-fired-source metadata matrix · biggest scope · its own loop · subsumes D-ELLA-1/2-fix/3 into a matrix view)
+- **D-DOC-1 triage rounds** (operator-direct ratchet work · strike `darntech-foreman/*` refs + template placeholders + decide on `scripts/memory-audit.sh`)
+- **GOV-11 carryforward** (operator-route or future GOV scope · git-commit hook scope-derivation refactor · NULL project_slug backfill · DellaTech cycle_label · D-OBS-1 verify-and-strike)
+
+### Memory referenced (no new memories authored this sprint)
+
+- [[canonical-source-per-fact]] — discipline both L02 contracts mechanize (config layer + doc layer)
+- [[fix-without-action-surface-reconciliation]] — same family at the action-surface layer
+- [[standing-watch-fire-criteria]] — why the detectors work as standing watches (closed, testable criteria)
+- [[route-out-verification-gate]] — what L03 demonstrates (the contract becoming PASS IS the route-out gate)
+
 ---
 
-_L03 closed 2026-05-17 — surgical 5-line VBC edit struck D-CFG-1 first-pair drift; `canonical-23-matches-value-bucket-config` flipped FAIL → PASS in one round; full 12-contract run now 6 pass · 6 fail · 0 warn (was 5 · 7 · 0). The D-CFG-1 detector's full author-to-fix loop demonstrated end-to-end: L01 pre-verify → L02 contract surfaces drift → L03 operator-direct fix → PASS. Sprint remains OPEN — operator pick on L04 (more contracts · operator triage · close GOV-12)._
+_GOV-12 CLOSED 2026-05-17 — 3 loops · 2 new contracts shipped (manifest 10 → 12) · 1 drift struck end-to-end (D-CFG-1 first-pair FAIL → PASS) · full author-to-fix arc demonstrated · 1060 doc-ref baseline carried forward as ratchetable surface · GOV-11 carryforward unchanged (operator-route) · GOV-13 substrate authored with 6 candidate workstreams queued. Standing instruments unchanged. Tonight 23:47 is the first cron-driven 12-contract run._

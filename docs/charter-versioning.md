@@ -32,6 +32,8 @@ Charters use a variant of semver tuned for methodology docs:
 
 **Amendment 15 note**: ratified at upstream cycle-12-OPEN 2026-05-04 concurrent with n=2 firing. Single rule §TT Rule 15a — consolidation-nephew end-of-lane completion backstop with autonomy-gate (3-step backstop · 5-class autonomy taxonomy a/b/c/d/e · verdict gates · mandatory firing points · heat-check section 6 codified). Honest forward signal: ratification-before-replication-completes timing per operator pre-authorization · charter v0.1.14 named as recovery vehicle if structural gap surfaces. Content externalized — see `docs/amendment-15-patterns.md`.
 
+**Amendment 22 note**: ratified at upstream cycle-37 OPEN 2026-05-18 (charter v0.1.16 → v0.1.17). Single rule §22 — GOV-NN standing duties (2-duty pathway-2 ratification: §22.a.1 dacumen canonical maintenance · §22.a.2 cross-instance synthesis at n-evidence threshold). Notably the first cycle where Governance is the pillar (not parallel-to-cascade). Pathway-2 narrowed from original 3-duty draft — dropped duty (cross-instance audit-discipline) preserved as Amendment-23 candidate territory if cross-instance audit drift surfaces. Composition with `dacumen_sync_dewey_duty` (per-cycle gate · per-instance) and `governance_thread_standalone_sprints` (cycle-27 codification · operating model). Content externalized — see `docs/amendment-22-patterns.md`.
+
 ## Amendment ratification
 
 An amendment goes through these states:

@@ -35,6 +35,8 @@ The **consolidation nephew** in the ratification cycle's sprint-trio owns the sy
 
 **Backstop owner**: if the ratification cycle closes without completing the ritual, ownership transfers to the **project's governance thread** — the standing maintenance sprint that handles ownerless cross-cutting work. This is the structural fix for amendment backlogs: when a ratification cycle's consolidation nephew cannot execute, the ritual doesn't simply wait for someone to notice — it has a named fallback owner who will find it in the next governance sweep.
 
+**Charter-binding update (upstream darntech charter v0.1.17 · Amendment 22 ratified 2026-05-18)**: the governance-thread ownership is now charter-codified as §22.a.1 "Dacumen canonical maintenance" — a STANDING duty of every GOV-NN sprint, not just an operational backstop invoked when the primary owner fails. The cadence shift is from "fires when invoked" to "fires every GOV-NN sweep at minimum as a check." This collapses the failure mode of "ownership transfers silently because no one notices the ratification closed without sync" — every GOV-NN sweep now explicitly asks "is dacumen current?" and reports the answer. See `docs/amendment-22-patterns.md` for the full duty contract and composition rules.
+
 ## The ritual — 5-step sanitization + commit cycle
 
 For each declared `dacumen_impact`:

@@ -2,6 +2,25 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.10 — Amendment 22 sync · GOV-NN standing duties (2026-05-18)
+
+First fire of the newly-ratified **§22.a.1 dacumen canonical maintenance** duty. Upstream darntech charter v0.1.16 → v0.1.17 ratified at cycle-37 OPEN; this sync propagates the rule to dacumen for cross-instance visibility.
+
+### Added
+
+- **`docs/amendment-22-patterns.md`** — externalizes Amendment 22 (GOV-NN 2-duty pathway-2 ratification). Covers: what was already in place (cycle-27 standalone-sprint codification), what Amendment 22 adds (two standing duties), why pathway-2 dropped the third duty, composition with existing rules, charter cadence note on pathway-2 ratification as a useful drafting pattern.
+
+### Changed
+
+- **`docs/charter-versioning.md`** — Amendment 22 note appended after Amendment 15 note (resumes the per-amendment-note pattern that was used for Amendments 12-15). v0.1.17 is the first Governance-pillar cycle in framework history.
+- **`docs/dacumen-sync-process.md`** — H1 (backstop owner) section updated: governance-thread is now charter-codified as the owner (§22.a.1), not just the operational backstop. Strengthens the v0.2.8 H1 update from "named owner" to "charter-binding owner."
+
+### Notes
+
+This is the first fire of Amendment 22 itself — GOV-04 (cycle-37 standalone sprint) performs the sync. The first-fire pattern is: amendment ratifies upstream → GOV-NN Duty-1 propagates within same cycle (no 6-deep backlog accumulation). Future GOV-NN sprints will fire Duty-1 on the same cadence as ratifications.
+
+Duty 2 (cross-instance synthesis at n-evidence threshold) also gets its first exploratory seed-fire in cycle-37 GOV-04 — see the upcoming `docs/foreman/synthesis/cross-instance-synthesis-cycle-37.md` in darntech for the inaugural pattern-naming pass. Cycle-37 is the first deliberate cross-instance reading exercise between darntech (~37 cycles) and DellaTech (~25 cycles).
+
 ## v0.2.9 — rag-core ADR + n=2 implementation externalizables (2026-05-14)
 
 First payload through the H2 multi-source channel (added in v0.2.8): learnings from the second Foreman^^ implementation (DellaTech, 25 cycles) now have a formal path to the mirror.

@@ -113,8 +113,9 @@ The convention is open beyond business-role agents — `project_endpoint`-kind a
 | `operator` | Operator | business_role | Reserved for the future `source: operator_intent` (Layer C contract, Phase 6) |
 | `gamecast` | gamecast podDAd (project_gamecast_poddad) | project_endpoint | Revenue project — weekly news-tied HTML5 games. Foreman-cadenced with own gamecast-cycle-N nephew lineage. Casey deployment `21b0d756`. First-fired `agent_health_check_gamecast` 2026-05-23 (Della cycle-40 L01); inventoried here Della cycle-41 L01 after operator caught the substrate gap. |
 | `proxmox` | Proxmox Homelab (project_proxmox_homelab) | project_endpoint | Vue dashboard + Prometheus + service monitoring for the 4-node homelab. YAML entry pre-dates this table (gov-10, 2026-05-16); MD persona-row added Della cycle-41 L02 after L01 surfaced the gap class. EllaBot source `agent_health_check_proxmox` firing pre-table; no Casey deployment. |
+| `coriolii` | Corîolîî Whether System (project_coriolii) | project_endpoint | Cores-layer governance home — internal upstream to DAcumen. Trio-only (no agent persona). Pillar Professional. Casey deployment `fe7f8317`. Foreman-cadenced (`coriolii-cycle-N` lineage); steady-state since cycle-7 close 2026-05-23. YAML + MD persona-row landed Della cycle-41 L03 — gap-class drift fully closed (all three same-class items from L01 finding resolved within cycle-41). |
 
-**Known unregistered emitters** (drift class — Della cycle-41 L01 finding, L02 retired proxmox from this note): `agent_health_check_coriolii` remains — coriolii is firing but has no agent-inventory entry in either YAML or this table. When fixing, copy the gamecast shape above. (Della cycle-41 L03 scheduled.)
+**Known unregistered emitters**: none remaining. Della cycle-41 L01 surfaced the drift-class (gamecast inventoried L01, proxmox MD-row added L02, coriolii YAML+MD-row added L03). New same-class emitters that surface in future cycles should land here in the same shape; touchpoint #11 in `~/projects/operator-scripts/utility/onboard-project.sh` (`check_dacumen_inventory`) catches the gap going forward.
 
 ## Touchpoint contract
 

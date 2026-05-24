@@ -1882,6 +1882,16 @@ agents:
     repos_owned: [governance-thread]
     provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/projects/governance-thread/ }
 
+  - id: project_dacumen
+    kind: project_endpoint
+    role_label: DAcumen — sanitized public methodology mirror of the Foreman^^ kit (MIT)
+    invocation_pattern: git workspace at ~/projects/dacumen (foreman-enabled); public remote github.com/GreenTilden/dacumen
+    description: The sanitized, public-facing methodology mirror — pure bash + jq + git, no credentials/telemetry/services/customer data. Hosts the canonical org-chart-responsibilities manifest (this file). Tier-1 primitives landed Della cycle-40; YAML self-entry + MD persona-row landed Della cycle-41 L05 (manifest source had been missing from its own manifest).
+    endpoint: (no HTTP — git workspace)
+    vault_path: "02-Areas/Projects/DAcumen/DAcumen.md"
+    repos_owned: [dacumen]
+    provenance: { authored_at: 2026-05-24, ratification_cycle: della-cycle-41, source_path: ~/projects/dacumen/ }
+
   - id: project_coriolii
     kind: project_endpoint
     role_label: Corîolîî Whether System — cores-layer governance home (internal upstream to DAcumen)

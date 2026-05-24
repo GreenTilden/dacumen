@@ -1882,6 +1882,16 @@ agents:
     repos_owned: [governance-thread]
     provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/projects/governance-thread/ }
 
+  - id: project_coriolii
+    kind: project_endpoint
+    role_label: Corîolîî Whether System — cores-layer governance home (internal upstream to DAcumen)
+    invocation_pattern: git workspace at ~/projects/coriolii (foreman-enabled, trio-only; private remote github.com/GreenTilden/coriolii)
+    description: Internal governance home of the `^^^` cores-layer — cores roster, exponent table, peeling record, seam logic, continuous-learning + external-anchor doctrines, plus a minimal extraction tool and a 19-entry reference corpus. Sibling (not fork) of governance-thread; coriolii holds the un-sanitized architecture, DAcumen is the sanitized public downstream. Pillar Professional. Steady-state since cycle-7 close 2026-05-23; re-activates only on trigger.
+    endpoint: (no HTTP — git workspace)
+    vault_path: "02-Areas/Projects/Coriolii/Coriolii.md"
+    repos_owned: [coriolii]
+    provenance: { authored_at: 2026-05-24, ratification_cycle: della-cycle-41, source_path: ~/projects/coriolii/ }
+
   - id: project_sprite_forge
     kind: project_endpoint
     role_label: Sprite Forge — ComfyUI + Ollama pgvector RAG sprite gen

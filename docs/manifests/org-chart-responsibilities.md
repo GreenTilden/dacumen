@@ -100,15 +100,20 @@ Rows whose `dashboard` column is `—` are non-live responsibilities (events tha
 
 EllaBot source identifiers use the **short persona** convention (matches existing practice for `agent_health_check_ops`, `agent_health_check_della`, etc.). The persona is a short kebab-case identifier; the role label is the human-readable title.
 
-| Persona (source-suffix) | Agent role label | Notes |
-|---|---|---|
-| `ops` | Front Office Director | DArnTech BU |
-| `della` | Internal Systems Director | DellaTech BU |
-| `greg` | Workshop Foreman | Vertical-IP system; uses `agent_health_check_checkbook` and `agent_health_check_aclu_intake` sub-source identifiers for specific workstreams |
-| `gizmoduck` | Strategic Head / CSO | Not currently emitting agent_health_check entries; reserved for future use |
-| `ellabot` | Dev Lab (Telemetry Source) | EllaBot doesn't currently self-fire; reserved |
-| `casey` | Deployment Tracker (PM) | Consumed via Casey API; doesn't currently emit agent_health_check entries |
-| `operator` | Operator | Reserved for the future `source: operator_intent` (Layer C contract, Phase 6) |
+The convention is open beyond business-role agents — `project_endpoint`-kind agents that emit their own daily telemetry lane (the Foreman-cadenced revenue projects) also fire `agent_health_check_<short>`. Business-role agents fire the **daily `responsibility_check` drift entry** (see Touchpoint contract below); project_endpoint agents fire whatever their own cycle cadence dictates — registration here makes the persona resolvable by aggregators, not a commitment to the 23:45 drift-check shape.
+
+| Persona (source-suffix) | Agent role label | Kind | Notes |
+|---|---|---|---|
+| `ops` | Front Office Director | business_role | DArnTech BU |
+| `della` | Internal Systems Director | business_role | DellaTech BU |
+| `greg` | Workshop Foreman | business_role | Vertical-IP system; uses `agent_health_check_checkbook` and `agent_health_check_aclu_intake` sub-source identifiers for specific workstreams |
+| `gizmoduck` | Strategic Head / CSO | business_role | Not currently emitting agent_health_check entries; reserved for future use |
+| `ellabot` | Dev Lab (Telemetry Source) | business_role | EllaBot doesn't currently self-fire; reserved |
+| `casey` | Deployment Tracker (PM) | business_role | Consumed via Casey API; doesn't currently emit agent_health_check entries |
+| `operator` | Operator | business_role | Reserved for the future `source: operator_intent` (Layer C contract, Phase 6) |
+| `gamecast` | gamecast podDAd (project_gamecast_poddad) | project_endpoint | Revenue project — weekly news-tied HTML5 games. Foreman-cadenced with own gamecast-cycle-N nephew lineage. Casey deployment `21b0d756`. First-fired `agent_health_check_gamecast` 2026-05-23 (Della cycle-40 L01); inventoried here Della cycle-41 L01 after operator caught the substrate gap. |
+
+**Known unregistered emitters** (drift class — Della cycle-41 L01 finding, to address in a future loop): `agent_health_check_coriolii` (coriolii is firing but has no agent-inventory entry) and `agent_health_check_proxmox` (proxmox-homelab is in the YAML inventory as `project_proxmox_homelab` but missing this persona-table row). When fixing, copy the gamecast shape above.
 
 ## Touchpoint contract
 

@@ -1910,6 +1910,16 @@ agents:
     repos_owned: [nodemad]
     provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/projects/nodemad/ }
 
+  - id: project_gamecast_poddad
+    kind: project_endpoint
+    role_label: gamecast podDAd — weekly news-tied playable HTML5 games
+    invocation_pattern: git workspace at ~/projects/gamecast-poddad + Foreman cadence (gamecast-cycle-N nephew lineage)
+    description: Weekly Patreon-gated HTML5 game tied to that week's news cycle. Godot 4.3 + GDScript + FastAPI backend + Sprite Forge asset pipeline. Casey deployment 21b0d756 (phase 2 sow); n=2 extraction event for service-bundle-runtime-core (after DillerQueen + Lennon Lives); revenue-side three-pillar lift (Domestic — Oliver + Isabella play).
+    endpoint: (TBD — FastAPI backend pre-foundation)
+    vault_path: "02-Areas/Projects/Gamecast PodDAd/Gamecast PodDAd.md"
+    repos_owned: [gamecast-poddad]
+    provenance: { authored_at: 2026-05-24, ratification_cycle: della-cycle-41, source_path: ~/projects/gamecast-poddad/ }
+
 pillar_emission_lanes:
   professional:
     emission_source: business_bu

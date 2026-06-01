@@ -8,7 +8,7 @@
 # Companion doc: org-chart-responsibilities.md (human-readable canonical).
 
 schema_version: 2          # bumped from 1 for v0.2.0 — adds `kind` discriminator + new agent kinds
-manifest_version: v0.2.0   # bumped from v0.1.0 (see v0_2_extension block below)
+manifest_version: v0.2.1   # v0.2.1 adds emitter_class field (see v0_2_1_extension); v0.2.0 added the kind discriminator
 ratification_cycle: della-cycle-2
 ratification_loop: L00-sidebar
 ratification_date: 2026-05-10
@@ -26,6 +26,28 @@ v0_2_extension:
     - governance-thread/docs/agent-card-research/01-field-inventory.md
     - governance-thread/docs/agent-card-research/02-schema-design.md
     - governance-thread/docs/agent-card-research/03-impact-analysis.md
+
+# v0.2.1 extension — emitter_class discriminator on agents that carry an
+# agent_health_check_<persona> ellabot_filter source. Resolves the cycle-63
+# contract drift (the source list over-declared never-firing seats AND omitted
+# live healthy emitters). Ratified from dellatech/docs/dacumen-contract-
+# correction-proposal-cycle63.md. Validator: operator-scripts/diagnose/
+# validate-constellation-contracts.sh reads this field.
+v0_2_1_extension:
+  ratification_cycle: della-cycle-63
+  ratification_loop: L05
+  ratification_date: 2026-06-01
+  proposal: dellatech/docs/dacumen-contract-correction-proposal-cycle63.md
+  emitter_class_enum:
+    cycle_emitter: runs a Foreman cycle or scheduled health loop — MUST fire agent_health_check; validator verdicts health (ops, della, coriolii, proxmox, poddad)
+    service_emitter: service that is expected to emit a health-check and has before; emitter currently broken pending repair — validator verdicts (lorna, darnometer)
+    service_agent: substrate/service whose health is a service-side concern; NO agent_health_check cadence expected — validator info-only (casey, ellabot, darnbot)
+    strategic_seat: operator/CSO-proxy seat with no autonomous loop; no emission expected — validator info-only (gizmoduck, greg)
+  changes:
+    - ADD agent_health_check_{coriolii,proxmox,poddad} ellabot_filter sources (were live+healthy but undeclared)
+    - CLASSIFY all 14 health-source-bearing agents with emitter_class
+    - DEPRECATE agent_health_check_gamecast (one-off 2026-05-24 mis-fire); poddad is canonical for gamecast-poddad — repo-side telemetry fix tracked separately
+    - service_emitter rows (lorna, darnometer) remain verdicted: contract correct, emitters broken (separate repair lane)
 
 # Valid kind enum values (discriminator for v0.2.0+ cards). Cards missing `kind`
 # default to `business_role` at render time per the bilateral-leniency policy.
@@ -49,6 +71,7 @@ agents:
 
   - id: front_office_director
     kind: business_role
+    emitter_class: cycle_emitter
     role_label: Front Office Director
     invocation_pattern: Strategic-head delegation; per-sprint role assignment
     description: |
@@ -90,6 +113,7 @@ agents:
 
   - id: internal_systems_director
     kind: business_role
+    emitter_class: cycle_emitter
     role_label: Internal Systems Director
     invocation_pattern: Strategic-head delegation; homelab + DellaTech infrastructure ownership
     description: |
@@ -134,6 +158,7 @@ agents:
 
   - id: workshop_foreman
     kind: business_role
+    emitter_class: strategic_seat
     role_label: Workshop Foreman
     invocation_pattern: Strategic-head delegation; vertical-IP system ownership
     description: |
@@ -170,6 +195,7 @@ agents:
 
   - id: strategic_head
     kind: business_role
+    emitter_class: strategic_seat
     role_label: Strategic Head
     invocation_pattern: Operator escalation for cross-BU decisions; charter ratification fire
     description: |
@@ -211,6 +237,7 @@ agents:
 
   - id: dev_lab
     kind: business_role
+    emitter_class: service_agent
     role_label: Dev Lab (Telemetry Source)
     invocation_pattern: Continuous telemetry emission via EllaBot; no explicit invocation
     description: |
@@ -249,6 +276,7 @@ agents:
 
   - id: deployment_tracker
     kind: business_role
+    emitter_class: service_agent
     role_label: Deployment Tracker (PM)
     invocation_pattern: Casey Junior REST API + activity webhooks; project-state delegation from Front Office
     description: |
@@ -1040,6 +1068,7 @@ agents:
 
   - id: service_casey_junior
     kind: service
+    emitter_class: service_agent
     role_label: Casey Junior — Project Manager
     invocation_pattern: REST API at http://[redacted-internal-ip]:[redacted-port]/api/* (no auth) | activity webhooks
     description: |
@@ -1100,6 +1129,7 @@ agents:
 
   - id: service_ellabot
     kind: service
+    emitter_class: service_agent
     role_label: EllaBot — Atomic Ledger / Stream of Consciousness
     invocation_pattern: REST API at http://[redacted-internal-ip]:[redacted-port]/api/v2/* | dev port :[redacted-port] | activity webhook POSTs from all services
     description: |
@@ -1165,6 +1195,7 @@ agents:
 
   - id: service_lorna_financials
     kind: service
+    emitter_class: service_emitter
     role_label: Lorna — CFO / Financial Data Layer
     invocation_pattern: REST API at http://[redacted-internal-ip]:[redacted-port]/api/financials/* (Bearer auth, enforced as of 2026-05-15 GOV-10 rotation) | dev :[redacted-port]
     description: |
@@ -1231,6 +1262,7 @@ agents:
 
   - id: service_darnometer
     kind: service
+    emitter_class: service_emitter
     role_label: DArnometer — Data Analyst / Predictions Platform
     invocation_pattern: REST API at http://[redacted-internal-ip]:[redacted-port]/api/* | scheduled background collectors
     description: |
@@ -1282,6 +1314,7 @@ agents:
 
   - id: service_darnbot
     kind: service
+    emitter_class: service_agent
     role_label: Darnbot — B2B Technical Sales Companion (ESP32 + paired Claude API)
     invocation_pattern: Physical device at client meetings (ESP32-S3 + dual GC9A01 eyes + dual OLED bar) | paired with nodemad hub for transcription + Claude API for synthesis | no LAN service endpoint
     description: |
@@ -1894,12 +1927,17 @@ agents:
 
   - id: project_coriolii
     kind: project_endpoint
+    emitter_class: cycle_emitter
     role_label: Corîolîî Whether System — cores-layer governance home (internal upstream to DAcumen)
     invocation_pattern: git workspace at ~/projects/coriolii (foreman-enabled, trio-only; private remote github.com/GreenTilden/coriolii)
     description: Internal governance home of the `^^^` cores-layer — cores roster, exponent table, peeling record, seam logic, continuous-learning + external-anchor doctrines, plus a minimal extraction tool and a 19-entry reference corpus. Sibling (not fork) of governance-thread; coriolii holds the un-sanitized architecture, DAcumen is the sanitized public downstream. Pillar Professional. Steady-state since cycle-7 close 2026-05-23; re-activates only on trigger.
     endpoint: (no HTTP — git workspace)
     vault_path: "02-Areas/Projects/Coriolii/Coriolii.md"
     repos_owned: [coriolii]
+    task_sources:
+      - label: EllaBot — agent_health_check_coriolii responsibility checks
+        url: http://[redacted-internal-ip]:[redacted-port]/api/v2/entries?source=agent_health_check_coriolii
+        type: ellabot_filter
     provenance: { authored_at: 2026-05-24, ratification_cycle: della-cycle-41, source_path: ~/projects/coriolii/ }
 
   - id: project_sprite_forge
@@ -1913,11 +1951,16 @@ agents:
 
   - id: project_proxmox_homelab
     kind: project_endpoint
+    emitter_class: cycle_emitter
     role_label: Proxmox Homelab — Vue dashboard for service monitoring
     invocation_pattern: git workspace at ~/projects/proxmox-homelab + service monitoring scripts
     description: Vue dashboard + Prometheus + service monitoring for the 4-node homelab.
     endpoint: (TBD)
     vault_path: "02-Areas/Homelab/Proxmox Homelab.md"
+    task_sources:
+      - label: EllaBot — agent_health_check_proxmox responsibility checks
+        url: http://[redacted-internal-ip]:[redacted-port]/api/v2/entries?source=agent_health_check_proxmox
+        type: ellabot_filter
     provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/projects/proxmox-homelab/ }
 
   - id: project_nodemad
@@ -1932,12 +1975,17 @@ agents:
 
   - id: project_gamecast_poddad
     kind: project_endpoint
+    emitter_class: cycle_emitter
     role_label: gamecast podDAd — weekly news-tied playable HTML5 games
     invocation_pattern: git workspace at ~/projects/gamecast-poddad + Foreman cadence (gamecast-cycle-N nephew lineage)
     description: Weekly Patreon-gated HTML5 game tied to that week's news cycle. Godot 4.3 + GDScript + FastAPI backend + Sprite Forge asset pipeline. Casey deployment 21b0d756 (phase 2 sow); n=2 extraction event for service-bundle-runtime-core (after DillerQueen + Lennon Lives); revenue-side three-pillar lift (Domestic — Oliver + Isabella play).
     endpoint: (TBD — FastAPI backend pre-foundation)
     vault_path: "02-Areas/Projects/Gamecast PodDAd/Gamecast PodDAd.md"
     repos_owned: [gamecast-poddad]
+    task_sources:
+      - label: EllaBot — agent_health_check_poddad responsibility checks
+        url: http://[redacted-internal-ip]:[redacted-port]/api/v2/entries?source=agent_health_check_poddad
+        type: ellabot_filter
     provenance: { authored_at: 2026-05-24, ratification_cycle: della-cycle-41, source_path: ~/projects/gamecast-poddad/ }
 
 pillar_emission_lanes:

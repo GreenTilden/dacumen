@@ -2,6 +2,20 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.11 — third-implementation externalizables · validation gate + dual-use tooling (2026-06-04)
+
+Second payload through the H2 multi-source channel — learnings from a **third** Foreman^^ implementation (an internal governance layer that runs above the three-sprint cascade). A focused promotion sweep: two patterns that reached cross-cycle ripeness in that implementation, sanitized and externalized. Two further candidates were triaged out this pass — one was still single-instance (below the implementation's own promotion threshold), one belonged to a different unit's scorecard — and are held for a future sweep rather than shipped un-ripe.
+
+### Added
+
+- **`docs/validation-gate.md`** — the pre-cycle validation gate: a second gate, orthogonal to three-pillar gating, that fires on operator-initiated **new scope** and asks *"is the externally-shaped problem this initiative claims to solve actually real, and is the plan to test it honest?"* Covers the six-axis pressure-test (fatal flaws / problem reality / competition map / first-10-customers / 2-week MVP / strong-weak-pivot verdict), the five-axis rank-among-allowed scorecard for multi-candidate openings, the verdict→action table, the verdict-artifact template, a worked retroactive-calibration example (incl. the dual-justification-chains finding), honest limits, and when the gate explicitly does **not** fire (arc-continuation / charter-amendment / doctrine / housekeeping). Pairs with a `/validate` slash-command skill as the executor. Neighbour to `three-pillars.md` + `hitl-cadence.md`.
+- **`docs/framework-artifact-as-creative-tool.md`** — the one-build-two-surfaces pattern: a tool built *for* a creative or operational substrate that is simultaneously a real component there AND a framework artifact proving a reusable template upstream. Runs in either direction across the clean-pattern↔instance boundary (ingest-PULL / scaffold-EMIT). Includes the "shape it for the lift from the start" rationale (mechanical extraction vs expensive rough extraction), the apply/anti-pattern test, and three over-fitting tripwires that keep the pattern from "explaining" every internal tool. Neighbour to `three-pillars.md` + `memory-framework.md`.
+
+### Notes
+
+- Both docs passed `scripts/check-guardrails.sh` (forbidden-terms + privacy grep) and a manual IP/path/proper-noun sanitization sweep — no private infrastructure, business, or financial context. Worked examples are anonymized to role-generic substrates.
+- The two triaged-out candidates (an idempotent graph-edit discipline still at single-instance + coupled to internal architecture; an operational-criticality buyer-risk axis owned by a different unit) are recorded as held in the upstream implementation, to flow on their own ripeness rather than be shipped un-ratified.
+
 ## v0.2.10 — Amendment 22 sync · GOV-NN standing duties (2026-05-18)
 
 First fire of the newly-ratified **§22.a.1 dacumen canonical maintenance** duty. Upstream darntech charter v0.1.16 → v0.1.17 ratified at cycle-37 OPEN; this sync propagates the rule to dacumen for cross-instance visibility.

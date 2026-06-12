@@ -570,9 +570,19 @@ fire_ellabot() {
     local drift_flags_json="$3"  # JSON array string
     local check_kind="${4:-daily_scheduled}"
     local desc="Daily responsibility-drift check for $persona. Surfaces checked: 5. Drift flags: $(echo "$drift_flags_json" | jq 'length')."
+    # project_slug per persona — global CLAUDE.md hard requirement; NULL slug
+    # entries are invisible to the wall-monitor and fail darntech's
+    # ellabot-entries-have-project-slug contract (2026-06-12 sweep: 4 ops +
+    # 4 della violators traced here).
+    local slug=""
+    case "$persona" in
+        ops)   slug="darntech" ;;
+        della) slug="dellatech" ;;
+    esac
     local payload
     payload=$(jq -n \
         --arg d "$RENDER_DATE" \
+        --arg slug "$slug" \
         --arg src "agent_health_check_$persona" \
         --arg desc "$desc" \
         --arg agent "$agent_id" \
@@ -582,6 +592,7 @@ fire_ellabot() {
         '{
             entry_date: $d,
             source: $src,
+            project_slug: (if $slug == "" then null else $slug end),
             activity_code: "OPS.ADMIN.PLAN",
             description: $desc,
             duration_minutes: 1,

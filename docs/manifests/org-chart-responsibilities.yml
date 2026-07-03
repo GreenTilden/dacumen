@@ -235,6 +235,52 @@ agents:
       ratification_cycle: della-cycle-2
       source_path: dacumen/docs/manifests/org-chart-responsibilities.md
 
+  - id: ephemeralization_officer
+    kind: business_role
+    emitter_class: cycle_emitter
+    role_label: Chief Ephemeralization Officer
+    invocation_pattern: Operator delegation for AI-workload placement + autonomous fleet oversight; maintains the agents graph
+    description: |
+      "More with less" for the agent fleet. Owns AI-workload placement — local
+      GPU stack first, cloud-GPU offload only when it pays — and the autonomous
+      execution posture of the agent fleet (dotted-line oversight of all agents,
+      a meta-seat analogous to the cores-layer governance seat). Maintains the
+      generated agents graph and the standalone agent-health cockpit.
+    scope_excluded: |
+      Not cross-BU strategic ratification (Strategic Head). Not per-BU execution
+      (each BU director runs their own lane). Not financial bookkeeping (Lorna
+      service). Not the ledger (Dev Lab / EllaBot). Not deployment state (Deployment
+      Tracker). Ephemeralization is workload-placement + fleet-autonomy + the
+      agents-graph/cockpit — it does not own the work the agents do, only where and
+      how efficiently the fleet runs.
+    pillar_primary: professional
+    pillar_secondary: personal
+    reports_to: operator
+    stewards_surfaces:
+      - agents_graph
+      - ai_workload_placement
+      - agent_health_cockpit
+      - fleet_autonomy_posture
+    responsibilities:
+      - agents_graph_maintain
+      - ai_workload_placement_local_first
+      - cloud_gpu_offload_policy_authoring
+      - fleet_autonomy_oversight_dotted
+    task_sources:
+      - label: Agent-health cockpit (the surface this role stewards)
+        url: /duckminster/
+        type: dashboard
+      - label: Agents graph (generated org map)
+        url: /observatory/data/duckminster-agents-graph.json
+        type: observatory
+      - label: EllaBot — agent_health_check_duck responsibility checks
+        url: http://[redacted-internal-ip]:[redacted-port]/api/v2/entries?source=agent_health_check_duck
+        type: ellabot_filter
+    provenance:
+      authored_at: 2026-07-03
+      ratification_cycle: professional-82
+      source_path: dacumen/docs/manifests/org-chart-responsibilities.md
+
   - id: dev_lab
     kind: business_role
     emitter_class: service_agent
@@ -2048,6 +2094,7 @@ persona_to_role_id:
   gizmoduck: strategic_head
   ellabot: dev_lab
   casey: deployment_tracker
+  duck: ephemeralization_officer
   operator: operator
 
 drift_check:

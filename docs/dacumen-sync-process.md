@@ -27,6 +27,13 @@ The governance thread may also fire a sync for **externalizable learnings from n
 
 This trigger exists because the amendment-driven trigger only captures changes authored by the primary implementation. A second implementation exercising the framework under different constraints is the richest signal the framework produces — and without a dedicated intake channel, that signal has no path to the public mirror.
 
+**Named standing sources** (demonstrated H2 feeders — added 2026-07-05, GOV-13 L02; a source is listed once it has landed at least one live promotion through this channel):
+
+- **coriolii** — internal cores-layer upstream. Self-sanitizes + self-lands generic non-sensitive patterns, operator-paced and HITL-gated, passing the same Step-2 guardrail check; records `externalized_to_dacumen` provenance on its source docs so the backstop sweep doesn't re-sweep landed content. The governance thread remains the standing backstop, not the executor. (Demonstrated: v0.2.11 — `validation-gate.md` + `framework-artifact-as-creative-tool.md`.)
+- **DellaTech** — second-implementation externalizables channel. (Demonstrated: v0.2.9 — rag-core ADR + n=2 implementation externalizables.)
+
+Listing a source here records the who-feeds-DAcumen arrangement in the canonical spec: the backstop owner (governance thread, §22.a.1) can see which intake already has a self-service owner versus what it is actually backstopping.
+
 ## Who owns the ritual
 
 The **consolidation nephew** in the ratification cycle's sprint-trio owns the sync ritual. They have the terminal cascade slot (discovery → validation → consolidation → next-cycle-kickoff), so they're positioned to absorb the amendment's scope alongside their consolidation + next-cycle-authorship workload.

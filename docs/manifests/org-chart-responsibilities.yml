@@ -8,7 +8,7 @@
 # Companion doc: org-chart-responsibilities.md (human-readable canonical).
 
 schema_version: 2          # bumped from 1 for v0.2.0 — adds `kind` discriminator + new agent kinds
-manifest_version: v0.2.1   # v0.2.1 adds emitter_class field (see v0_2_1_extension); v0.2.0 added the kind discriminator
+manifest_version: v0.2.2   # v0.2.2 adds burst_emitter class (see v0_2_2_extension); v0.2.1 added emitter_class; v0.2.0 added the kind discriminator
 ratification_cycle: della-cycle-2
 ratification_loop: L00-sidebar
 ratification_date: 2026-05-10
@@ -48,6 +48,24 @@ v0_2_1_extension:
     - CLASSIFY all 14 health-source-bearing agents with emitter_class
     - DEPRECATE agent_health_check_gamecast (one-off 2026-05-24 mis-fire); poddad is canonical for gamecast-poddad — repo-side telemetry fix tracked separately
     - service_emitter rows (lorna, darnometer) remain verdicted: contract correct, emitters broken (separate repair lane)
+
+# v0.2.2 extension — burst_emitter class for project personas that fire
+# agent_health_check_<persona> telemetry only while their project is active
+# (burst cadence, no daily heartbeat expected). Resolves the cycle-65 validator
+# finding: agent_health_check_{dq,forgemaster} live+firing but undeclared.
+# Operator ratified info-only classification 2026-07-05 (della-cycle-65 L03).
+v0_2_2_extension:
+  ratification_cycle: della-cycle-65
+  ratification_loop: L03
+  ratification_date: 2026-07-05
+  emitter_class_enum_additions:
+    burst_emitter: project persona firing telemetry only while its project is active; no daily cadence expected — validator info-only (dq, forgemaster)
+  changes:
+    - ADD burst_emitter to emitter_class enum (validator case updated in operator-scripts/diagnose/validate-constellation-contracts.sh same-day)
+    - ADD agent_health_check_dq source on new project_diller_queen card (was live+firing but undeclared)
+    - ADD agent_health_check_forgemaster source on project_sprite_forge card (was live+firing but undeclared)
+    - UPDATE project_coriolii description — "steady-state since cycle-7" was 6-weeks stale (repo closed cycle-23 on 2026-07-04); coriolii stays cycle_emitter, emitter repaired via daily heartbeat timer (agent-health-check-coriolii.timer, poddad pattern) same-day
+    - FLAGGED not actioned — RND.GAME_DEV activity code missing from EllaBot registry (dq entries borrow RND.AI.AUTO); codes are curated DB-side with rd_qualifying tax metadata → operator call
 
 # Valid kind enum values (discriminator for v0.2.0+ cards). Cards missing `kind`
 # default to `business_role` at render time per the bilateral-leniency policy.
@@ -1976,7 +1994,7 @@ agents:
     emitter_class: cycle_emitter
     role_label: Corîolîî Whether System — cores-layer governance home (internal upstream to DAcumen)
     invocation_pattern: git workspace at ~/projects/coriolii (foreman-enabled, trio-only; private remote github.com/GreenTilden/coriolii)
-    description: Internal governance home of the `^^^` cores-layer — cores roster, exponent table, peeling record, seam logic, continuous-learning + external-anchor doctrines, plus a minimal extraction tool and a 19-entry reference corpus. Sibling (not fork) of governance-thread; coriolii holds the un-sanitized architecture, DAcumen is the sanitized public downstream. Pillar Professional. Steady-state since cycle-7 close 2026-05-23; re-activates only on trigger.
+    description: Internal governance home of the `^^^` cores-layer — cores roster, exponent table, peeling record, seam logic, continuous-learning + external-anchor doctrines, plus a minimal extraction tool and a 19-entry reference corpus. Sibling (not fork) of governance-thread; coriolii holds the un-sanitized architecture, DAcumen is the sanitized public downstream. Pillar Professional. Trigger-activated but ACTIVE in practice (cycle-23 closed 2026-07-04; the earlier "steady-state since cycle-7" note was 6 weeks stale — description-decay catch, della-cycle-65 L03). Session-fired telemetry lapsed 2026-06-05→07-05; daily heartbeat timer wired 2026-07-05 (agent-health-check-coriolii.timer, poddad pattern).
     endpoint: (no HTTP — git workspace)
     vault_path: "02-Areas/Projects/Coriolii/Coriolii.md"
     repos_owned: [coriolii]
@@ -1988,12 +2006,32 @@ agents:
 
   - id: project_sprite_forge
     kind: project_endpoint
+    emitter_class: burst_emitter
     role_label: Sprite Forge — ComfyUI + Ollama pgvector RAG sprite gen
     invocation_pattern: HTTP at http://localhost:[redacted-port] (dev) | (prod TBD)
-    description: Express/TS sprite generation pipeline. ComfyUI + Ollama + pgvector RAG for sprite-pattern retrieval.
+    description: Express/TS sprite generation pipeline. ComfyUI + Ollama + pgvector RAG for sprite-pattern retrieval. Persona "Forgemaster" fires telemetry during active blitzes (e.g. lennon-lives-ingest); consumers on disk include lennon-lives, diller-queen, gamecast (coriolii cycle-23 seam detection).
     endpoint: "localhost:[redacted-port]"
     vault_path: "02-Areas/Projects/Sprite Forge/Sprite Forge Status.md"
-    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/projects/sprite-forge/ }
+    task_sources:
+      - label: EllaBot — agent_health_check_forgemaster responsibility checks (persona Forgemaster, burst cadence)
+        url: http://[redacted-internal-ip]:[redacted-port]/api/v2/entries?source=agent_health_check_forgemaster
+        type: ellabot_filter
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/projects/sprite-forge/, emitter_registered: della-cycle-65 }
+
+  - id: project_diller_queen
+    kind: project_endpoint
+    emitter_class: burst_emitter
+    role_label: DillerQueen — revived arcade game (Python server + render-only Godot client)
+    invocation_pattern: git workspace at ~/projects/DillerQueen; HTML5 primary dev target, Android APK for ArcadeKit kiosk deployment
+    description: Revived game project. Python game-logic server with render-only Godot client (coriolii cycle-22/23 verdict — cannot consume a GDScript engine addon). Persona "DQ" fires telemetry during active build bursts (e.g. v2 Backyard Fourth Gate A, SDXL role anchors via Sprite Forge). Known gap — dq entries borrow RND.AI.AUTO because intended RND.GAME_DEV is missing from the EllaBot code registry (flagged della-cycle-65 L03, operator call).
+    endpoint: (no persistent HTTP — dev workspace)
+    vault_path: "01-Projects/Homelab/Diller Queen.md"
+    repos_owned: [DillerQueen]
+    task_sources:
+      - label: EllaBot — agent_health_check_dq responsibility checks (persona DQ, burst cadence)
+        url: http://[redacted-internal-ip]:[redacted-port]/api/v2/entries?source=agent_health_check_dq
+        type: ellabot_filter
+    provenance: { authored_at: 2026-07-05, ratification_cycle: della-cycle-65, source_path: ~/projects/DillerQueen/ }
 
   - id: project_proxmox_homelab
     kind: project_endpoint

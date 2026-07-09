@@ -2072,6 +2072,15 @@ agents:
         type: ellabot_filter
     provenance: { authored_at: 2026-05-24, ratification_cycle: della-cycle-41, source_path: ~/projects/gamecast-poddad/ }
 
+  - id: project_game_dev_rag
+    kind: project_endpoint
+    role_label: game-dev-rag — rag-core instance #5 (game-dev corpus split)
+    invocation_pattern: HTTP GET/POST http://[redacted-internal-ip]:8004/recall (or via rag-core-client)
+    description: Fifth rag-core instance, split out of darney-rag (#4) 2026-07-09 to keep Godot/GDScript-specific retrieval tuning from diluting non-game personal/creative recall. Indexes DillerQueen, gamecast-poddad, sprite-forge, lennon-lives, DArnimos. Casey deployment 43379c1d (phase 2 sow).
+    endpoint: "[redacted-internal-ip]:8004"
+    vault_path: "02-Areas/Projects/game-dev-rag/game-dev-rag.md"
+    provenance: { authored_at: 2026-07-09, ratification_cycle: operator-session-2026-07-09, source_path: ~/projects/game-dev-rag/ }
+
 pillar_emission_lanes:
   professional:
     emission_source: business_bu

@@ -2,6 +2,24 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.12 — Amendment 23 sync · provenance + evidence standards (2026-07-11)
+
+Clears the one open amendment sync: upstream charter v0.1.18 (Amendment 23, ratified 2026-06-11, `dacumen_impact: doc-edit`) had been owed for a month — the ratification cycle's consolidation slot missed it, and this is the §22.a.1 standing-duty backstop catching it. Amendments 24 (v0.1.19, impact `none`) and 25 (v0.1.20, impact `manifesto`, already synced via the org-chart manifest mint) are assessed and noted in the same pass, so the ledger shows all three versions covered.
+
+### Added
+
+- **`docs/amendment-23-patterns.md`** — externalizes Amendment 23 (provenance + evidence standards, upstream charter §23.a–e). Covers: per-instance provenance manifests + the pointer-only two-altitude register and its honesty constraints (§23.a–b) · the backfill doctrine for instance→core graduation — triggers (n≥2 independent convergence hard floor), allow list, HARD never-list with asymmetric change-cost, operator-ratified decision path, all-or-nothing artifact chain (§23.c) · the three-state graph-visual evidence grammar (projected / forming / realized) with its five HARD honesty rules (§23.d) · the evidence floor as the internal twin of public-claims safety-first (§23.e) · adoption-by-reference as a charter drafting technique.
+
+### Changed
+
+- **`docs/generated-artifact-safety.md`** — fifth pattern added: declare every automation-touched data file **generated** (script-emitted, idempotent regeneration, never hand-edited) or **curated** (hand-authored, marked, upsert discipline on stable derived identities) — never mixed in one file. Plus the unknown-fields-are-inert companion rule.
+- **`docs/charter-versioning.md`** — Amendment 23/24/25 notes appended to the per-amendment-note ledger, including the none-impact and manifest-impact dispositions so assessed-but-no-doc versions are visibly covered rather than ambiguously skipped.
+- **`docs/dacumen-sync-process.md`** — lessons-learned entry appended (single-amendment sync run by the standing-duty backstop).
+
+### Notes
+
+- The amendment's referenced upstream artifacts (backfill-criteria doc, provenance-register doc, graph-visual standard) are externalized kernel-only per the v0.2.7 tier: portable rules extracted, reference-implementation specifics (instance names, palette tokens, band metaphors, schema field trivia) stripped.
+
 ## v0.2.11 — third-implementation externalizables · validation gate + dual-use tooling (2026-06-04)
 
 Second payload through the H2 multi-source channel — learnings from a **third** Foreman^^ implementation (an internal governance layer that runs above the three-sprint cascade). A focused promotion sweep: two patterns that reached cross-cycle ripeness in that implementation, sanitized and externalized. Two further candidates were triaged out this pass — one was still single-instance (below the implementation's own promotion threshold), one belonged to a different unit's scorecard — and are held for a future sweep rather than shipped un-ripe.

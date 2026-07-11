@@ -44,6 +44,19 @@ All four failures share a shape: **the script's behavior diverges from what you'
 
 *Side-effecting / generated-artifact automation is unsafe to poke at casually.* Before running, backfilling, or debugging any script in this class, answer: what does it write, what does it deploy, and what does it auto-resolve from the environment? Those three questions surface the hazard before it bites.
 
+## Declare generated vs curated — and never mix them in one file
+
+A fifth pattern, adjacent to the four above (added with the Amendment 23 sync — it originated in the upstream graph-visual standard's data-discipline section, but it applies to any data file automation touches):
+
+**Every data file that automation reads or writes declares which of two kinds it is, and the kinds never mix in one file:**
+
+- **Generated** — emitted by a build script. Never hand-edited; every change goes through the script's source-of-truth inputs and a regeneration. Regeneration is idempotent: running the build twice produces identical content (a timestamp stamp is the only byte permitted to differ).
+- **Curated** — hand-authored and *marked so* (e.g. a `doNotRegenerate` field). Edited directly, under an upsert discipline: each record has a stable derived identity (e.g. `"<source>--<target>--<type>"` for graph edges), every touch is an upsert keyed on it, and re-applying the same edit yields identical content — no duplicates, no rewrites of untouched records.
+
+The failure mode this prevents is the worst of both worlds: a file that is *sometimes* regenerated and *sometimes* hand-edited will eventually have a regeneration silently destroy hand edits (pattern 1's cousin), or hand edits silently mask stale generated content. The declaration makes "who may write this file" mechanically checkable.
+
+A useful companion rule: **unknown fields are inert** — consumers ignore fields they don't recognize, so additive metadata never breaks a reader and never forces a coordinated deploy to land.
+
 ## The surface-check ritual is the complementary pattern
 
 The surface-check ritual (`surface-check-ritual.md`) addresses a related but distinct hazard: the drift between substrate and derived surfaces. The generated-artifact safety patterns address the hazard *during the generation process itself* — what goes wrong when you run the generator. The surface-check ritual addresses what goes wrong when you stop running it. Both concern the same class of artifacts; neither subsumes the other.

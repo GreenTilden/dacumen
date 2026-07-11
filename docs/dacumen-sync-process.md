@@ -261,3 +261,25 @@ The governance-thread sprint cleared the existing backlog (v0.2.7) and then fixe
 ### When the next sync fires
 
 Version v0.2.8 adds the three structural-hole fixes. The next ritual execution is the first one with a backstop owner (H1), a multi-source trigger (H2), and a completion-tracking discipline (H3). All three should be exercised on the DellaTech externalizables pass — that is explicitly the first payload through the H2 multi-source channel.
+
+---
+
+## Lessons-learned — charter-amend-23 backstop sync (2026-07-11, v0.2.12)
+
+*Single-amendment sync (upstream v0.1.18, ratified 2026-06-11, `dacumen_impact: doc-edit`), executed by the §22.a.1 standing duty a month late — the ratification session's "sync fires at next touch" note never got a next touch, and no GOV-NN sweep ran in the interval.*
+
+### The gap-detection grep works — run it on charter versions, not amendment mentions
+
+The staleness was found exactly the way the v0.2.7 lesson prescribes, with one refinement: grep the *upstream charter directory for versions newer than the last synced one*, then read each version's `dacumen_impact` line. Grepping this repo for "Amendment 23" gives false confidence — the string appears here in "candidate territory" notes from the Amendment 22 era, which look like coverage but aren't. Version-forward beats mention-backward.
+
+### Record the none-impact and already-synced dispositions, not just the doc-producing ones
+
+Three upstream versions had landed (v0.1.18/19/20); only one owed a patterns doc. The other two (impact `none`; impact `manifesto` already satisfied by a manifest mint that didn't announce itself as a sync) would have looked like open debt to every future sweep. This pass added one-line dispositions for them to `charter-versioning.md`'s per-amendment ledger. Cheap now, saves every future triage from re-deriving "was 24 skipped or assessed?"
+
+### Impact tags can also be under-declared
+
+The v0.2.7 lesson warned about over-declared tags. Amendment 23's `doc-edit` was mildly *under*-declared: the graph standard's data-discipline section was a genuine addition to an existing doc (true doc-edit), but the provenance/backfill kernel had no parent doc here and needed a new patterns file — closer to `manifesto`-weight work. Read the amendment body to size the sync; the tag is a trigger, not an estimate.
+
+### When the next sync fires
+
+Amendments through 25 (charter v0.1.20) are covered at v0.2.12. The next triage opens with: `ls` the upstream charter dir for versions past v0.1.20 → read each `dacumen_impact` line → grep `docs/` here for the core concepts → tier.

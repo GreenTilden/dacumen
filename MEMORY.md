@@ -1,11 +1,11 @@
 # dacumen — Memory
 
 ## Session Status
-- **Status**: active — Tier-1 primitives authored 2026-05-24 via dellatech cycle-40 L02-e (was TODO-stub since 2026-05-22 onboarding scaffold)
+- **Status**: current — amendments through 25 (upstream charter v0.1.20) covered as of v0.2.12, pushed + tagged 2026-07-11
 - **Current Focus**: absorb upstream charter amendments via the sync ritual; standing maintenance owned by `governance-thread` GOV-NN sweeps
 - **Blockers**: none
-- **Next Steps**: operator-paste Casey deployment registration (id stored at `.foreman/casey-deployment-id`) + EllaBot first-fire; vault note already authored at `02-Areas/Projects/DAcumen/DAcumen.md`
-- **Last Updated**: 2026-05-24
+- **Next Steps**: next triage opens version-forward — `ls` upstream charter dir for versions past v0.1.20, read each `dacumen_impact` line (see sync-process lessons v0.2.12). Casey deployment `4da4550b` registered; id now stored at `.foreman/casey-deployment-id`
+- **Last Updated**: 2026-07-11
 
 ## Project Identity
 

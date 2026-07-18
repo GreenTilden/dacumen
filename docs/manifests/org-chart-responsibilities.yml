@@ -2081,6 +2081,20 @@ agents:
     vault_path: "02-Areas/Projects/game-dev-rag/game-dev-rag.md"
     provenance: { authored_at: 2026-07-09, ratification_cycle: operator-session-2026-07-09, source_path: ~/projects/game-dev-rag/ }
 
+  - id: project_oolitic_engine
+    kind: project_endpoint
+    emitter_class: burst_emitter
+    role_label: Oolitic engine — clean-room method-intelligence engine (expertise-core instance #2)
+    invocation_pattern: local pytest/CLI in ~/projects/oolitic-engine (N1 self-host tailnet-only since cycle-7)
+    description: Clean-room WS-4 build for the Oolitic program — public-corpus method intelligence emitting to PyLabRobot's open API; expertise-core instance #2 (GBGreg = #1). Runs its own foreman cycles (cycle-11 closed 2026-07-18). Fires telemetry as source agent_health_check_oolitic during active cycles (burst cadence, no daily heartbeat); entry metadata carries canonical_source agent_health_check_oolitic_engine — the source string is the shorter form, registered here as-fired per the della-cycle-65 L03 dq/forgemaster precedent.
+    endpoint: null
+    vault_path: "02-Areas/Projects/DArnTech/Oolitic.md"
+    task_sources:
+      - label: EllaBot — agent_health_check_oolitic loop/cycle entries (burst cadence)
+        url: http://[redacted-internal-ip]:[redacted-port]/api/v2/entries?source=agent_health_check_oolitic
+        type: ellabot_filter
+    provenance: { authored_at: 2026-07-18, ratification_cycle: della-cycle-65-audit, source_path: ~/projects/oolitic-engine/, emitter_registered: della-cycle-65 }
+
 pillar_emission_lanes:
   professional:
     emission_source: business_bu

@@ -1,8 +1,9 @@
 <!--
   DAcumen favicon · pixelated robot-dove-with-olive-branch
-  placeholder — not real art, hand-rolled SVG rectangles in 32×32
-  pixel grid. Replaces when commissioned art lands. See
-  docs/logo-concept.md for the design brief.
+  Hand-rolled SVG rectangles on a 32×32 pixel grid — this is the
+  mark, and it is the source every raster form is scaled from
+  (nearest-neighbour only; smoothing destroys it). Design brief and
+  the reasoning behind the palette: docs/logo-concept.md
 
   Palette:
     body   #e6edf3  (off-white body)
@@ -52,13 +53,15 @@
   <rect x="15" y="17" width="1" height="1" fill="#d29922"/>
   <rect x="16" y="17" width="1" height="1" fill="#d29922"/>
 
-  <!-- olive branch — stem (dark) -->
-  <rect x="17" y="9" width="1" height="1" fill="#30363d"/>
-  <rect x="18" y="9" width="1" height="1" fill="#30363d"/>
-  <rect x="19" y="9" width="1" height="1" fill="#30363d"/>
-  <rect x="20" y="9" width="1" height="1" fill="#30363d"/>
-  <rect x="21" y="9" width="1" height="1" fill="#30363d"/>
-  <rect x="22" y="9" width="1" height="1" fill="#30363d"/>
+  <!-- olive branch — stem. Ops-blue, not shadow-dark: on the #0d1117
+       background a #30363d stem disappears and the leaves read as
+       floating free of the beak once the mark is scaled up. -->
+  <rect x="17" y="9" width="1" height="1" fill="#58a6ff"/>
+  <rect x="18" y="9" width="1" height="1" fill="#58a6ff"/>
+  <rect x="19" y="9" width="1" height="1" fill="#58a6ff"/>
+  <rect x="20" y="9" width="1" height="1" fill="#58a6ff"/>
+  <rect x="21" y="9" width="1" height="1" fill="#58a6ff"/>
+  <rect x="22" y="9" width="1" height="1" fill="#58a6ff"/>
 
   <!-- olive branch — leaves (ops blue) -->
   <rect x="18" y="8" width="1" height="1" fill="#58a6ff"/>

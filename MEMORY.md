@@ -1,11 +1,11 @@
 # dacumen — Memory
 
 ## Session Status
-- **Status**: current — amendments through 25 (upstream charter v0.1.20) covered as of v0.2.12, pushed + tagged 2026-07-11
-- **Current Focus**: absorb upstream charter amendments via the sync ritual; standing maintenance owned by `governance-thread` GOV-NN sweeps
-- **Blockers**: none
-- **Next Steps**: next triage opens version-forward — `ls` upstream charter dir for versions past v0.1.20, read each `dacumen_impact` line (see sync-process lessons v0.2.12). Casey deployment `4da4550b` registered; id now stored at `.foreman/casey-deployment-id`
-- **Last Updated**: 2026-07-11
+- **Status**: v0.2.13 landed LOCAL, **not pushed** — content refresh, not an amendment sync. Amendments through 25 (upstream charter v0.1.20) remain covered as of v0.2.12 (pushed + tagged 2026-07-11)
+- **Current Focus**: v0.2.13 = second case study + the mark shipping for real. Added `docs/case-studies/whethermap-observatory.md` (*Altitude as Abstraction Order* — invariant-beats-layout, the decision-ledger convention, build-a-second-artifact-instead-of-filtering, four honesty rules for self-updating surfaces) and a README §"What this looks like at scale" pointing at the live map. Logo truth-up: the hand-rolled 32×32 SVG is now declared the mark rather than a placeholder, with raster forms generated *from* it
+- **Blockers**: none. Two operator actions pending, neither blocking: (1) `git push` to `GreenTilden/dacumen` — held deliberately, a public-surface sanitization gets eyes before it leaves the machine; (2) upload `public/social-1200x630.png` to the repo's social-preview slot, which is a repo-settings action and cannot be a commit
+- **Next Steps**: after push, the standing amendment triage resumes version-forward — `ls` the upstream charter dir for versions past v0.1.20 and read each `dacumen_impact` line (see sync-process lessons v0.2.12). Casey deployment `4da4550b` registered; id stored at `.foreman/casey-deployment-id`
+- **Last Updated**: 2026-07-28
 
 ## Project Identity
 

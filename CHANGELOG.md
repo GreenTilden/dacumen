@@ -2,6 +2,22 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.13 — second case study · the mark ships for real (2026-07-28)
+
+Not an amendment sync. Two things the repo owed: a second worked example so `docs/case-studies/` stops being a directory with one file in it, and a README that stops contradicting itself about its own logo.
+
+### Added
+
+- **`docs/case-studies/whethermap-observatory.md`** — *Altitude as Abstraction Order.* Second case study: how one organizing invariant, a 26-row decision ledger, and a clean-room second build turned an internal map of a whole software estate into a publishable artifact that regenerates nightly. Carries four portable patterns — the invariant-beats-layout argument, the decision-ledger convention (authority-or-escalate, explicit supersession, written at decision time), the build-a-second-artifact-instead-of-filtering rule for public surfaces, and four honesty rules for any generated surface that updates itself. Sanitized to the same standard as everything else here: no hosts, no addresses, no client or internal project names, no counts that fingerprint an estate.
+- **`README.md` § "What this looks like at scale"** — links the live artifact the case study describes, and names its limitation (self-hosted in a house; it goes dark when the power does) before its feature.
+- **`public/banner-1200x200.png`, `public/social-1200x630.png`, `public/logo-128.png`, `public/favicon-32.png`** — the raster forms of the mark, all generated *from* `public/favicon.svg` by nearest-neighbour scaling rather than redrawn, so the SVG stays the single source of truth.
+
+### Changed
+
+- **`public/favicon.svg`** — the olive branch's stem is now ops-blue instead of shadow-dark. Dark-on-dark is invisible, which nobody notices at 32×32, but at banner size the leaves floated free of the beak and the bird looked like it was ignoring an unrelated shrub. A color that works at one size can be a legibility bug at another. The "placeholder — not real art" header is gone: this is the mark.
+- **`docs/logo-concept.md`** — "not yet drawn" replaced with a status table and a §"How it got drawn". The palette, the three canonical sizes and the original ASCII sketch are all kept; the doc is now the spec the shipped mark implements rather than a brief for art that doesn't exist.
+- **`README.md`** — header swapped from the 96px favicon to the banner. The attribution section no longer claims the logo "hasn't been drawn yet" three lines below where the README embeds it.
+
 ## v0.2.12 — Amendment 23 sync · provenance + evidence standards (2026-07-11)
 
 Clears the one open amendment sync: upstream charter v0.1.18 (Amendment 23, ratified 2026-06-11, `dacumen_impact: doc-edit`) had been owed for a month — the ratification cycle's consolidation slot missed it, and this is the §22.a.1 standing-duty backstop catching it. Amendments 24 (v0.1.19, impact `none`) and 25 (v0.1.20, impact `manifesto`, already synced via the org-chart manifest mint) are assessed and noted in the same pass, so the ledger shows all three versions covered.

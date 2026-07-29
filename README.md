@@ -1,10 +1,8 @@
 # DAcumen
 
-<img src="public/favicon.svg" alt="DAcumen — pixelated robot dove with olive branch" width="96" height="96" align="left" />
+<img src="public/banner-1200x200.png" alt="DAcumen — pixelated robot dove with an olive branch, beside the wordmark DAcumen" width="600" />
 
 *A working-rhythm kit for people collaborating with Claude Code.*
-
-&nbsp;
 
 DAcumen is a set of **opinionated, shareable patterns** for running real work with [Claude Code](https://claude.com/claude-code) — the sprint structure, the memory framework, the loop discipline, the cross-sprint audit, the three-pillars test — pulled out of one person's setup and packaged so you can drop it onto your own machine in about five minutes.
 
@@ -115,6 +113,13 @@ At that point you have enough to open a real sprint, fire a real loop, and see y
 If you want to see the framework applied to real infrastructure work before you try it yourself, `docs/case-studies/` contains worked examples from the reference implementation:
 
 - **[Telemetry Contract Inversion](docs/case-studies/telemetry-contract-inversion.md)** — how a Foreman^^ setup went from ten drifting telemetry writers to one contract-validated ledger, with the whole dashboard, briefing, and regenerated MEMORY.md as derived views. Seven loops, one sprint, measurable before/after.
+- **[Altitude as Abstraction Order](docs/case-studies/whethermap-observatory.md)** — how a decision ledger, one organizing invariant, and a clean-room second build turned an internal map of a whole software estate into something publishable. Eight days, 26 recorded decisions, and the resulting artifact is live (below).
+
+## What this looks like at scale
+
+If you want to see where this rhythm ends up, there's a live one: **<https://darn-tech.com/whethermap/>** — a 3D map of one person's entire software estate. Every node on it is a system that is actually running or actually being built, regenerated nightly from the same registry the framework maintains, never hand-drawn. Altitude means abstraction order, so the shape you're looking at is an argument rather than decoration.
+
+Being straight about what it is: it's self-hosted on hardware in a house, so it goes dark when the power or the line does — no promises that it's up when you click. Individual products are pseudonymized on purpose; the layers, the structure and the nightly refresh are real. How it got built, and how the public version was kept clean-room separate from the internal one, is the second case study above.
 
 ## How to make this yours
 
@@ -142,7 +147,7 @@ Changelog lives in `CHANGELOG.md` and notes what landed when.
 
 DAcumen is maintained by Darren Arney, but the patterns are portable — don't feel like you have to credit anything. Use what works. Improve what doesn't. Share what's good.
 
-The name is a nod to a high-school band. There's a pixelated-robot-dove-with-olive-branch logo in my head that hasn't been drawn yet; see [`docs/logo-concept.md`](docs/logo-concept.md) for the sketch-in-words if you want to take a crack at it.
+The name is a nod to a high-school band. The pixelated robot dove with the olive branch up top is the mark — hand-rolled as SVG rectangles on a 32×32 grid, which is about as on-brand as a logo gets here. [`docs/logo-concept.md`](docs/logo-concept.md) is the spec it implements: what the bird means, why the branch carries three colors, and what the canonical sizes are if you want to redraw it better.
 
 ## License
 

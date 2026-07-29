@@ -1,6 +1,19 @@
 # DAcumen — Logo Concept
 
-*Not yet drawn. This doc captures the intended vibe so whoever commissions or sketches the real art later has something to work from.*
+*The mark is drawn and shipped. This doc is the spec it implements — kept because the reasoning is the useful part, and because anyone forking DAcumen may want to redraw the bird for their own version.*
+
+**Status**
+
+| form | state |
+|---|---|
+| Favicon (32×32) | **shipped** — `public/favicon.svg`, hand-rolled SVG rectangles on a 32×32 grid |
+| Logo (128×128) | **shipped** — `public/logo-128.png` |
+| README banner (1200×200) | **shipped** — `public/banner-1200x200.png` |
+| Social preview (1200×630) | **shipped** — `public/social-1200x630.png`, not yet uploaded to the repo's social-preview slot |
+
+Every raster form is generated *from* `public/favicon.svg` rather than redrawn, so the SVG stays the single source of truth for the mark. Change the rectangles and the banner follows. Scaling is nearest-neighbour throughout — the mark is defined by where its pixels are, so any smoothing destroys it.
+
+One note on the palette, because it's a lesson rather than a preference: the olive branch's **stem** is ops-blue rather than the shadow dark the rest of the linework uses. Shadow-dark on the dark background is invisible, which nobody notices at 32×32 — but scale the mark to banner size and the leaves float free of the beak, and the bird looks like it's ignoring an unrelated shrub. A color choice that works at one size can be a legibility bug at another.
 
 ## The image in words
 
@@ -44,9 +57,16 @@ The name *DAcumen* is a nod to a high-school band of the same name. If the logo 
 - Post-it Notes doodles of birds (the dove shouldn't try to look anatomical)
 - Any "olive branch" emoji treatment, inverted — the standard olive branch is too polished, DAcumen's version should feel like it was stitched together
 
-## When this gets drawn
+## How it got drawn
 
-There's no rush. DAcumen ships without a logo. When it exists, it slots into the README banner, `favicon.svg` at the repo root, and any social-preview image. Until then, an ASCII sketch or plain-text reference at the top of the README is fine.
+No commission, no illustrator, no diffusion model. The dove is thirty-odd `<rect>` elements on a 32×32 `viewBox` with `shape-rendering="crispEdges"` — placed by hand, one pixel at a time, in a text editor. That is a slightly ridiculous way to make a logo and it is also exactly the aesthetic the doc above asks for: a late-80s sprite, a little awkward, obviously made by a person.
+
+Two consequences worth knowing if you fork this:
+
+- **The SVG is the source, not an export.** Every raster form comes from it by nearest-neighbour scaling. Nothing is redrawn per size, so nothing can drift between sizes.
+- **Editing it is editing text.** Want a different eye color, a fifth leaf, the guitar-pick easter egg? Change a `fill` or add a rect. No design tool required.
+
+The original sketch that preceded it, kept for the record:
 
 ```
    .-----.

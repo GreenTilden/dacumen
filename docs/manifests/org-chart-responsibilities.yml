@@ -1960,6 +1960,7 @@ agents:
 
   - id: project_lorna_checkbook
     kind: project_endpoint
+    emitter_class: burst_emitter
     role_label: Lorna Checkbook — household forecast endpoint (separate from Lorna Financials)
     invocation_pattern: HTTP GET http://[redacted-internal-ip]:[redacted-port]/api/forecast/* (behind Authelia)
     description: Household + operator-private cashflow forecast service. Calls Lorna for source data, computes forecasts, returns via auth-gated dashboard pages.
@@ -1967,7 +1968,11 @@ agents:
     deployment_id: caaef3e3
     vault_path: "02-Areas/Projects/Lorna Checkbook/Lorna Checkbook.md"
     status: active
-    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/projects/checkbook-deploy/ }
+    task_sources:
+      - label: EllaBot — agent_health_check_checkbook responsibility checks (greg sub-source workstream, burst cadence)
+        url: http://[redacted-internal-ip]:[redacted-port]/api/v2/entries?source=agent_health_check_checkbook
+        type: ellabot_filter
+    provenance: { authored_at: 2026-05-16, ratification_cycle: gov-10, source_path: ~/projects/checkbook-deploy/, emitter_registered: della-cycle-65 }
 
   - id: project_governance_thread
     kind: project_endpoint

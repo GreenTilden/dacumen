@@ -2100,6 +2100,21 @@ agents:
         type: ellabot_filter
     provenance: { authored_at: 2026-07-18, ratification_cycle: della-cycle-65-audit, source_path: ~/projects/oolitic-engine/, emitter_registered: della-cycle-65 }
 
+  - id: project_darnimos
+    kind: project_endpoint
+    emitter_class: cycle_emitter
+    role_label: DArnimos — double-six Draw dominoes game (Godot 4.6 web)
+    invocation_pattern: git workspace at ~/projects/DArnimos + Foreman cadence (cycle-1-{huey,louie,dewey} nephew lineage)
+    description: Double-six dominoes (Draw variant) — hotseat 1-4 players + AI seats, Godot 4.6 gl_compatibility HTML5 export, Blender pre-rendered tile sprites with the pixel aesthetic applied only as a runtime post-process filter. Revived from an empty dir 2026-08-03 with full Tier-1 + foreman Tier-2 onboarding in one pass. Casey deployment 21b71630 (5 needs). Fires telemetry as source agent_health_check_darnimos during active cycles.
+    endpoint: null
+    vault_path: "02-Areas/Projects/DArnimos/DArnimos.md"
+    repos_owned: [DArnimos]
+    task_sources:
+      - label: EllaBot — agent_health_check_darnimos loop/cycle entries (cycle cadence)
+        url: http://[redacted-internal-ip]:[redacted-port]/api/v2/entries?source=agent_health_check_darnimos
+        type: ellabot_filter
+    provenance: { authored_at: 2026-08-03, ratification_cycle: operator-session-2026-08-03, source_path: ~/projects/DArnimos/ }
+
 pillar_emission_lanes:
   professional:
     emission_source: business_bu

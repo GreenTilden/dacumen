@@ -1482,6 +1482,62 @@ agents:
       ratification_cycle: gov-10
       source_path: /opt/cathy-bot/ (no CLAUDE.md — thin card by design)
 
+  - id: service_sturkel_bot
+    kind: service
+    role_label: sturkel-bot — Homelab Governance Telegram Bot (/red, /plumbing)
+    invocation_pattern: systemd --user long-polling service on the Node 3 orchestrator VM | Telegram bot, locked to the operator's chat id | no LAN service endpoint (long-polling, not inbound HTTP)
+    description: |
+      The low-latency answer half to the nightly detector suite's push half.
+      Two commands: /red diffs the current detector-nightly-status board
+      against yesterday's snapshot (new-vs-known-with-reason-vs-unexplained,
+      never silently folding an untriaged FAIL into "known"), and /plumbing
+      aggregates the d-plumb-1/d-vault-1 detector rows with a live check of
+      n8n's active workflows for Authelia-gated or retired-N2 URLs (via
+      n8n's own REST API, not SSH into production). No LLM in the hot path
+      by deliberate design — fetch/diff/format only. Seeded by Gizmoduck
+      2026-08-07, built by Della cycle-66.
+    scope_excluded: |
+      Not a dashboard — Telegram-only. Not an inference/summarization layer
+      (explicitly no LLM in the render path). Does not own or disposition
+      the detectors it surfaces — Della/Gizmoduck do that per the existing
+      split (infra vs. money-attached). Does not mutate n8n or any other
+      production state — read-only against both the detector board and
+      n8n's REST API. Layer 2+ (per-detector /detail, /suppress write-back,
+      /backup, /services, /deploys) explicitly deferred.
+    reports_to: internal_systems_director
+    pillar_primary: domestic
+    pillar_secondary: personal
+    stewards_surfaces:
+      - detector_nightly_status_consumption
+      - n8n_gated_url_live_check
+    responsibilities:
+      - red_command_diff_reporting
+      - plumbing_command_dead_endpoint_aggregation
+      - self_heartbeat_uptime_kuma_push
+    endpoint: (no LAN endpoint — Telegram long-polling)
+    deployment_id: null
+    health_check_definition: |
+      systemd --user unit (sturkel-bot.service) with Restart=always; a
+      JobQueue-driven push to an uptime-kuma push-monitor URL every 5 min
+      catches a hung-but-alive process that Restart=always cannot see.
+      KUMA_PUSH_URL is optional at startup (logs a warning and skips
+      pinging rather than crashing if unset).
+    vault_path: null
+    status: bootstrapping
+    repos_owned:
+      - dellatech (household/sturkel-bot/)
+    task_sources:
+      - label: sturkel-bot source (dellatech)
+        url: "https://github.com/GreenTilden/dellatech/tree/main/household/sturkel-bot"
+        type: repo
+      - label: Design seed
+        url: "https://github.com/GreenTilden/dellatech/blob/main/docs/foreman/gizmoduck-homelab-governance-bot-seed.md"
+        type: doc
+    provenance:
+      authored_at: 2026-08-08
+      ratification_cycle: della-cycle-66
+      source_path: dellatech/docs/foreman/gizmoduck-homelab-governance-bot-seed.md
+
   - id: nephew_dewey
     kind: nephew
     role_label: Dewey — Consolidation Thread Agent

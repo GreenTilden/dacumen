@@ -58,5 +58,8 @@ No build system, no package manager — pure bash + jq + git.
   owner of dacumen canonical maintenance + telemetry-contract framework
 - **darntech** (`~/projects/darntech`) — private upstream that ratifies the
   amendments dacumen mirrors
+- **dacumen-internal** (`~/projects/dacumen-internal`, private) — the internal half
+  of this repo since 2026-08-07: GOV sprint logs, estate memory corpus, `.foreman/`
+  cycle state. This repo is a public work sample; that one is not.
 - **Casey deployment**: registered at L02-d apply (dellatech cycle-40); id stored
-  at `.foreman/casey-deployment-id` after operator-paste
+  at `dacumen-internal/.foreman/casey-deployment-id`

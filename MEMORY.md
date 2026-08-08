@@ -4,8 +4,16 @@
 - **Status**: v0.2.13 landed LOCAL, **not pushed** — content refresh, not an amendment sync. Amendments through 25 (upstream charter v0.1.20) remain covered as of v0.2.12 (pushed + tagged 2026-07-11)
 - **Current Focus**: v0.2.13 = second case study + the mark shipping for real. Added `docs/case-studies/whethermap-observatory.md` (*Altitude as Abstraction Order* — invariant-beats-layout, the decision-ledger convention, build-a-second-artifact-instead-of-filtering, four honesty rules for self-updating surfaces) and a README §"What this looks like at scale" pointing at the live map. Logo truth-up: the hand-rolled 32×32 SVG is now declared the mark rather than a placeholder, with raster forms generated *from* it
 - **Blockers**: none. Two operator actions pending, neither blocking: (1) `git push` to `GreenTilden/dacumen` — held deliberately, a public-surface sanitization gets eyes before it leaves the machine; (2) upload `public/social-1200x630.png` to the repo's social-preview slot, which is a repo-settings action and cannot be a commit
-- **Next Steps**: after push, the standing amendment triage resumes version-forward — `ls` the upstream charter dir for versions past v0.1.20 and read each `dacumen_impact` line (see sync-process lessons v0.2.12). Casey deployment `4da4550b` registered; id stored at `.foreman/casey-deployment-id`
-- **Last Updated**: 2026-07-28
+- **Next Steps**: the standing amendment triage resumes version-forward — `ls` the upstream charter dir for versions past v0.1.20 and read each `dacumen_impact` line (see sync-process lessons v0.2.12). Casey deployment `4da4550b` registered; id now stored at `dacumen-internal/.foreman/casey-deployment-id`
+- **Last Updated**: 2026-08-07
+
+### Repo split (2026-08-07)
+This repo is public and is cited as a work sample. The internal working artifacts —
+GOV sprint logs, the estate memory corpus, `.foreman/` cycle state — moved to the
+private **`GreenTilden/dacumen-internal`** (`~/projects/dacumen-internal`), with
+per-file history carried over. What stays here is the framework itself: docs,
+skeleton, decisions, manifests, scripts. Full costing:
+`darntech/docs/dacumen-public-exposure-spike.md`.
 
 ## Project Identity
 
@@ -33,7 +41,8 @@ standing canonical-maintenance owner per upstream charter §22.a.1
 - `skeleton/` — generic CLAUDE.md / MEMORY.md / sprint scaffolds the installer copies
 - `skills/` + `commands/` — exportable Claude Code slash-commands/skills
 - `decisions/` — ADRs mirrored from upstream
-- `memory/` — sanitized topic-file memories
+- (`memory/`, `docs/foreman/sprints/`, `.foreman/` moved to `dacumen-internal` 2026-08-07 —
+  see Repo split above; `skeleton/MEMORY.md` remains here as the teaching template)
 
 **Sync ritual** (`docs/dacumen-sync-process.md`): an upstream amendment with
 `dacumen_impact: manifesto|case-study|skill|skeleton|script|doc-edit` triggers
@@ -55,4 +64,4 @@ See `decisions/adr-001-carbon-thin-house-standard.md` + `decisions/adr-002-rag-c
 ## Deployment Targets
 - **GitHub** (`github.com/GreenTilden/dacumen`) — the only consumer-facing surface; `git push origin main` after a clean `check-guardrails.sh` pass
 - **Local installer** — copies skeleton/ + scripts/ into a user's `~/.claude/` (or a path of their choosing)
-- **Casey Junior dashboard** — registered as a deployment (id at `.foreman/casey-deployment-id`); shows up on `ops.darrenarney.com` as a project tile via the dellatech-cycle-40-L02 PROJECT_ENDPOINTS + vaultNoteMap landing
+- **Casey Junior dashboard** — registered as a deployment (id at `dacumen-internal/.foreman/casey-deployment-id`); shows up on `ops.darrenarney.com` as a project tile via the dellatech-cycle-40-L02 PROJECT_ENDPOINTS + vaultNoteMap landing

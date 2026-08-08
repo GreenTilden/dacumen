@@ -251,7 +251,7 @@ provenance:
 id: service_casey_junior
 kind: service
 role_label: Casey Junior — Project Manager
-invocation_pattern: REST API at http://[redacted-internal-ip]:[redacted-port]/api/* (no auth) | Activity webhooks
+invocation_pattern: REST API at ${CASEY_BASE}/api/* (no auth) | Activity webhooks
 description: |
   Internal project management + deployment tracking service. Holds the
   authoritative deployment list, pipeline registry, pillar health, and
@@ -261,7 +261,7 @@ scope_excluded: |
   Not the financial data store (that's Lorna). Not the activity ledger
   (that's EllaBot). Not the LLM agent runtime (that's Claude Code).
 pillar_primary: professional
-endpoint: "[redacted-internal-ip]:[redacted-port]"
+endpoint: "${CASEY_BASE}"
 deployment_id: 9cbb63ce
 health_check_definition: |
   GET /api/health returns 200 with {status: ok, service: casey-junior};

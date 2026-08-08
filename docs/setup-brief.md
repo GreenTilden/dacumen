@@ -34,7 +34,7 @@ Base URL of a v2-compatible ledger service. When set, `/brief` queries the ledge
 Example:
 
 ```bash
-export DACUMEN_LEDGER_URL="http://your-ledger.example:[redacted-port]"
+export DACUMEN_LEDGER_URL="http://your-ledger.example"
 ```
 
 Add to your shell profile (`~/.bashrc` / `~/.zshrc`) if you want it set for every session.

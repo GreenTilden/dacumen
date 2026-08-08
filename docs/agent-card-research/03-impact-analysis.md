@@ -26,7 +26,7 @@ Multi-angle value-grep (per the [[canonical-source-per-fact]] rule #5 against na
 |---|---|---|
 | **per_agent_memory** | `~/.claude/projects/<slug>/memory/responsibilities.md` | Auto-regenerated; new fields included for free |
 | **per_agent_claude_md** | `<repo>/CLAUDE.md` (between `BEGIN/END dacumen` markers) | Auto-regenerated; same as above |
-| **primary_doc_surface** | Obsidian vault via pct push to [redacted-container] | Auto-regenerated; same |
+| **primary_doc_surface** | Obsidian vault via remote push to the doc host | Auto-regenerated; same |
 | **knowledge_management** | Notion page (via MCP) | Auto-regenerated; same |
 | **dashboard_json** | `darntech/observatory/data/org-chart/responsibilities.json` | Auto-regenerated; consumed by Vue |
 

@@ -10,7 +10,9 @@
 #                               hours worked / billable / claimable / QRE /
 #                               rd_credit / rate * anywhere in src/ or
 #                               docs/ or skeleton/ or scripts/)
-#   2. [redacted] grep      — catches any [redacted] leak anywhere
+#   2. Private deny-list     — catches operator-private literals (creditor names
+#                               etc.) leaking into distributable files. The
+#                               literals live OUTSIDE this repo; see Check 2.
 #   3. Script lint           — shellcheck if installed, bash -n otherwise
 #
 # Usage:
@@ -147,28 +149,69 @@ else
     FAIL_COUNT=$((FAIL_COUNT + 1))
 fi
 
-# ---- Check 2: [redacted] grep ----
-printf "${C_BOLD}[2/%d]${C_RESET} [redacted] audit..." "$TOTAL"
+# ---- Check 2: private deny-list audit ----
+#
+# THIS CHECK IS DELIBERATELY LITERAL-FREE. It used to hard-code a creditor name
+# directly in this file. dacumen is a PUBLIC repo, so that published the exact
+# value the check exists to suppress — the detector became the disclosure. The
+# literal was anonymously readable at raw.githubusercontent.com from 2026-04-15
+# until 2026-08-07 (darntech cycle-98 Q2 public-repo sweep).
+#
+# The literals now live OUTSIDE any repo, in a file that is never committed:
+#   $SCRUB_DENYLIST_FILE, else ~/.config/darntech/secrets/scrub-denylist.txt
+# One extended-regex alternation per line; blank lines and #-comments ignored.
+#
+# Prefer the estate's shared gate when present — it already owns this indirection
+# and is maintained in one place (operator-scripts, a private remote).
+printf "${C_BOLD}[2/%d]${C_RESET} Private deny-list audit..." "$TOTAL"
 
-WF_PATTERN='[Ww]ells.?[Ff]argo|[redacted]'
+DENYLIST_FILE="${SCRUB_DENYLIST_FILE:-$HOME/.config/darntech/secrets/scrub-denylist.txt}"
+SHARED_GATE="${SCRUB_GATE:-$HOME/projects/operator-scripts/utility/scrub-gate.sh}"
 
-WF_MATCHES=$(find "$REPO_ROOT" -type f \
-    \( -name "*.md" -o -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.html" -o -name "*.css" -o -name "*.json" \) \
-    -not -path "*/.git/*" \
-    -not -path "*/node_modules/*" \
-    -not -path "*/scratch/*" \
-    -not -path "*/tmp-install/*" \
-    -print0 2>/dev/null \
-    | xargs -0 grep -lE "$WF_PATTERN" 2>/dev/null || true)
+DENY_PATTERN=""
+if [ -r "$DENYLIST_FILE" ]; then
+    DENY_PATTERN=$(grep -vE '^[[:space:]]*(#|$)' "$DENYLIST_FILE" | paste -sd'|' -)
+fi
 
-if [ -z "$WF_MATCHES" ]; then
-    printf " ${C_GREEN}PASS${C_RESET}\n"
-    PASS_COUNT=$((PASS_COUNT + 1))
+if [ -z "$DENY_PATTERN" ] && [ ! -x "$SHARED_GATE" ]; then
+    # Loud SKIP, never a silent PASS — a missing deny-list must not read as clean.
+    printf " ${C_YELLOW:-$C_RED}SKIP${C_RESET}\n"
+    echo "  no deny-list at $DENYLIST_FILE and no shared gate at $SHARED_GATE" >&2
+    echo "  (expected for third-party clones of this framework — populate either to enable)" >&2
 else
-    printf " ${C_RED}FAIL${C_RESET}\n"
-    echo "$WF_MATCHES" | sed 's|^|  |'
-    suggest_fix "[redacted] data is operator-private. Never in public distribution. Remove immediately and do not commit."
-    FAIL_COUNT=$((FAIL_COUNT + 1))
+    DENY_MATCHES=""
+    while IFS= read -r -d '' f; do
+        if [ -n "$DENY_PATTERN" ] && grep -qiE "$DENY_PATTERN" "$f" 2>/dev/null; then
+            DENY_MATCHES="${DENY_MATCHES}${f}"$'\n'
+            continue
+        fi
+        if [ -z "$DENY_PATTERN" ] && [ -x "$SHARED_GATE" ]; then
+            # private-denylist ONLY — NOT the whole finance-existence category.
+            # The category also matches generic words ("checkbook", "debt") that
+            # appear legitimately in this repo's prose; scanning it wholesale
+            # would fail on false positives until someone switched the check off.
+            "$SHARED_GATE" check --only private-denylist "$f" >/dev/null 2>&1
+            [ $? -eq 3 ] && DENY_MATCHES="${DENY_MATCHES}${f}"$'\n'
+        fi
+    done < <(find "$REPO_ROOT" -type f \
+        \( -name "*.md" -o -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.html" \
+           -o -name "*.css" -o -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name "*.sh" \) \
+        -not -path "*/.git/*" \
+        -not -path "*/node_modules/*" \
+        -not -path "*/scratch/*" \
+        -not -path "*/tmp-install/*" \
+        -print0 2>/dev/null)
+    DENY_MATCHES="${DENY_MATCHES%$'\n'}"
+
+    if [ -z "$DENY_MATCHES" ]; then
+        printf " ${C_GREEN}PASS${C_RESET}\n"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        printf " ${C_RED}FAIL${C_RESET}\n"
+        echo "$DENY_MATCHES" | sed 's|^|  |'
+        suggest_fix "an operator-private literal is present in a distributable file. This repo is PUBLIC — remove the value, do not relocate it into another tracked file. If a check needs it, add it to \$SCRUB_DENYLIST_FILE (never committed)."
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
 fi
 
 # ---- Check 3: Script lint ----

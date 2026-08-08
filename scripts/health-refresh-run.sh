@@ -3,8 +3,8 @@
 #
 # WHY THIS EXISTS — GOV-03 L03 (governance-thread).
 # The 6 health-refresh cron jobs were `curl -sf <url> >/dev/null 2>&1` — silent,
-# fail-quiet, output discarded. When casey-pipeline (:[redacted-port]) is down, every job
-# failed invisibly: no log, no alert, no signal. casey-pipeline was dead from
+# fail-quiet, output discarded. When the upstream pipeline service is down, every job
+# failed invisibly: no log, no alert, no signal. The pipeline was dead from
 # the 2026-05-13 reboot until GOV-02 L04 restored it, so the whole 2026-05-14
 # morning batch fired into a dead port and nothing recorded it — which is
 # exactly why GOV-02 found 24-day-stale health scores with nothing surfacing

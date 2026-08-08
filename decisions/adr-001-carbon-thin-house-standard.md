@@ -20,7 +20,7 @@ Cycle-08-huey L11 shipped Sub-D Vue per-deployment Documents at `/review/:deploy
 
 Audit revealed:
 - Zero Carbon footprint in `src/`
-- Two prod-only HTML+CSS files at `/var/www/darntech-ops/customer-hub/` never committed to git
+- Two prod-only HTML+CSS files under the deployed web root never committed to git
 - 30+ Vue files using brand v3 application palette
 - Two ratified memories (`project_carbon_mcp_reference_layer.md` + `project_brand_v30_locked.md`) directly conflicted with operator's stated preference
 

@@ -106,7 +106,7 @@ The convention is open beyond business-role agents — `project_endpoint`-kind a
 |---|---|---|---|
 | `ops` | Front Office Director | business_role | DArnTech BU |
 | `della` | Internal Systems Director | business_role | DellaTech BU |
-| `greg` | Workshop Foreman | business_role | Vertical-IP system; uses `agent_health_check_checkbook` and `agent_health_check_aclu_intake` sub-source identifiers for specific workstreams |
+| `greg` | Workshop Foreman | business_role | Vertical-IP system; uses `agent_health_check_aclu_intake` and other per-workstream sub-source identifiers (some declared only in the private overlay) |
 | `gizmoduck` | Strategic Head / CSO | business_role | Not currently emitting agent_health_check entries; reserved for future use |
 | `ellabot` | Dev Lab (Telemetry Source) | business_role | EllaBot doesn't currently self-fire; reserved |
 | `casey` | Deployment Tracker (PM) | business_role | Consumed via Casey API; doesn't currently emit agent_health_check entries |

@@ -10,7 +10,7 @@
 #                               hours worked / billable / claimable / QRE /
 #                               rd_credit / rate * anywhere in src/ or
 #                               docs/ or skeleton/ or scripts/)
-#   2. Private deny-list     — catches operator-private literals (creditor names
+#   2. Private deny-list     — catches operator-private literals (specific names
 #                               etc.) leaking into distributable files. The
 #                               literals live OUTSIDE this repo; see Check 2.
 #   3. Script lint           — shellcheck if installed, bash -n otherwise
@@ -151,7 +151,7 @@ fi
 
 # ---- Check 2: private deny-list audit ----
 #
-# THIS CHECK IS DELIBERATELY LITERAL-FREE. It used to hard-code a creditor name
+# THIS CHECK IS DELIBERATELY LITERAL-FREE. It used to hard-code a private literal
 # directly in this file. dacumen is a PUBLIC repo, so that published the exact
 # value the check exists to suppress — the detector became the disclosure. The
 # literal was anonymously readable at raw.githubusercontent.com from 2026-04-15
@@ -187,7 +187,7 @@ else
         fi
         if [ -z "$DENY_PATTERN" ] && [ -x "$SHARED_GATE" ]; then
             # private-denylist ONLY — NOT the whole finance-existence category.
-            # The category also matches generic words ("checkbook", "debt") that
+            # The category also matches generic English words that
             # appear legitimately in this repo's prose; scanning it wholesale
             # would fail on false positives until someone switched the check off.
             "$SHARED_GATE" check --only private-denylist "$f" >/dev/null 2>&1

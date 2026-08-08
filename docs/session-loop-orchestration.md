@@ -229,7 +229,7 @@ If any of those return empty or stale, that's a compensating-action target — n
 
 ## Portability across projects
 
-The flow above is project-agnostic. Any repo following the dacumen memory-framework + three-sprint-cascade pattern can use this as the orchestration spec. Project-specific overlays (e.g., darntech's deployment-to-[redacted-container], sprite-forge's ComfyUI integration) layer on top of these stages without changing the underlying shape.
+The flow above is project-agnostic. Any repo following the dacumen memory-framework + three-sprint-cascade pattern can use this as the orchestration spec. Project-specific overlays (e.g., darntech's deployment-to-ingress, sprite-forge's ComfyUI integration) layer on top of these stages without changing the underlying shape.
 
 When bootstrapping a new project: the wake / loop / sleep skeleton is the same; only the artifacts (which APIs, which sprint dirs, which deploy commands) change.
 

@@ -1523,7 +1523,7 @@ agents:
       KUMA_PUSH_URL is optional at startup (logs a warning and skips
       pinging rather than crashing if unset).
     vault_path: null
-    status: bootstrapping
+    status: active
     repos_owned:
       - dellatech (household/sturkel-bot/)
     task_sources:

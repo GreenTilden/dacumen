@@ -45,9 +45,9 @@ PRIVATE_ENV="${DACUMEN_PRIVATE_ENV:-$HOME/.config/darntech/dacumen-render.env}"
 [ -r "$PRIVATE_ENV" ] && . "$PRIVATE_ENV"
 
 ELLABOT_URL="${ELLABOT_URL:-}"                 # empty = telemetry skipped
-DOC_HOST="${DOC_HOST:-${[redacted-container]_HOST:-}}"        # ssh target for the doc surface; empty = push skipped
+DOC_HOST="${DOC_HOST:-}"                       # ssh target for the doc surface; empty = push skipped
 DOC_PUSH_WRAPPER="${DOC_PUSH_WRAPPER:-}"       # optional prefix that re-enters a container, e.g. "<ctl> exec <id> --"
-VAULT_ROOT_REMOTE="${VAULT_ROOT_REMOTE:-${VAULT_ROOT_IN_[redacted-container]:-/opt/obsidian-vault/Obsidian Vault}}"
+VAULT_ROOT_REMOTE="${VAULT_ROOT_REMOTE:-/opt/obsidian-vault/Obsidian Vault}"
 
 CANONICAL_MD="$DACUMEN_ROOT/docs/manifests/org-chart-responsibilities.md"
 CANONICAL_YML="$DACUMEN_ROOT/docs/manifests/org-chart-responsibilities.yml"

@@ -72,7 +72,7 @@ git commit --allow-empty -m "chore(test-01): L01 — hook verify"
 Base URL of a v2-compatible ledger. Example:
 
 ```bash
-export DACUMEN_LEDGER_URL="http://your-ledger.example:[redacted-port]"
+export DACUMEN_LEDGER_URL="http://your-ledger.example"
 ```
 
 When unset, the hook runs the loop-parse + audit-refresh steps but emits no ledger entries. Useful if you want the TELCON v1 discipline without a ledger backend.

@@ -4,13 +4,13 @@
 # WHY THIS EXISTS — GOV-06 L03 (governance-thread).
 # GOV-06 L02 moved the /ops doc-health panel onto a static artifact
 # (observatory/data/doc-health-status.json) written nightly by
-# darntech/scripts/doc-health-snapshot.sh and deployed to [redacted-container]. That fixed the
+# darntech/scripts/doc-health-snapshot.sh and deployed to the web host. That fixed the
 # panel — but a static artifact has its own silent failure mode: if the snapshot
 # timer breaks, or the deploy step breaks, the panel keeps rendering the last
 # good data and nothing says it has gone stale. This checker closes that loop.
 # It tests BOTH copies:
 #   - the LOCAL artifact  — is the snapshot timer still writing it?
-#   - the PROD artifact   — is the deploy step still pushing it to [redacted-container]?
+#   - the PROD artifact   — is the deploy step still pushing it to the web host?
 #                           (this is the copy the panel actually reads)
 # and exits non-zero if either is missing, not JSON, or older than the window.
 # Wired to a systemd --user timer, the unit goes `failed` — visible to
@@ -74,10 +74,10 @@ fi
 prod_body="$(curl -s --max-time 8 "$PROD_URL" 2>/dev/null || echo "")"
 prod_code="$(curl -s --max-time 8 -o /dev/null -w '%{http_code}' "$PROD_URL" 2>/dev/null || echo "curl-err")"
 if [ "$prod_code" != "200" ]; then
-  echo "  STALE   prod — HTTP $prod_code (deploy broken, or [redacted-container] unreachable)"
+  echo "  STALE   prod — HTTP $prod_code (deploy broken, or web host unreachable)"
   fail=1
 elif ! echo "$prod_body" | jq -e . >/dev/null 2>&1; then
-  echo "  STALE   prod — HTTP 200 but not JSON (SPA HTML fallback — file missing on [redacted-container])"
+  echo "  STALE   prod — HTTP 200 but not JSON (SPA HTML fallback — file missing on the web host)"
   fail=1
 else
   check_age "prod" "$(echo "$prod_body" | jq -r '.generated_at // empty')" || fail=1

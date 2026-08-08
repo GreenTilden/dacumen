@@ -7,7 +7,7 @@
 #
 #   per_agent_memory      ~/.claude/projects/<slug>/memory/responsibilities.md
 #   per_agent_claude_md   <repo>/CLAUDE.md (between BEGIN/END dacumen markers)
-#   primary_doc_surface   Obsidian: pct push to [redacted-container] -> Obsidian Vault
+#   primary_doc_surface   Obsidian: remote push -> Obsidian Vault
 #   knowledge_management  Notion page (manual update via MCP; this script
 #                         emits a render payload + a fire-summary line — the
 #                         Notion mirror is fired by Claude session calling
@@ -21,7 +21,7 @@
 # Usage:
 #   render-responsibilities.sh                              # full fire
 #   render-responsibilities.sh --skip-telemetry             # no EllaBot fire
-#   render-responsibilities.sh --skip-obsidian              # no pct push
+#   render-responsibilities.sh --skip-obsidian              # no remote doc push
 #   render-responsibilities.sh --dry-run                    # report only
 #
 # Exit codes:
@@ -35,9 +35,19 @@ DACUMEN_ROOT="${DACUMEN_ROOT:-$HOME/projects/dacumen}"
 DARNTECH_ROOT="${DARNTECH_ROOT:-$HOME/projects/darntech}"
 DELLATECH_ROOT="${DELLATECH_ROOT:-$HOME/projects/dellatech}"
 MEMORY_ROOT="${MEMORY_ROOT:-$HOME/.claude/projects}"
-ELLABOT_URL="${ELLABOT_URL:-http://[redacted-internal-ip]:[redacted-port]}"
-[redacted-container]_HOST="${[redacted-container]_HOST:-root@[redacted-internal-ip]}"  # [redacted-container] migrated to Node 2 in Della cycle-2 L01 (2026-05-11); pct exec via Node 2 Proxmox host
-VAULT_ROOT_IN_[redacted-container]="${VAULT_ROOT_IN_[redacted-container]:-/opt/obsidian-vault/Obsidian Vault}"
+# ── per-install settings ─────────────────────────────────────────────────────
+# THIS REPO IS PUBLIC. Real hostnames, ports, and container transports live in a
+# private env file outside any repo; the defaults below are deliberately inert, so
+# a fresh clone renders the local surfaces and quietly skips the remote ones rather
+# than trying to reach someone else's infrastructure. See docs/setup-render.md.
+PRIVATE_ENV="${DACUMEN_PRIVATE_ENV:-$HOME/.config/darntech/dacumen-render.env}"
+# shellcheck source=/dev/null
+[ -r "$PRIVATE_ENV" ] && . "$PRIVATE_ENV"
+
+ELLABOT_URL="${ELLABOT_URL:-}"                 # empty = telemetry skipped
+DOC_HOST="${DOC_HOST:-${[redacted-container]_HOST:-}}"        # ssh target for the doc surface; empty = push skipped
+DOC_PUSH_WRAPPER="${DOC_PUSH_WRAPPER:-}"       # optional prefix that re-enters a container, e.g. "<ctl> exec <id> --"
+VAULT_ROOT_REMOTE="${VAULT_ROOT_REMOTE:-${VAULT_ROOT_IN_[redacted-container]:-/opt/obsidian-vault/Obsidian Vault}}"
 
 CANONICAL_MD="$DACUMEN_ROOT/docs/manifests/org-chart-responsibilities.md"
 CANONICAL_YML="$DACUMEN_ROOT/docs/manifests/org-chart-responsibilities.yml"
@@ -83,16 +93,52 @@ vlog "canonical version: $DACUMEN_VER"
 vlog "render date: $RENDER_DATE"
 
 # Parse the YAML sidecar into JSON via python3 (avoids yq dependency).
-MANIFEST_JSON=$(python3 -c "
-import sys, json
+#
+# Two things happen here that did not before the 2026-08-07 public-surface close:
+#
+#   1. PRIVATE OVERLAY. The public manifest cannot name a household-finance
+#      service — the shared scrub gate's finance-existence category is
+#      non-waivable, and a portfolio reader should not learn such a service
+#      exists. Those entries live in $PRIVATE_OVERLAY and are merged into
+#      `agents` here. Absent overlay = one fewer node, not an error.
+#   2. TOKEN EXPANSION. The manifest carries ${ELLABOT_BASE}-style tokens instead
+#      of real hosts and ports. They expand from the environment (see
+#      $PRIVATE_ENV). An UNRESOLVED token is left verbatim rather than blanked —
+#      a URL reading "${LORNA_BASE}/api" on the dashboard is an obvious
+#      misconfiguration; a URL reading "/api" is a silent one.
+PRIVATE_OVERLAY="${DACUMEN_PRIVATE_OVERLAY:-$HOME/projects/dacumen-internal/docs/manifests/org-chart-private-entries.yml}"
+MANIFEST_JSON=$(CANONICAL_YML="$CANONICAL_YML" PRIVATE_OVERLAY="$PRIVATE_OVERLAY" python3 -c '
+import sys, os, json, re
 try:
     import yaml
 except ImportError:
-    print('python3 yaml module required (apt install python3-yaml)', file=sys.stderr)
+    print("python3 yaml module required (apt install python3-yaml)", file=sys.stderr)
     sys.exit(2)
-with open('$CANONICAL_YML') as f:
-    print(json.dumps(yaml.safe_load(f), default=str))
-") || { err "YAML parse failed"; exit 2; }
+
+with open(os.environ["CANONICAL_YML"]) as f:
+    data = yaml.safe_load(f)
+
+overlay_path = os.environ.get("PRIVATE_OVERLAY", "")
+if overlay_path and os.path.isfile(overlay_path):
+    with open(overlay_path) as f:
+        extra = yaml.safe_load(f) or {}
+    extra_agents = extra.get("agents", [])
+    for a in extra_agents:
+        data.setdefault("agents", []).append(a)
+    print("  overlay: merged %d private agent(s)" % len(extra_agents), file=sys.stderr)
+
+TOKEN = re.compile(r"\$\{([A-Z][A-Z0-9_]*)\}")
+def expand(v):
+    if isinstance(v, str):
+        return TOKEN.sub(lambda m: os.environ.get(m.group(1), m.group(0)), v)
+    if isinstance(v, list):
+        return [expand(x) for x in v]
+    if isinstance(v, dict):
+        return {k: expand(x) for k, x in v.items()}
+    return v
+
+print(json.dumps(expand(data), default=str))
+') || { err "YAML parse failed"; exit 2; }
 
 # Private per-install agent identity map + narrative enrichment.
 # Keyed by agent_id (matches manifest agents[].id). Agents not in this map
@@ -131,11 +177,11 @@ IDENTITY_MAP_JSON=$(cat <<'MAPJSON'
     "ellabot_source_persona": "della",
     "bu_label": "DellaTech",
     "agent_short_name": "Della",
-    "stewards_prose_md": "- Household / homelab service estate: Tandoor (LIVE on [redacted-container]), Kavita, Plex, Home Assistant, *arr stack, Freezer Meals, themes hub\n- LXC topology on Node 2 (homelab side)\n- Backup discipline for household state (Proxmox snapshot policy)\n- Theme system architecture\n- Domestic-BU emission lane on the trend chart (the pink line — \"DellaTech\")\n- First §14a memory-audit at the active cycle's Dewey close (cycle-2)",
+    "stewards_prose_md": "- Household / homelab service estate: Tandoor (LIVE on the services container), Kavita, Plex, Home Assistant, *arr stack, Freezer Meals, themes hub\n- Container topology on the production node (homelab side)\n- Backup discipline for household state (Proxmox snapshot policy)\n- Theme system architecture\n- Domestic-BU emission lane on the trend chart (the pink line — \"DellaTech\")\n- First §14a memory-audit at the active cycle's Dewey close (cycle-2)",
     "emits_prose_md": "- **Layer A** (Personal-pillar synthesis): cross-BU artifacts originated from homelab side that land in DArnTech surfaces. Per `feedback_land_cross_bu_artifacts.md` — I'm the primary Layer A emitter (cycle-1 produced 2 such artifacts: framework-portability-thesis.md + DArnTech playbook §H)\n- **Layer B** (Personal-pillar synthesis): new DellaTech feedback memories · charter amendments (when authored at Della scope) · first §14a memory-audit (cycle-2 close)\n- **Layer B** (responsibility_check): one EllaBot entry per day during 23:45 drift check, with `metadata.agent: \"internal_systems_director\"`\n- **Domestic-pillar lane**: DellaTech sprint loop-closes (DELLA-N-* sprint-coded EllaBot end-events feed `della-daily-audit-snapshot.sh` → daily snapshot → pink trend line)",
-    "consumes_prose_md": "- This canonical (and its dacumen source)\n- DArnTech feedback corpus (inherited unless overridden by Della-specific rule per CLAUDE.md)\n- Casey Jr deployment `879022b3` (DellaTech) — phase tracking\n- EllaBot ledger filtered to `source: agent_health_check_della` for Della-emitted entries\n- [redacted-container] nginx state (for ingress changes affecting Della services)",
-    "how_to_apply_prose_md": "- When authoring an artifact that has cross-BU impact, I land it on the DArnTech surface directly per `feedback_land_cross_bu_artifacts.md` (NOT as an operator follow-up). I'm the primary Layer A emitter.\n- When deploying a Della service, the artifact + EllaBot fire happens under `source: agent_health_check_della` (NOT operator-fired).\n- Escalation matrix: [redacted-container] routes, Node 1 GPU contention, NFS topology → escalate to operator. Service deploys, LXC topology on Node 2, backup policy, theme architecture → my decision authority.\n- If this file disagrees with the dacumen source, the dacumen source wins.",
-    "claude_md_stewards_md": "- Household / homelab service estate (Tandoor LIVE on [redacted-container], Kavita pending, Plex, HA, *arr stack, Freezer Meals, themes hub)\n- LXC topology on Node 2 (homelab side; [redacted-container] della-services is the multi-tenant hub)\n- Backup discipline (Proxmox snapshot policy)\n- Theme system architecture\n- Domestic-BU emission lane on the trend chart (the pink line — `DellaTech`)\n- First §14a memory-audit fires at the active cycle's Dewey close (cycle-2)",
+    "consumes_prose_md": "- This canonical (and its dacumen source)\n- DArnTech feedback corpus (inherited unless overridden by Della-specific rule per CLAUDE.md)\n- Casey Jr deployment `879022b3` (DellaTech) — phase tracking\n- EllaBot ledger filtered to `source: agent_health_check_della` for Della-emitted entries\n- Ingress nginx state (for ingress changes affecting Della services)",
+    "how_to_apply_prose_md": "- When authoring an artifact that has cross-BU impact, I land it on the DArnTech surface directly per `feedback_land_cross_bu_artifacts.md` (NOT as an operator follow-up). I'm the primary Layer A emitter.\n- When deploying a Della service, the artifact + EllaBot fire happens under `source: agent_health_check_della` (NOT operator-fired).\n- Escalation matrix: ingress routes, GPU-node contention, NFS topology → escalate to operator. Service deploys, container topology on the production node, backup policy, theme architecture → my decision authority.\n- If this file disagrees with the dacumen source, the dacumen source wins.",
+    "claude_md_stewards_md": "- Household / homelab service estate (Tandoor LIVE on the services container, Kavita pending, Plex, HA, *arr stack, Freezer Meals, themes hub)\n- Container topology on the production node (homelab side; the services container is the multi-tenant hub)\n- Backup discipline (Proxmox snapshot policy)\n- Theme system architecture\n- Domestic-BU emission lane on the trend chart (the pink line — `DellaTech`)\n- First §14a memory-audit fires at the active cycle's Dewey close (cycle-2)",
     "claude_md_emits_md": "- **Layer A** (Personal-pillar synthesis): cross-BU artifacts from homelab side landing in DArnTech surfaces. **I am the primary Layer A emitter** per `feedback_land_cross_bu_artifacts.md` (cycle-1 produced 2 such artifacts).\n- **Layer B**: new feedback memories, charter amendments (Della-scope), §14a audit fires, daily `responsibility_check` entries (`metadata.agent: \"internal_systems_director\"`)\n- **Domestic-pillar lane**: DellaTech sprint loop-closes flow through `della-daily-audit-snapshot.sh` → daily snapshot → trend chart"
   }
 }
@@ -510,22 +556,28 @@ EOF
 if [ "$SKIP_OBSIDIAN" -eq 1 ]; then
     log "Surface 4/5: primary_doc_surface (Obsidian) — SKIPPED per flag"
 else
-    log "Surface 4/5: primary_doc_surface (Obsidian via pct push to [redacted-container])"
+    log "Surface 4/5: primary_doc_surface (Obsidian via remote push)"
     for agent_id in $(echo "$IDENTITY_MAP_JSON" | jq -r 'keys[]'); do
         agent_rec=$(echo "$IDENTITY_MAP_JSON" | jq --arg id "$agent_id" '.[$id]')
         bu_label=$(echo "$agent_rec" | jq -r '.bu_label')
-        page_path="$VAULT_ROOT_IN_[redacted-container]/02-Areas/Projects/$bu_label/Org Chart and Responsibilities.md"
+        page_path="$VAULT_ROOT_REMOTE/02-Areas/Projects/$bu_label/Org Chart and Responsibilities.md"
         obs_content=$(build_obsidian_page "$agent_id" "$agent_rec")
         # Stash locally first so we can hash-compare on next run.
         local_cache="$DACUMEN_ROOT/.render-cache/obsidian-$bu_label.md"
         mkdir -p "$(dirname "$local_cache")"
         if write_if_changed "$local_cache" "$obs_content" "obsidian-cache($bu_label)"; then
             if [ "$DRY_RUN" -eq 0 ]; then
-                # Push via pct exec on host. The file content goes over stdin to a 'tee' inside the container.
-                if ssh -o ConnectTimeout=5 "$[redacted-container]_HOST" "pct exec 100 -- bash -c 'cat > \"$page_path\"'" < "$local_cache" 2>/dev/null; then
-                    log "  ↳ obsidian($bu_label): pushed to [redacted-container]"
+                if [ -z "$DOC_HOST" ]; then
+                    # No doc host configured (the default for a fresh clone). Say so
+                    # once, loudly enough to notice, and do not count it as a failure.
+                    log "  ↳ obsidian($bu_label): no DOC_HOST configured — remote push skipped"
+                # Content goes over stdin to a shell on the doc host. DOC_PUSH_WRAPPER,
+                # when set, re-enters a container first; unset means write on the host.
+                elif ssh -o ConnectTimeout=5 "$DOC_HOST" \
+                        "$DOC_PUSH_WRAPPER bash -c 'cat > \"$page_path\"'" < "$local_cache" 2>/dev/null; then
+                    log "  ↳ obsidian($bu_label): pushed to doc host"
                 else
-                    err "obsidian($bu_label): pct push failed"
+                    err "obsidian($bu_label): remote push failed"
                     AGENT_FAILED_SURFACES[$agent_id]+="obsidian "
                     FAILED_COUNT=$((FAILED_COUNT+1))
                 fi
@@ -609,6 +661,13 @@ fire_ellabot() {
         }')
     if [ "$DRY_RUN" -eq 1 ]; then
         log "  ↳ ellabot[$persona]: DRY-RUN would fire entry"
+        return 0
+    fi
+    if [ -z "$ELLABOT_URL" ]; then
+        # Default for a fresh clone. Skip rather than POST at a placeholder host —
+        # but say it out loud, so a silently-unconfigured ledger never reads as a
+        # successful fire.
+        log "  ↳ ellabot[$persona]: no ELLABOT_URL configured — telemetry skipped"
         return 0
     fi
     local resp

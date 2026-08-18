@@ -378,7 +378,7 @@ $consumes
 $how_to_apply
 
 ## Cross-references
-- Plan that produced this contract: \`~/.claude/plans/well-yeah-i-think-soft-yeti.md\`
+- Plan that produced this contract: the cycle-2 L00 sidebar arc, shipped 2026-05-11 (plan file not retained \u2014 \`~/.claude/plans/\` is ephemeral scratch)
 - Manifest first-of-kind notes: \`dacumen/docs/manifests/org-chart-responsibilities.md\` ("First-of-kind notes" section)
 EOF
 }
@@ -434,7 +434,7 @@ $emits
               "check_kind": "daily_scheduled"}}
 \`\`\`
 
-**See also**: \`~/.claude/projects/-home-darney-projects-$(echo "$persona" | tr '[:upper:]' '[:lower:]' | sed 's/ops/darntech/;s/della/dellatech/')/memory/responsibilities.md\` (full agent-view), \`~/.claude/plans/well-yeah-i-think-soft-yeti.md\` (originating plan)
+**See also**: \`~/.claude/projects/-home-darney-projects-$(echo "$persona" | tr '[:upper:]' '[:lower:]' | sed 's/ops/darntech/;s/della/dellatech/')/memory/responsibilities.md\` (full agent-view), the cycle-2 L00 sidebar arc, shipped 2026-05-11 (originating plan; file not retained)
 <!-- END auto-rendered from dacumen -->
 EOF
 }
@@ -549,7 +549,7 @@ Each agent fires one EllaBot entry per daily 23:45 drift check with \`metadata.s
 
 ---
 Source-of-truth: \`dacumen/docs/manifests/org-chart-responsibilities.md\`
-Plan: \`~/.claude/plans/well-yeah-i-think-soft-yeti.md\`
+Plan: the cycle-2 L00 sidebar arc, shipped 2026-05-11 (file not retained)
 EOF
 }
 

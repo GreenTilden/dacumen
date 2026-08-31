@@ -1,28 +1,40 @@
 # dacumen — Memory
 
 ## Session Status
-- **Status**: v0.2.13 is PUSHED — `c89b269`, 2026-08-18, local `main` equals `origin/main`.
-  (This line read "landed LOCAL, **not pushed**" until 2026-08-30, dated 2026-08-07 — 23 days
-  stale and wrong about the repo's own push state, in the repo that publishes the
-  session-handoff rule. Recorded rather than quietly corrected: it is the cheapest possible
-  worked example of why the handoff is mandatory.)
-- **Current Focus**: public-surface remediation (2026-08-30). The 2026-08-07 split cleaned
-  CLAUDE.md and MEMORY.md but left the internal half tracked: `docs/agent-card-research/`,
-  five operational scripts, and systemd units carrying absolute `/home/<user>` paths. Those
-  are now in `dacumen-internal` with history. The org-chart manifest, which promises
-  "role-labels, no proper nouns", was publishing two children's given names, a client entity
-  name, 15 live Casey deployment ids and a Notion page id — all redacted. `check-guardrails.sh`
-  gained Check 4 (identity / operator-path / resource-id, corpus-wide, literal-free,
-  self-contained) because Checks 1-3 structurally could not see any of it and passed for 98 days.
-- **Blockers**: none blocking. Open operator actions: (1) `git push` — held for review, the
-  whole point of a public-surface change; (2) the history rewrite — HEAD is clean but every
-  redacted value is still served at old SHAs; (3) social-preview upload, a repo-settings action.
-- **Next Steps**: amendment triage resumes version-forward — `ls` the upstream charter dir past
-  v0.1.20 and read each `dacumen_impact`. Highest ratified is Amendment 25 / v0.1.20 and dacumen
-  covers through it, so there is no sync gap today. Casey deployment id lives at
-  `dacumen-internal/.foreman/casey-deployment-id` (not restated here — it is a live handle into
-  an unauthenticated tracker).
-- **Last Updated**: 2026-08-30
+- **Status**: v0.2.15 landed LOCAL — `031c7fd` (docs) + the CHANGELOG/MEMORY commit. `main` is
+  **2 commits ahead of `origin/main` and unpushed**. v0.2.14 (`c89b269`-era public-surface
+  remediation) is the last pushed state.
+- **Current Focus**: the pillar-test reframe (2026-08-31) and its propagation. `three-pillars.md`
+  was the hardest language in a repo whose README promises the opposite; it is now a **sorting
+  mechanism, not a bar to clear**. An axis says what work is FOR, which sets how much rigor it
+  earns. Single-axis work is **recorded, not rejected**. Added precedence (axes totally ordered by
+  what breaks), propagation (`effective_tier = min(declared, worst dependent)`), and an attention
+  budget that may honestly render as *unbudgeted*. `skeleton/CLAUDE.md` now carries Tier / Why this
+  tier / Depended on by.
+- **Propagated the same day** — this ran backwards from the usual upstream→mirror direction:
+  governance-thread `4a61a12` (5 files were byte-identical to dacumen's pre-reframe versions),
+  coriolii `95cbd3d` (pre-cycle validation doctrine — coverage no longer skips the 6-axis walk),
+  `~/.claude/CLAUDE.md` §Three Pillars, and the `/validate` skill + its capability file.
+- **Blockers**: none blocking. Open operator actions: (1) **ratify or reject darntech charter
+  Amendment 26** — `darntech/docs/charter/charter-v0.1.21-amendments-DRAFT.md` (`017fbd20`), which
+  amends §1 Mission from "must advance all three or be bundled" to the sorting framing. **Until it
+  ratifies, charter §1 outranks every doc listed above**, and the global CLAUDE.md says so
+  explicitly. (2) `git push` — still held for review, same as v0.2.14; a push here is a publish.
+  (3) the v0.2.14 history rewrite and social-preview upload, both still open. (4) **NEW —
+  `check-guardrails.sh` has no address/endpoint check.** Demonstrated live on 2026-08-31: a
+  tailnet IP + port was written into this file, all 4 checks passed, and neither the corpus-wide
+  script nor the local `pre-commit` hook flagged it. Caught by eye, not by instrument. This is the
+  v0.2.14 lesson repeating one version later — *a gate that cannot see a category must not be
+  quoted as evidence about that category* — and it wants a Check 5 (address / endpoint / port,
+  corpus-wide) with an allowlist for the example addresses docs legitimately use.
+- **Next Steps**: wire tier into `scan-repo.sh` — it classifies repo *shape* (greenfield / legacy /
+  established / foreman-enabled) but not *purpose*, and shape × tier → recipe is the natural next
+  piece (~45 min; a legacy repo at `experiment` doesn't need a full cartography sprint, one at
+  `customer` does). Then amendment triage resumes version-forward past charter v0.1.20.
+- **Review surface**: the reframe is published for operator reading on the private tailnet review
+  page (host + path deliberately not recorded here — this repo is public; the endpoint is in
+  `dacumen-internal`).
+- **Last Updated**: 2026-08-31
 
 ### Repo split (2026-08-07)
 This repo is public and is cited as a work sample. The internal working artifacts —

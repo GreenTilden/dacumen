@@ -2,6 +2,79 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.15 — the pillar test sorts, it does not gate (2026-08-31)
+
+The three-pillars material was the hardest language in this repo, and this repo's README
+promises the opposite. Side by side:
+
+    three-pillars.md:7     "must serve all three pillars"
+    three-pillars.md:15    "if work can't pass the test, it doesn't go on the roadmap"
+    validation-gate.md:12  "either failing is a deferral, not a debate"
+    README:148             "opinionated but not sacred... prose, not rules"
+    README:149             "Ignore the three-pillars test if it doesn't fit your life"
+
+The README was already honest. The docs were contradicting it, and the inversion ran the
+wrong way round: everything that actually transfers — loops, sprints, the cascade, the
+memory framework, the cycle manifest — was stated gently, while the one part that is purely
+one person's values was stated as law.
+
+Professional / Personal / Domestic encodes a life shape: you live with people, their
+wellbeing is a legitimate input to prioritisation, and you have discretion over which work
+you accept. A salaried engineer has none of that discretion. Someone living alone has no
+Domestic paragraph to write. The doc told both that their work failed the test. It also
+blocked this repo's own legacy-onboarding path, since a cartography sprint on an inherited
+codebase is professional-only and cannot be deferred.
+
+The portable lesson, and the reason it took a whole version: **the part of a framework that
+is most specific to its author is the part most likely to be written as law**, because to
+its author it is not a preference, it is just how things are. Everything a stranger can
+actually use was already hedged. Check the hedging gradient against the transfer gradient;
+where they run opposite, the doc is describing the author, not the method.
+
+### Changed
+
+- **`docs/three-pillars.md`** — rewritten as a sorting mechanism. An axis says what work is
+  *for*, which sets how much rigor it earns; it is not a bar work must clear to exist. The
+  three defaults are now named as the author's, with four alternate starter sets (Delivery ·
+  Craft · Career / Clients · Product · Learning / Customer · Revenue · Daily · Experiment /
+  Users · Contributors · Sustainability) and five rules for picking your own. Reframed on the
+  pattern `trio-identities.md` already used: here are mine, here are alternates, here is how
+  to choose.
+- **Three rules added** that make it a taxonomy rather than a judgement, generalised from the
+  estate-roster tier model. **Precedence** — axes totally ordered by what breaks if they
+  fail. **Propagation** — `effective_tier = min(declared, worst dependent)`; an experiment a
+  customer surface depends on is not an experiment, and a declared-vs-effective gap *is* the
+  finding. **Budget** — declare what you can carry, or render honestly as *unbudgeted*.
+- **`docs/validation-gate.md`** — the two gates stay orthogonal, but only validation can
+  defer a candidate. Coverage's failure verdict went from `one-pillar — bundle-or-defer` to
+  `one-axis — bundle, defer, or record`.
+- **`docs/cycle-architecture.md`** — the 3-cycle rotation no longer argues from a test that
+  can fail; a 1-cycle period is now described as the displacement the test exists to catch.
+- **`docs/quickstart.md`**, **`README.md`** — charter step 6 and the two pillar-test blurbs
+  follow the new framing. A forced axis paragraph is information, not a blocker.
+- **`skeleton/CLAUDE.md`** — "Three Pillars Check" is now "Axis Coverage" and carries
+  **Tier** / **Why this tier** / **Depended on by**, so a scaffolded repo declares its own
+  tier and the propagation rule has edges to run on.
+- **`skeleton/charter-v0.1-seed.md`**, **`skeleton/sprints/SAMPLE-01/charter.md`** — Rule 4
+  and the sample charter reframed. Single-axis work is recorded, not rejected.
+
+### Not changed
+
+- No code path. `pillar` remains one string in `.foreman/cycle.json` that `brief.sh` prints;
+  `cross-sprint-audit.sh` never read it. `check-guardrails.sh` passed 4/4 after every edit.
+- The three default axes themselves, and pillar rotation. Rotation is a focus mechanism, not
+  a permission mechanism.
+
+### Upstream note
+
+This one ran backwards. DAcumen normally mirrors amendments ratified upstream; here the
+reframe originated in the mirror and propagated outward the same day — to the private
+operating twin, to the pre-cycle validation doctrine, and to the operator's global config.
+The upstream business charter that *is* the rule has an amendment drafted but **not
+ratified**, and until it is, the charter outranks these docs. A future `docs/amendment-NN-
+patterns.md` will record the ratification when it lands; there is no sync gap to close in
+the meantime, only an authority that has not caught up yet.
+
 ## v0.2.14 — the sanitization that wasn't · public-surface remediation (2026-08-30)
 
 The repo was shared on LinkedIn on 2026-08-17. This is what a look at it found.

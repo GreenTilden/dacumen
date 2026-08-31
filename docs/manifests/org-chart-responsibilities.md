@@ -139,7 +139,8 @@ Each agent fires one EllaBot entry per daily drift-check. The entry shape:
   "metadata": {
     "synthesis_event_type": "responsibility_check",
     "agent": "<role_identifier>",
-    "surfaces_checked": ["memory", "claude_md", "obsidian", "notion", "dashboard_json"],
+    "surfaces_checked": ["memory", "claude_md", "obsidian", "dashboard_json"],
+    "surface_registry": {"memory": "checked", "claude_md": "checked", "obsidian": "checked", "dashboard_json": "checked", "notion": "retired-2026-07-04", "bookstack": "live-unregistered"},
     "drift_flags": [],
     "dacumen_canonical_version": "<commit-sha-of-this-manifest-at-time-of-check>",
     "check_kind": "daily_scheduled"
@@ -151,6 +152,17 @@ Where:
 - `<persona>` is the short identifier from the Persona ↔ role-label table above (e.g., `ops`, `della`).
 - `metadata.agent` is the long role-identifier from the YAML sidecar's `agents[].id` (e.g., `front_office_director`).
 - These differ intentionally: source-suffix is short for legibility in EllaBot UI; `metadata.agent` is the structured identifier consumed by aggregators.
+- `metadata.surface_registry` records **every known surface, including the ones not being checked**, with an explicit state: `checked`, `retired`, or `live-unregistered`. Added 2026-08-30 (cycle-101 L05).
+
+**Why the registry exists.** `surfaces_checked` on its own is a list of what is watched, and a list of what is watched cannot tell you what was dropped. Two surfaces proved that. `notion` sat in the checked list for eight weeks after the wiki push was retired on 2026-07-04, so the daily check reported a healthy surface that no longer updated. BookStack went the other way: it is live, it is the primary documentation render, and it was absent from the list entirely — indistinguishable from a surface nobody had ever considered. A manifest whose job is to make drift observable had two blind spots of opposite sign, in its own contract.
+
+The registry is the same rule this system applies to repos that run no work cycle: **a deliberate omission is a value, never an empty space.** States, as verified on 2026-08-30:
+
+| surface | state | evidence |
+|---|---|---|
+| `memory` · `claude_md` · `obsidian` · `dashboard_json` | `checked` | rendered by the renderer and hash-compared by the drift check |
+| `notion` | `retired-2026-07-04` | ratified cycle-87. Push script marked decommissioned, scheduled job removed, commit-hook branch removed. Verified by inspection on 2026-08-30 |
+| `bookstack` | `live-unregistered` | live and healthy — its own status endpoint returns database, cache and session all true — but **nothing renders this manifest to it**. There is no wiki-manifest registration for this corpus, so the documentation-parity check never sees it. Listing it as `checked` would be the same lie in the opposite direction. Registering it is an operator decision; until then the omission is on the record |
 
 **M23 from upstream P1 audit** resolved here: prior manifest version declared `agent_health_check_<agent_id>` (long form) which didn't match real practice. Real practice uses short persona; both forms are now formally declared.
 

@@ -21,6 +21,15 @@
 #   ./scripts/check-guardrails.sh --verbose      # show all file scans even on pass
 #   ./scripts/check-guardrails.sh --help         # this help
 #
+# Environment:
+#   DACUMEN_NO_DENYLIST=1   Acknowledge that you keep no private deny-list. If you
+#                           cloned this kit that is the normal case; without it,
+#                           Check 2 cannot run and the suite exits 2 rather than
+#                           reporting a pass it did not earn.
+#   SCRUB_DENYLIST_FILE     Path to your private deny-list (one ERE per line).
+#                           Never commit it. This is the only sanctioned home for
+#                           a specific private literal.
+#
 # Install as pre-commit hook:
 #   ln -s ../../scripts/check-guardrails.sh .git/hooks/pre-commit
 # or via the installer:
@@ -29,7 +38,9 @@
 # Exit codes:
 #   0 — all checks passed
 #   1 — one or more checks failed; see stderr output for detail
-#   2 — invalid arguments
+#   2 — invalid arguments, OR a check could not run (see DACUMEN_NO_DENYLIST).
+#       A check that could not run is NOT a pass. Reporting it as one is the
+#       failure this suite exists to prevent.
 
 set -u
 
@@ -173,11 +184,23 @@ if [ -r "$DENYLIST_FILE" ]; then
     DENY_PATTERN=$(grep -vE '^[[:space:]]*(#|$)' "$DENYLIST_FILE" | paste -sd'|' -)
 fi
 
-if [ -z "$DENY_PATTERN" ] && [ ! -x "$SHARED_GATE" ]; then
-    # Loud SKIP, never a silent PASS — a missing deny-list must not read as clean.
+if [ -z "$DENY_PATTERN" ] && [ ! -x "$SHARED_GATE" ] && [ "${DACUMEN_NO_DENYLIST:-0}" = "1" ]; then
+    # ACKNOWLEDGED absence. If you cloned this kit you have no private deny-list
+    # and never will — that is the normal case, not a fault, and it must not leave
+    # you with a suite that can never exit 0. Set DACUMEN_NO_DENYLIST=1 to say so
+    # once. Checks 1, 3 and 4 are self-contained and still do their jobs.
+    printf " ${C_DIM}n/a${C_RESET} ${C_DIM}(no private deny-list; acknowledged)${C_RESET}\n"
+    PASS_COUNT=$((PASS_COUNT + 1))
+elif [ -z "$DENY_PATTERN" ] && [ ! -x "$SHARED_GATE" ]; then
+    # UNACKNOWLEDGED absence — loud, and not a pass. The difference between "I
+    # have no deny-list" and "my deny-list silently went missing" is the whole
+    # ballgame: the second reads identical to the first and must never be quoted
+    # as a clean run. Exits 2 via the summary.
     printf " ${C_YELLOW:-$C_RED}SKIP${C_RESET}\n"
     echo "  no deny-list at $DENYLIST_FILE and no shared gate at $SHARED_GATE" >&2
-    echo "  (expected for third-party clones of this framework — populate either to enable)" >&2
+    echo "  If you cloned this kit, that is expected: re-run with DACUMEN_NO_DENYLIST=1" >&2
+    echo "  to acknowledge it. If you DO maintain one, it has gone missing — that is a" >&2
+    echo "  real finding, and this run is not evidence of anything." >&2
 else
     DENY_MATCHES=""
     while IFS= read -r -d '' f; do
@@ -296,15 +319,23 @@ printf "${C_BOLD}[4/%d]${C_RESET} Identity + resource-id audit..." "$TOTAL"
 FQDN_ALLOW='raw\.githubusercontent\.com|www\.w3\.org'
 
 CAT4_MATCHES=""
-scan4() { # <label> <ere> <hint>
-    local label="$1" ere="$2" hits
+# scan4 <label> <ere> [exclude-ere]
+# NOTE: grep -E has NO lookahead. An attempt to write the placeholder-username
+# carve-out as (?!user/|...) parsed as a literal, matched nothing, and reported
+# PASS on a tree containing a real /home/<user>/ path — caught only by injecting
+# one. Exclusions are a SECOND pass, never inline.
+scan4() {
+    local label="$1" ere="$2" excl="${3:-}" hits
     hits=$(git -C "$REPO_ROOT" grep -nIE "$ere" -- . 2>/dev/null \
            | grep -vE '^scripts/check-guardrails\.sh:' || true)
+    [ -n "$excl" ] && hits=$(echo "$hits" | grep -vE "$excl" || true)
     [ -n "$hits" ] && CAT4_MATCHES="${CAT4_MATCHES}${label}"$'\n'"$(echo "$hits" | sed 's|^|    |')"$'\n'
 }
 
 # An absolute home path is a hidden dependency on one machine, and names its user.
-scan4 "operator-path" '(/home/|/Users/)[a-z][a-z0-9._-]*/'
+# Placeholder usernames are what a doc SHOULD use — never flag them.
+scan4 "operator-path" '(/home/|/Users/)[a-z][a-z0-9._-]{2,}/' \
+      '/(home|Users)/(user|username|youruser|you|example|someone|me|alice|bob|foo|bar|test|demo)/'
 # Live handles into deployment trackers / SaaS pages. Casey Junior runs unauthenticated.
 scan4 "resource-id"   '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 scan4 "resource-id"   '(deployment|deploy_id|page_id|/review/)[^0-9a-f]{0,12}\b[0-9a-f]{8}\b'

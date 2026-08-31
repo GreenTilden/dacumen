@@ -19,7 +19,7 @@ They fire in a natural order: axis coverage is cheap (you and the charter answer
 
 If you surface a new initiative — a new vertical, a new client offering, a new product, a new internal-tooling direction that did not exist as carryover at the previous cycle close — the session runs the gate against it and writes a verdict artifact **before** authoring the cycle's manifest. The verdict either authorizes the cycle to open (`STRONG`), defers it (`WEAK`), or kicks the initiative back for sharpening (`PIVOT`).
 
-The chain runs **operator surfaces scope → three-pillar gate → validation gate → cycle-open.** A `WEAK` or `PIVOT` verdict is the same kind of brake a one-pillar verdict is.
+The chain runs **operator surfaces scope → axis coverage recorded → validation gate → cycle-open.** Validation is the only brake in that chain: `WEAK` or `PIVOT` defers a candidate. Single-axis coverage does not.
 
 ## §2 — When the gate fires — and when it doesn't
 
@@ -61,10 +61,10 @@ The scorecard **does not gate** — it does not block a cycle from opening. It *
 
 ## §5 — Verdict → action
 
-| Validation verdict | Three-pillar verdict | Action |
+| Validation verdict | Axis coverage | Action |
 |---|---|---|
-| `STRONG` | passes | **Open the cycle.** The verdict artifact is the cycle's primary scope substrate. |
-| `STRONG` | one-pillar | **Bundle or defer.** Externally-real, but it must lift more pillars — bundle with a complementary candidate or defer until a bundle exists. |
+| `STRONG` | multi-axis | **Open the cycle.** The verdict artifact is the cycle's primary scope substrate. |
+| `STRONG` | single-axis | **Open the cycle, with the narrowness recorded.** Externally-real, and narrow. Prefer a real bundle if one exists, and where several `STRONG` candidates compete for the same hour the broader one wins. But narrowness alone doesn't defer anything — record `single-axis — deliberate: <why>` and proceed. |
 | `WEAK` | (any) | **Defer.** Record the artifact with a **re-validation trigger** — what new evidence would flip it to `STRONG`. Do not open the cycle. |
 | `PIVOT` | (any) | **Sharpen and re-validate.** Signal is there, the form is wrong; the artifact names what to sharpen, and the next pass re-runs the six axes on the sharpened version. |
 
@@ -77,7 +77,7 @@ A run writes **one file**: a verdict doc in the *initiative's own repo* (each pr
 ```
 ## Validation verdict — <initiative-slug> · <date> · <session>
 Initiative: <one-line: the named scope surfaced>
-Three-pillar verdict: <pass / one-pillar — bundle-or-defer>   (run first; if FAIL, skip the axes)
+Axis coverage: <axes served> — <multi-axis / single-axis — bundle candidate: … / single-axis — deliberate: … / single-axis — defer: …>   (record first; it never skips the axes)
 
 Axis 1 — fatal flaws         : <evidence — most likely killer in 90 days>
 Axis 2 — problem reality     : PASS/FAIL — <customer language quoted; source>
@@ -93,7 +93,7 @@ Scorecard (multi-candidate only):
   MVP feasibility    : <score> — <evidence>
   Differentiation    : <score> — <evidence>
 
-Action: <open cycle | bundle-or-defer | defer with re-validation trigger | sharpen and re-validate>
+Action: <open cycle | open cycle as deliberate single-axis | bundle, then open | defer with re-validation trigger | sharpen and re-validate>
 Re-validation trigger (if WEAK / PIVOT): <what new evidence flips the call>
 ```
 

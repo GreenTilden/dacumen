@@ -1,0 +1,25 @@
+{
+  "cycle_number": 1,
+  "cycle_label": "first-cycle",
+  "pillar": "professional",
+  "pillar_rotation_position": 1,
+  "pillar_rotation_cycle_length": 3,
+  "cadence": "weekly",
+  "structure": "dev-week",
+  "cascade_mode": "sequential-with-lag-fixed-N",
+  "charter_version": "0.1",
+  "rotation_discipline_strictness": "strict",
+  "sprint_root": "sprints",
+  "sprint_trio": [
+    {
+      "identity": "Huey",
+      "id": "SAMPLE-01",
+      "role": "discovery",
+      "work_locus": "the sample sprint the installer shipped — replace with your first real sprint"
+    }
+  ],
+  "carryover_decisions_at_open": {},
+  "opened_at": "YYYY-MM-DDT00:00:00Z",
+  "status": "open",
+  "notes": "Seed manifest, written by scripts/install.sh so /brief renders on the first session. Three things to do as you go: (1) set cycle_label, pillar and opened_at to your real first cycle; (2) point sprint_trio[0].id at your own sprint once you copy SAMPLE-01; (3) add the validation and consolidation entries when you open those sprints — see docs/three-sprint-cascade.md. sprint_root is resolved relative to the directory holding .foreman/, and may be an absolute path. Field reference: docs/cycle-architecture.md."
+}

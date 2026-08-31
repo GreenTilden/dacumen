@@ -2,6 +2,8 @@
 
 *You've installed DAcumen. Now what? This walkthrough takes you from "the templates are on disk" to "a real Foreman^^ loop has fired" in about ten minutes. No prior framework experience required.*
 
+**Starting from a repo that already exists?** Read `onboarding-an-existing-repo.md` instead, or alongside this. A repo with real history needs a different first sprint than a new one — run `./scripts/scan-repo.sh /path/to/repo` and it will tell you which.
+
 ## Before you start
 
 Make sure you've run the installer:
@@ -221,6 +223,7 @@ None of these are canonical. They're all workarounds for a real methodology gap.
 - **`three-pillars.md`** — the Professional / Personal / Domestic test. You already wrote a paragraph per pillar in your sprint charter; this doc explains why.
 - **`memory-framework.md`** — the CLAUDE.md + MEMORY.md tier system and the vocabulary-guardrail pattern. Read this when you're about to surface time or money metrics in a UI or report.
 - **`hitl-cadence.md`** — the Human-in-the-Loop checkpoint rule. You'll hit your first cadence trigger around L03 — come back here before you do.
+- **`onboarding-an-existing-repo.md`** — the four repo shapes, the cartography sprint, and why HITL density is set by the test suite rather than the repo's age.
 - **`setup-brief.md`** — the `/brief` skill in full: the sprint-root and observatory lookup order, and the optional ledger contract that fills in the Ledger section.
 - **`trio-identities.md`** — naming your three sprints with alternate trios (Three Stooges, Chipmunks, Musketeers, ...) and the pick-your-own-palette checklist.
 

@@ -19,6 +19,7 @@ Anthropic account + local filesystem.
 ```bash
 ./scripts/install.sh             # scaffolds ~/.claude/ (backs up existing first)
 ./scripts/install.sh --reference # print-only, no writes
+./scripts/scan-repo.sh <repo>    # classify a repo, recommend its first sprint (read-only)
 ./scripts/check-guardrails.sh    # privacy + sanitization grep — MUST pass before any commit
 ./scripts/cross-sprint-audit.sh  # bash + jq audit of local sprint state
 ```
@@ -34,6 +35,8 @@ No build system, no package manager — pure bash + jq + git.
 | `docs/dacumen-sync-process.md` | The 5-step ritual for absorbing amendments from the private source |
 | `scripts/check-guardrails.sh` | Privacy/sanitization enforcement — gates every sync commit |
 | `scripts/install.sh` | End-to-end installer (delivers on the 5-minute claim) |
+| `scripts/scan-repo.sh` | Read-only repo classifier — prints the first sprint that fits a greenfield / legacy / established / foreman-enabled repo |
+| `docs/onboarding-an-existing-repo.md` | Why an inherited codebase gets a cartography sprint before any change loop |
 | `skeleton/` | Generic CLAUDE.md / MEMORY.md / sprint templates the installer copies |
 | `docs/amendment-NN-patterns.md` | Per-amendment pattern docs landed via sync ritual |
 | `decisions/adr-NNN-*.md` | Architecture decisions ratified upstream + mirrored here |

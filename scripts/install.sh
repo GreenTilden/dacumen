@@ -4,6 +4,9 @@
 # Usage:
 #   ./scripts/install.sh                           # interactive, installs to ~/.claude
 #   ./scripts/install.sh --reference               # prints paths, writes nothing
+#   ./scripts/install.sh --scan <repo>             # classify <repo> and print the
+#                                                    matching onboarding recipe, then
+#                                                    exit — writes nothing
 #   ./scripts/install.sh --target <dir>            # install to a custom path (for testing)
 #   ./scripts/install.sh --force                   # skip confirmation prompts
 #   ./scripts/install.sh --hooks <repo>            # also install check-guardrails.sh
@@ -21,6 +24,10 @@
 #   4. Copies scripts into the target scripts dir
 #   5. Prints a "where to go next" summary
 #
+# Onboarding an existing repo is a separate question — a greenfield repo and an
+# inherited codebase want different first sprints. Run --scan against it, or
+# scripts/scan-repo.sh directly. See docs/onboarding-an-existing-repo.md.
+#
 # Nothing is destroyed. Nothing phones home. You can uninstall by deleting
 # the newly-installed files and restoring the backup directory.
 
@@ -34,16 +41,20 @@ INSTALL_HOOKS=0
 HOOKS_REPO=""
 INSTALL_COMMIT_HOOK=0
 COMMIT_HOOK_REPO=""
+SCAN_REPO=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
         --reference)           MODE="reference"; shift ;;
+        --scan)                MODE="scan"; SCAN_REPO="${2:-.}"; shift 2 ;;
         --target)              TARGET="$2"; shift 2 ;;
         --force)               FORCE=1; shift ;;
         --hooks)               INSTALL_HOOKS=1; HOOKS_REPO="$2"; shift 2 ;;
         --install-commit-hook) INSTALL_COMMIT_HOOK=1; COMMIT_HOOK_REPO="$2"; shift 2 ;;
         -h|--help)
-            sed -n '2,25p' "$0" | sed 's/^# //; s/^#//'
+            # Print the whole header comment, whatever its length — a fixed line
+            # range silently truncates the moment a usage line is added.
+            awk 'NR>1 { if (/^#/) { sub(/^# ?/, ""); print } else exit }' "$0"
             exit 0
             ;;
         *) echo "unknown arg: $1" >&2; exit 2 ;;
@@ -78,6 +89,11 @@ say ""
 say_bold "   DAcumen installer"
 say_dim  "   a gift of working rhythm for Claude Code"
 say ""
+
+# ---- Scan mode: classify a repo and exit. Writes nothing. ----
+if [ "$MODE" = "scan" ]; then
+    exec "$REPO_ROOT/scripts/scan-repo.sh" "$SCAN_REPO"
+fi
 
 # ---- Reference mode: print paths and exit ----
 if [ "$MODE" = "reference" ]; then
@@ -172,7 +188,7 @@ fi
 # ---- Install scripts into $TARGET/scripts so they're easy to find ----
 say_blue "Installing scripts..."
 mkdir -p "$TARGET/scripts"
-for script in cross-sprint-audit.sh check-guardrails.sh post-commit-hook.sh; do
+for script in cross-sprint-audit.sh check-guardrails.sh post-commit-hook.sh scan-repo.sh; do
     src="$REPO_ROOT/scripts/$script"
     dst="$TARGET/scripts/$script"
     if [ -e "$src" ]; then
@@ -319,6 +335,11 @@ say "  2. Read $REPO_ROOT/docs/quickstart.md (spin up your first real sprint)"
 say "  3. Read $REPO_ROOT/docs/foreman-manifesto.md (the core framework)"
 say "  4. Edit $TARGET/CLAUDE.md to match your context"
 say "  5. Run $TARGET/scripts/cross-sprint-audit.sh when you have sprints"
+say ""
+say "Pointing this at a repo that already exists?"
+say "  $TARGET/scripts/scan-repo.sh <repo>   # classifies it, recommends a first sprint"
+say_dim "  An inherited codebase wants a different first sprint than a new one."
+say_dim "  Why: $REPO_ROOT/docs/onboarding-an-existing-repo.md"
 say ""
 say_dim "DAcumen is a starting point. Take what works, drop what doesn't,"
 say_dim "shape the rest to your context. There's nothing to update, no service"

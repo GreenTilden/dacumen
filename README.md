@@ -59,6 +59,7 @@ Probably no if:
 - **A skeleton `~/.claude/` config** — a generic, privacy-scrubbed CLAUDE.md + MEMORY.md + sample sprint folder you can adapt to your own context. Fill in the blanks, delete what doesn't fit, keep what does.
 - **A cross-sprint audit script** — pure bash + jq, no dependencies on anyone's infrastructure. Reads your own sprint logs, emits a JSON snapshot of where every active sprint sits in the cascade, flags inversions, highlights health.
 - **A quickstart walkthrough** — "spin up your first sprint in 10 minutes." Complete with a sample sprint you can run a first loop through before you've written anything yourself.
+- **A repo scanner** — point it at a repo and it classifies what you've got (greenfield / legacy / established / already-running) and prints the first sprint that fits. An inherited codebase wants a different first sprint than a new one: it has to become describable before a loop can safely change anything. Read-only; it writes nothing.
 
 ## What's explicitly NOT in the box
 
@@ -95,6 +96,14 @@ cd ~/.claude && claude
 
 and type `/brief`. That's the whole loop, working, in one command. `docs/quickstart.md` takes it from there.
 
+**Already have a repo you want to point this at?** Scan it first — the recipe differs a lot between a fresh project and an inherited one:
+
+```bash
+./scripts/install.sh --scan /path/to/your/repo
+```
+
+That reads the repo and prints a recommended first sprint. It writes nothing.
+
 If you'd rather not touch your existing `~/.claude/` at all, pass `--reference`:
 
 ```bash
@@ -113,6 +122,7 @@ Once installed, the onboarding path is:
 4. **`docs/three-pillars.md`** — the organizing principle that decides what work is worth doing. ~5 minutes.
 5. **`docs/memory-framework.md`** — how CLAUDE.md and MEMORY.md work together across sessions. ~5 minutes.
 6. **`docs/quickstart.md`** — your first sprint, start to finish. ~10 minutes to read + try.
+7. **`docs/onboarding-an-existing-repo.md`** — pointing all this at a repo that already exists, which is usually what you're actually doing. ~5 minutes.
 
 At that point you have enough to open a real sprint, fire a real loop, and see your first cross-sprint audit. Everything else in DAcumen is reference material you pull in when you need it.
 

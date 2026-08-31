@@ -1043,10 +1043,10 @@ agents:
     commit_prefix_convention: "feat(ddann-01-l<NN>): / docs(ddann-01-l<NN>):"
     source_ref_prefix: "ddann_01_l<NN>_<phase> (optional identity suffix: ddann_01_l<NN>_huey_<phase>)"
     reporting_cadence: Every loop close + cascade_health check on every wake (per DDANN-01 L58 cross-sprint-sync design)
-    deployment_id: huey-monitor-01 (historical) | be099f1c (MISC LLC DDANN-01 research substrate)
+    deployment_id: huey-monitor-01 (historical) | <deployment-id> (client engagement research substrate)
     task_sources:
-      - label: Casey deployment — MISC LLC (DDANN-01 substrate)
-        url: /review/xxxxxxxx
+      - label: Casey deployment — a client engagement (DDANN-01 substrate)
+        url: /review/<deployment-id>
         type: deployment
       - label: DDANN-01 sprint log (open + closed loops)
         url: /repos/darntech-huey/blob/main/docs/foreman/sprints/DDANN-01/sprint-log.md
@@ -1078,7 +1078,7 @@ agents:
     scope_excluded: |
       Not Dewey's lane (discovery-layer novel research, DDANN-01 — wait, actually
       Huey's — and consolidation work, Dewey's N0D3MAD). Not construction-vertical
-      customer work (Dewey via MISC LLC). Not cross-thread synthesis (Huey).
+      customer work (Dewey via a client engagement). Not cross-thread synthesis (Huey).
       Not business strategy + pricing (Gizmoduck persona).
     reports_to: operator
     pillar_primary: personal
@@ -1228,7 +1228,7 @@ agents:
       - faster_whisper_transcription
       - ollama_analysis_orchestration
     endpoint: "${ELLABOT_BASE_HOSTPORT}"
-    deployment_id: 4ea1a17f
+    deployment_id: "<deployment-id>"
     health_check_definition: |
       GET /api/health returns 200 with {status: ok, service: ellabot};
       end-to-end test: GET /api/v2/entries?since=24h returns recent entries,
@@ -1238,8 +1238,8 @@ agents:
     repos_owned:
       - ellabot
     task_sources:
-      - label: Casey deployment review — EllaBot 4ea1a17f
-        url: /review/xxxxxxxx
+      - label: Casey deployment review — EllaBot <deployment-id>
+        url: /review/<deployment-id>
         type: deployment
       - label: GitHub repo (ellabot)
         url: /repos/ellabot
@@ -1293,7 +1293,7 @@ agents:
       - asset_depreciation_tracking
       - cashflow_projection
     endpoint: "${LORNA_BASE_HOSTPORT}"
-    deployment_id: 65dac2cd
+    deployment_id: "<deployment-id>"
     health_check_definition: |
       Service reachable on 8901 (no /api/health endpoint — verify_token short-
       circuits without API_TOKEN; now enforces Bearer auth as of GOV-10 token
@@ -1304,8 +1304,8 @@ agents:
     repos_owned:
       - lorna-financials
     task_sources:
-      - label: Casey deployment review — Lorna 65dac2cd
-        url: /review/xxxxxxxx
+      - label: Casey deployment review — Lorna <deployment-id>
+        url: /review/<deployment-id>
         type: deployment
       - label: Lorna dashboard view
         url: /lorna
@@ -1353,7 +1353,7 @@ agents:
       - scheduled_collector_orchestration
       - pipeline_health_pattern_detection
     endpoint: "${DARNMETRICS_BASE_HOSTPORT}"
-    deployment_id: 8c7945b5
+    deployment_id: "<deployment-id>"
     health_check_definition: |
       GET /api/health returns 200 with {status: ok, service: DArnometer, version, location: "Indianapolis, IN — Meridian-Kessler"};
       collectors reach their data sources on schedule; predictions update within freshness budget.
@@ -1362,8 +1362,8 @@ agents:
     repos_owned:
       - darnometer
     task_sources:
-      - label: Casey deployment review — DArnometer 8c7945b5
-        url: /review/xxxxxxxx
+      - label: Casey deployment review — DArnometer <deployment-id>
+        url: /review/<deployment-id>
         type: deployment
       - label: GitHub repo (darnometer)
         url: /repos/darnometer
@@ -1408,7 +1408,7 @@ agents:
       - meeting_review_email_generation
       - real_time_deal_qa_via_casey_lorna_tool_use
     endpoint: (no LAN endpoint — physical device)
-    deployment_id: eb57b57e
+    deployment_id: "<deployment-id>"
     health_check_definition: |
       ESP32 reachable via paired nodemad hub; faster-whisper + Ollama + Claude
       API all healthy on the hub side; ops dashboard project page returns
@@ -1418,8 +1418,8 @@ agents:
     repos_owned:
       - nodemad/darnbot (lives under nodemad)
     task_sources:
-      - label: Casey deployment review — Darnbot eb57b57e
-        url: /review/xxxxxxxx
+      - label: Casey deployment review — Darnbot <deployment-id>
+        url: /review/<deployment-id>
         type: deployment
       - label: Darnbot project page
         url: /projects/darnbot
@@ -1710,7 +1710,7 @@ agents:
     description: |
       Notion via MCP. 14 tools across pages, databases, comments, users, teams,
       data sources, search, views, duplication, move. Used in this session for
-      the agent-card-research Notion page updates (page_id xxxxxxxx-3a6c-81c9...).
+      the agent-card-research Notion page updates (page_id <notion-page-id>).
     scope_excluded: |
       Not for non-Notion knowledge bases. Not for Obsidian (separate provider).
       Not for live database queries — fetches at MCP call time, not real-time sync.
@@ -2107,7 +2107,7 @@ agents:
     emitter_class: cycle_emitter
     role_label: gamecast podDAd — weekly news-tied playable HTML5 games
     invocation_pattern: git workspace at ~/projects/gamecast-poddad + Foreman cadence (gamecast-cycle-N nephew lineage)
-    description: Weekly Patreon-gated HTML5 game tied to that week's news cycle. Godot 4.3 + GDScript + FastAPI backend + Sprite Forge asset pipeline. Casey deployment xxxxxxxx (phase 2 sow); n=2 extraction event for service-bundle-runtime-core (after DillerQueen + Lennon Lives); revenue-side three-pillar lift (Domestic — [REDACTED-PRIVATE] + [REDACTED-PRIVATE] play).
+    description: Weekly Patreon-gated HTML5 game tied to that week's news cycle. Godot 4.3 + GDScript + FastAPI backend + Sprite Forge asset pipeline. Casey deployment <deployment-id> (phase 2 sow); n=2 extraction event for service-bundle-runtime-core (after DillerQueen + Lennon Lives); revenue-side three-pillar lift (Domestic pillar — played by household members).
     endpoint: (TBD — FastAPI backend pre-foundation)
     vault_path: "02-Areas/Projects/Gamecast PodDAd/Gamecast PodDAd.md"
     repos_owned: [gamecast-poddad]
@@ -2121,7 +2121,7 @@ agents:
     kind: project_endpoint
     role_label: game-dev-rag — rag-core instance #5 (game-dev corpus split)
     invocation_pattern: HTTP GET/POST ${RAG_OOLITIC_BASE}/recall (or via rag-core-client)
-    description: Fifth rag-core instance, split out of darney-rag (#4) 2026-07-09 to keep Godot/GDScript-specific retrieval tuning from diluting non-game personal/creative recall. Indexes DillerQueen, gamecast-poddad, sprite-forge, lennon-lives, DArnimos. Casey deployment xxxxxxxx (phase 2 sow).
+    description: Fifth rag-core instance, split out of darney-rag (#4) 2026-07-09 to keep Godot/GDScript-specific retrieval tuning from diluting non-game personal/creative recall. Indexes DillerQueen, gamecast-poddad, sprite-forge, lennon-lives, DArnimos. Casey deployment <deployment-id> (phase 2 sow).
     endpoint: "${RAG_OOLITIC_BASE_HOSTPORT}"
     vault_path: "02-Areas/Projects/game-dev-rag/game-dev-rag.md"
     provenance: { authored_at: 2026-07-09, ratification_cycle: operator-session-2026-07-09, source_path: ~/projects/game-dev-rag/ }
@@ -2145,7 +2145,7 @@ agents:
     emitter_class: cycle_emitter
     role_label: DArnimos — double-six Draw dominoes game (Godot 4.6 web)
     invocation_pattern: git workspace at ~/projects/DArnimos + Foreman cadence (cycle-1-{huey,louie,dewey} nephew lineage)
-    description: Double-six dominoes (Draw variant) — hotseat 1-4 players + AI seats, Godot 4.6 gl_compatibility HTML5 export, Blender pre-rendered tile sprites with the pixel aesthetic applied only as a runtime post-process filter. Revived from an empty dir 2026-08-03 with full Tier-1 + foreman Tier-2 onboarding in one pass. Casey deployment xxxxxxxx (5 needs). Fires telemetry as source agent_health_check_darnimos during active cycles.
+    description: Double-six dominoes (Draw variant) — hotseat 1-4 players + AI seats, Godot 4.6 gl_compatibility HTML5 export, Blender pre-rendered tile sprites with the pixel aesthetic applied only as a runtime post-process filter. Revived from an empty dir 2026-08-03 with full Tier-1 + foreman Tier-2 onboarding in one pass. Casey deployment <deployment-id> (5 needs). Fires telemetry as source agent_health_check_darnimos during active cycles.
     endpoint: null
     vault_path: "02-Areas/Projects/DArnimos/DArnimos.md"
     repos_owned: [DArnimos]
@@ -2254,7 +2254,7 @@ render_targets:
     applies_to_kinds: [business_role, nephew, service]
   - id: knowledge_management_page
     template: responsibilities-notion-blocks.tmpl
-    page_id: xxxxxxxx-0000-0000-0000-000000000000  # captured 2026-05-16 on first MCP push (replace_content); Notion path: Work Notes > DArnTech LLC > Org Chart & Staff Directory > Org Chart × Responsibilities Manifest
+    page_id: "<notion-page-id>"  # set per-install; the real id lives in the private overlay
     transport: notion_mcp_update_page
     section_markers: null
     applies_to_kinds: [business_role, nephew, service]

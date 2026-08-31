@@ -55,7 +55,7 @@ Edit `MYFIRST-01/charter.md`:
 3. Set `opened:` to today's date
 4. Replace the **External goal** paragraph with what you're actually trying to accomplish
 5. Fill in the **Close condition** checklist (2-4 specific, checkable outcomes)
-6. Fill in the **Three-pillars compliance** paragraphs (one per pillar — see `three-pillars.md`). If one paragraph is forced, consider reframing or bundling before proceeding.
+6. Fill in the axis paragraphs (see `three-pillars.md`). The defaults are the author's — swap in axes that fit your situation. A forced paragraph is information, not a blocker.
 7. Delete everything else you don't need yet
 
 Then clear out the sample rows in `sprint-log.md` — delete L01, L02, L03, L04 from the loop table, leaving the header row intact.
@@ -220,7 +220,7 @@ None of these are canonical. They're all workarounds for a real methodology gap.
 
 - **`foreman-manifesto.md`** — the full framework spec. 15 minutes, worth it once you have your first loop on the board.
 - **`three-sprint-cascade.md`** — the cascade architecture in detail, the rescue protocol, and the cascade-sync brief format for when validation leads from the middle.
-- **`three-pillars.md`** — the Professional / Personal / Domestic test. You already wrote a paragraph per pillar in your sprint charter; this doc explains why.
+- **`three-pillars.md`** — naming the axes your work serves and sorting repos by them. You already wrote a paragraph per axis in your sprint charter; this doc explains why, and how to choose axes that fit you.
 - **`memory-framework.md`** — the CLAUDE.md + MEMORY.md tier system and the vocabulary-guardrail pattern. Read this when you're about to surface time or money metrics in a UI or report.
 - **`hitl-cadence.md`** — the Human-in-the-Loop checkpoint rule. You'll hit your first cadence trigger around L03 — come back here before you do.
 - **`onboarding-an-existing-repo.md`** — the four repo shapes, the cartography sprint, and why HITL density is set by the test suite rather than the repo's age.

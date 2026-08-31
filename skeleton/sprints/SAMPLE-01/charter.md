@@ -40,11 +40,11 @@ When all close conditions are met, the sprint closes as a success and a successo
 
 (Honest estimate. 10-25 is a good range for a focused sprint. 50+ suggests the scope is probably too large. If you expect to need 100, consider splitting into two sprints.)
 
-## Three-pillars compliance
+## Axis coverage
 
-*Every sprint must pass the three-pillars test (see `dacumen/docs/three-pillars.md`). Write one paragraph per pillar. If any paragraph is forced, consider reframing, bundling, or deferring.*
+*Write a short paragraph per axis — a prompt to think, not a form to complete (see `dacumen/docs/three-pillars.md`). The defaults below are the author's; swap in axes that fit your situation. If a paragraph is forced, that's information: reframe, bundle, defer, or record the sprint as deliberately single-axis and carry on.*
 
-- **Professional**: (how this sprint advances the business / capability / revenue)
+- **Professional**: (how this sprint advances the business / capability / revenue)   ← replace these three with your own axes
 - **Personal**: (creative satisfaction / skill growth / intellectual engagement for the operator)
 - **Domestic**: (tangible household or family benefit — can be indirect via "makes the operator more available to family")
 

@@ -6,12 +6,12 @@ The two gates are **orthogonal** and both fire before a cycle opens on operator-
 
 | Gate | Question it answers | Failure verdict |
 |---|---|---|
-| **Three-pillar gating** | Is this *allowed* — does it serve all three pillars, or must it be bundled? | `one-pillar — bundle-or-defer` |
+| **Axis coverage** | What is this *for* — which axes does it serve, and is single-axis deliberate here? | `one-axis — bundle, defer, or record` |
 | **Validation gate** (this doc) | Is this *externally-real* — is the problem real, the competition mapped, the customers reachable, the test honest? | `WEAK` / `PIVOT` |
 
-A candidate can pass three-pillar coverage and fail validation (it lifts all three pillars but rests on a hallucinated competition map). It can pass validation and fail three-pillar coverage (a real, well-tested product idea that serves only one pillar — must be bundled). Both must pass for the cycle to open; either failing is a deferral, not a debate.
+The two are independent. A candidate can cover every axis and still fail validation (it serves all three and rests on a hallucinated competition map). It can pass validation and cover one axis (a real, well-tested idea that serves only the professional axis). Validation failing is a deferral. Single-axis coverage is not a failure — it's a prompt to bundle, defer, or record the narrowness deliberately and proceed. Necessary work is often honestly single-axis.
 
-The gates fire in a natural order: three-pillar gating is cheap (you and the charter answer it in a turn); validation is heavier (six axes, evidence per axis, possibly a re-walk). Run three-pillar first; if it fails, validation is moot.
+They fire in a natural order: axis coverage is cheap (you and the charter answer it in a turn); validation is heavier (six axes, evidence per axis, possibly a re-walk). Run axis coverage first — it costs a minute and it frames what validation is even for.
 
 ## §1 — The rule
 

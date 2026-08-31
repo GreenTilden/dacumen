@@ -49,7 +49,7 @@ cycle N+3   → Professional (pos 1)   [rotation wraps]
 
 The rotation period is 3 cycles by default. On a weekly cadence, that's a full three-pillar sweep every three weeks.
 
-**Why 3-cycle period**: it's the shortest period that covers all three pillars while leaving each pillar its own dedicated week. A 1-cycle period (Professional only) fails the three-pillars test. A 6-cycle period (Professional / Professional / Personal / Personal / Domestic / Domestic) creates week-long subject-matter gaps that don't help focus. 3 is the Goldilocks number.
+**Why 3-cycle period**: it's the shortest period that covers three axes while leaving each its own dedicated week. A 1-cycle period never rotates, so one axis takes every cycle by default — which is the displacement the test exists to catch. A 6-cycle period (Professional / Professional / Personal / Personal / Domestic / Domestic) creates week-long subject-matter gaps that don't help focus. 3 is the Goldilocks number.
 
 **Operator override**: the operator may skip a pillar per cycle with explicit rationale in the cycle manifest's `notes` field. The rotation position still advances — skipped-pillar work accumulates toward its next scheduled cycle. This prevents rotation-gaming while preserving operator authority.
 

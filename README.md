@@ -35,7 +35,7 @@ Next step: resume HUEY L19b write-mode PATCH after operator green-light
 
 That's the DAcumen difference. Your project has a *structure* the agent can read — sprints, loops, a cascade, a cycle, a cross-sprint audit — and it persists between sessions. You don't re-orient; you run `/brief` and you're in flight within 30 seconds.
 
-Everything in DAcumen exists to make that briefing trustworthy and cheap to produce. The Foreman^^ framework gives you the sprint shape. The memory framework gives you the persistent layer. The cross-sprint audit script gives you the rollup. The three-pillars test gives you the prioritization filter for which work to open next. The loop discipline gives you commit subjects the tooling can parse.
+Everything in DAcumen exists to make that briefing trustworthy and cheap to produce. The Foreman^^ framework gives you the sprint shape. The memory framework gives you the persistent layer. The cross-sprint audit script gives you the rollup. The pillar test gives you the axes to sort work and repos by. The loop discipline gives you commit subjects the tooling can parse.
 
 **Is this for you?** Yes if any of these apply:
 
@@ -54,7 +54,7 @@ Probably no if:
 ## What's in the box
 
 - **The Foreman^^ framework** — a three-sprint cascading-learning methodology (discovery / validation / consolidation) with a loop nomenclature, wall-clock time anchoring, and HITL cadence rules. Readable in one sitting. Opinionated in a good way.
-- **The three-pillars test** — an organizing principle for deciding what work to take on. Every initiative serves Professional, Personal, and Domestic pillars, or it gets bundled with something that covers the missing ones.
+- **The pillar test** — name three to five axes your work has to serve, then sort every repo by which one it serves. Axes are ordered by what breaks if they fail, and a repo's effective tier is the lowest of its own and its dependents' — so the experiment a customer surface leans on stops being an experiment. A sorting mechanism, not a bar to clear. The default axes are the giver's; the doc tells you how to pick your own.
 - **The file-based memory framework** — a tiered CLAUDE.md + MEMORY.md pattern for long-running projects, with semantic topic files and session-handoff discipline. Claude Code sessions stop amnesia'ing across time.
 - **A skeleton `~/.claude/` config** — a generic, privacy-scrubbed CLAUDE.md + MEMORY.md + sample sprint folder you can adapt to your own context. Fill in the blanks, delete what doesn't fit, keep what does.
 - **A cross-sprint audit script** — pure bash + jq, no dependencies on anyone's infrastructure. Reads your own sprint logs, emits a JSON snapshot of where every active sprint sits in the cascade, flags inversions, highlights health.
@@ -119,7 +119,7 @@ Once installed, the onboarding path is:
 1. **`docs/foreman-manifesto.md`** — the methodology, end to end. ~15 minutes to read, shapes everything else.
 2. **`docs/three-sprint-cascade.md`** — the discovery / validation / consolidation pattern in detail. ~5 minutes.
 3. **`docs/cycle-architecture.md`** — the layer above sprints: pillar rotation + cascade lag across successive cycles. ~5 minutes.
-4. **`docs/three-pillars.md`** — the organizing principle that decides what work is worth doing. ~5 minutes.
+4. **`docs/three-pillars.md`** — naming the axes your work serves, and sorting repos by them. ~5 minutes.
 5. **`docs/memory-framework.md`** — how CLAUDE.md and MEMORY.md work together across sessions. ~5 minutes.
 6. **`docs/quickstart.md`** — your first sprint, start to finish. ~10 minutes to read + try.
 7. **`docs/onboarding-an-existing-repo.md`** — pointing all this at a repo that already exists, which is usually what you're actually doing. ~5 minutes.

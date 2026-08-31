@@ -47,9 +47,11 @@ Every project follows the DAcumen memory framework:
 
 ## Rule 4 — Three-pillars test for initiative prioritization
 
-Every initiative this project takes on must serve all three pillars — Professional, Personal, Domestic — or be bundled with something that covers the missing ones. If an initiative only serves one pillar, it's either deferred or paired with complementary work.
+Every initiative this project takes on records which axes it serves — by default Professional, Personal, Domestic, though you should replace these with axes that describe your own situation. Work that serves one axis is a candidate for bundling with complementary work, or for deferral until the framing is there.
 
-This is the organizing principle for scope decisions. See `dacumen/docs/three-pillars.md` for application guidance.
+Single-axis work is recorded, not rejected. Plenty of necessary work — an assigned task, a security patch, mapping an inherited codebase — is honestly single-axis and cannot be deferred. Note it as deliberate and proceed.
+
+Repos also carry an axis, which drives how much rigor each earns. See `dacumen/docs/three-pillars.md` for the precedence and dependency-propagation rules.
 
 ## Rule 5 — Commit subject convention
 

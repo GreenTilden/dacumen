@@ -1,88 +1,105 @@
-# The Three Pillars Test
+# The Pillar Test — Naming the Axes Your Work Has to Serve
 
-*An organizing principle for deciding what work is worth taking on. Every initiative serves all three pillars or is bundled with work that covers the missing ones.*
+*The framework checks every piece of work against a small set of named axes, and sorts every repo by which one it serves. This doc explains the pattern, gives the default axes and some alternates, and tells you how to pick your own.*
 
-## The test
+## Why axes, and why name them?
 
-Every initiative DAcumen runs — every sprint, every loop, every side project, every piece of infrastructure — must serve all three pillars:
+There's one failure mode this test exists to catch: **single-axis work silently displacing everything else.**
 
-1. **Professional** — advances the business, consulting revenue, technical capability, or market position
-2. **Personal** — provides creative satisfaction, skill growth, mental health benefit, or intellectual engagement
-3. **Domestic** — makes life tangibly better for the people you live with, the household, or the operator's time with family
+It's easy to end up where all the work you take on serves one axis very well. Only client delivery, and the learning stops and you burn out. Only refactoring, and the runway shrinks. Only the fun rewrite, and the thing people actually depend on rots. The trap is that single-axis work feels *productive* in the moment — you're doing the thing, and the thing is getting done. The cost arrives later, as the neglected axis turning into a problem you can't defer any longer.
 
-If an initiative only serves one pillar, it must be **bundled** with something that covers the missing ones, or **deferred**.
+Naming the axes makes the displacement visible while you can still cheaply change course. That's the whole mechanism. Everything below is detail.
 
-This is the organizing principle for all project prioritization. If work can't pass the three-pillars test, it doesn't go on the roadmap.
+**This is a sorting mechanism, not a morality test.** An axis tells you what a piece of work is *for*, which tells you how much rigor it earns. It is not a bar that work has to clear to be allowed to exist.
 
-## Why three pillars specifically
+## The default axes — Professional, Personal, Domestic
 
-The pillar test exists because of a specific failure mode: **single-pillar work that silently displaces multi-pillar work**.
+DAcumen ships with the three the author uses:
 
-It's easy to fall into patterns where all the work you take on serves one pillar very well. Pure professional work (client delivery only) starves the personal and domestic pillars — you burn out, or your family notices you're absent, or both. Pure personal work (only hobby coding) starves the professional pillar — the runway shrinks, and the operator becomes anxious. Pure domestic work (only household chores) starves both — no growth, no money.
+| Axis | Serves | Asks |
+|---|---|---|
+| **Professional** | business, revenue, capability, market position | Is there a growth, income, or skill story here? |
+| **Personal** | creative satisfaction, learning, intellectual engagement | Will I resent this work by loop 20? |
+| **Domestic** | the people you live with, the household, your time with them | Who benefits at home, and when does that become visible? |
 
-The trap is that single-pillar work feels **productive** in the moment — you're doing the thing, and the thing is getting done. The cost shows up later, when the neglected pillars surface as problems: burnout, family resentment, financial strain.
+These are one person's axes, chosen for one person's situation: self-employed, with a family, with discretion over which work to accept. **If any of those three things isn't true for you, these are the wrong axes** — not because you're doing it wrong, but because you're solving a different balance problem. Someone in salaried work has little discretion over what to accept; someone living alone has no Domestic paragraph to write, and shouldn't invent one. Pick axes that describe the tensions you actually have.
 
-The three-pillars test catches this at the scope-definition stage. If a new initiative can't articulate how it serves all three pillars, that's a signal to either **bundle** it with adjacent work that covers the gap or **defer** it until the bundling is possible.
+## Other starter sets
 
-## What "bundled" means
+| Situation | Axes |
+|---|---|
+| Employed engineer | **Delivery** · **Craft** · **Career** |
+| Freelancer / consultant | **Clients** · **Product** · **Learning** |
+| Sorting by consequence | **Customer** · **Revenue** · **Daily** · **Experiment** |
+| Maintainer of shared tools | **Users** · **Contributors** · **Sustainability** |
 
-Bundling is the deliberate pairing of work that individually fails the test but together passes it.
+The last two are worth a look even if you take the defaults, because they order by *what breaks if this fails* rather than by *what part of life this belongs to*. That ordering is what makes the propagation rule below work.
 
-**Example:** building a side-project hobby game (single-pillar: personal only).
+## Pick your own
 
-- Alone → fails the test (personal creative satisfaction but no professional / domestic payoff)
-- Bundled with: streaming dev sessions for educational content (professional: teaching credibility, potential revenue, portfolio artifact) + building it alongside a partner or child who's learning to code (domestic: shared activity, household-visible, relationship investment)
-- Together → passes all three
+1. **Three to five axes.** Fewer than three isn't a balance, it's a preference. More than five and nothing is prioritized, because everything is.
+2. **Order them by consequence of failure**, not by importance in the abstract. You will need a total order later; decide it now while nothing is on fire.
+3. **Each axis must be checkable from outside your head.** "Serves the business" is checkable. "Feels aligned" is not.
+4. **At least one axis has to be able to say no** to work you want to do. An axis set that approves everything you were going to do anyway isn't measuring anything.
+5. **Use your own vocabulary.** If you'd never say "domestic" out loud, the check won't fire when it matters.
 
-The bundling has to be **real**, not rhetorical. If the "domestic" half of the bundle is "my family will eventually see the finished thing if I ever finish it," that's not a real bundle — that's wishful thinking about a future state. A real domestic bundle involves the family during the work, not after it.
+## Sorting repos by axis
 
-## What "deferred" means
+Each repo declares the axis it primarily serves. That declaration drives how much rigor it earns — how hard the gates are, how often it gets audited, how much of your attention budget it may draw.
 
-Some initiatives just don't pass the test in their current framing, and no bundling is feasible. The test says: **defer**. Not "reject forever" — defer until the circumstances change such that the initiative could serve the missing pillars.
+```json
+{ "tier": "customer", "note": "why this repo sits here" }
+```
 
-An initiative that was single-pillar last quarter might be multi-pillar this quarter because the circumstances around it changed. Revisit deferred initiatives quarterly to see if the bundling path has opened up.
+Two rules make this useful rather than decorative:
 
-## The proof case
+**Precedence.** The axes are totally ordered. Using the consequence-sorted set as the example: `customer > revenue > daily > experiment`. When two repos compete for the same hour, the higher tier wins, and you don't relitigate it in the moment.
 
-The clearest proof case of the test working is a real example from the framework's origin history:
+**Propagation — a repo's effective tier is the lowest of its own tier and its worst dependency.** This is the rule that earns its keep. An experiment that a customer-facing surface depends on **is not an experiment** — it inherits the customer tier, and it should be gated like one. Most unpleasant surprises in a small estate are some version of this: neglected plumbing under something that matters, tiered by what it felt like when it was written rather than by what now leans on it.
 
-> A self-hosted voice assistant that takes voice memos, transcribes them, routes them to the right place (notes / tasks / reminders), and maintains a running journal.
+State it as a check you can run:
 
-Why it passes:
+```
+effective_tier(repo) = min(declared_tier(repo), min over dependents)
+```
 
-- **Professional** — it's R&D (building with local LLMs, voice pipelines, prompt engineering). It's also a portfolio artifact that demonstrates the skill set to any future client who cares about voice interfaces or self-hosted AI.
-- **Personal** — it's fun to build. The voice-pipeline problem space is creatively engaging, and the incremental improvements feel satisfying.
-- **Domestic** — it captures the operator's partner's book-idea voice memos in a way that doesn't require her to touch a computer. Her creative work becomes visible and searchable for the first time. Direct, tangible household benefit.
+If `effective_tier` and `declared_tier` disagree, that gap *is* the finding. It usually means a repo has quietly become load-bearing without anyone re-tiering it.
 
-All three pillars clearly served. No bundling required. This initiative is charter-compliant on its own and gets prioritized accordingly.
+## Attention budget
 
-## How to use the test
+The axes tell you what work is for. A budget tells you how much of it you can carry.
 
-At the scope-definition stage of any new initiative, write one paragraph per pillar. If you struggle to write any of the three paragraphs, that's a signal:
+Declare the number of active repos, or maintenance events per quarter, or hours per week that you're actually willing to spend — the honest answer to "how much one-more-thing is right." Then let the roster render against it. An estate over budget doesn't need a new prioritization framework; it needs something retired, and the budget is what makes that conversation short.
 
-- **Can't write the Professional paragraph** — why am I doing this? What's the growth / revenue / capability story?
-- **Can't write the Personal paragraph** — will this make me resent the work? Is there a version that's creatively satisfying?
-- **Can't write the Domestic paragraph** — who benefits at home? When does that benefit become visible?
+Leaving the budget undeclared is a valid state, and better than declaring one you don't mean. Render it as *unbudgeted* rather than pretending to a number.
 
-If one or more of the three paragraphs is forced, consider:
+## Bundling and deferring
 
-1. **Reframing** the initiative so the missing pillar is served naturally
-2. **Bundling** with adjacent work that covers the gap
-3. **Deferring** until circumstances allow a natural framing
+When a piece of work serves one axis and you'd like it to serve more:
 
-## Integration with the Foreman^^ framework
+**Bundling** is deliberately pairing work that individually covers one axis so that together it covers several. A hobby project (personal only) bundled with writing up what you learned (professional) and building it with someone in your household (domestic). The bundle has to be real. "My family will see the finished thing eventually" is not a domestic bundle; it's a wish about a future state.
 
-The three-pillars test is a **first-class check inside the sprint lifecycle**:
+**Deferring** is deciding the framing isn't there yet and revisiting later, not rejecting forever. Circumstances change and the bundling path opens.
 
-- **Sprint charters** include a three-pillars paragraph — "why this sprint passes the test"
-- **HITL checkpoints** can include a three-pillars re-check when the sprint's direction meaningfully shifts mid-run
-- **Cross-sprint rescue protocol** uses the test as part of `charter_function_match` — if a rescue's target-sprint framing is forced, the test catches it
-- **Cascade-sync briefs** (validation layer's upstream/downstream docs) include a three-pillars compliance paragraph confirming the recommendations serve all three pillars
+**Neither is mandatory.** Plenty of necessary work is honestly single-axis and can't be deferred — an assigned task at a salaried job, a security patch, mapping a codebase you've just inherited. Record which axis it serves, note that it's single-axis on purpose, and get on with it. A framework that tells you your necessary work is disallowed is a framework you will correctly ignore.
 
-When in doubt, run the test. If you can't articulate the bundling, the answer is defer.
+## Wiring it into your config
+
+- `.foreman/cycle.json` carries `pillar` for the cycle's current focus, plus the rotation fields (`pillar_rotation_position`, `pillar_rotation_cycle_length`) if you rotate focus between cycles. See `cycle-architecture.md`.
+- Sprint charters include a short paragraph per axis — a prompt to think, not a form to complete. If one paragraph is forced, that's information: reframe, bundle, defer, or record it as deliberately single-axis and continue.
+- A repo roster carries one `tier` per repo plus the dependency edges the propagation rule needs.
+
+## The short version
+
+1. Name three to five axes in your own words, ordered by what breaks if they fail
+2. Tag each repo with the axis it serves
+3. A repo's effective tier is the lowest of its own and its dependents' — mind the gap
+4. Declare an attention budget, or render honestly as unbudgeted
+5. Single-axis work is a fact to record, not a verdict to appeal
 
 ## See also
 
-- **`foreman-manifesto.md`** — the framework spec (§3 references the pillar test as a core primitive)
-- **`three-sprint-cascade.md`** — how the pillar test lands inside the rescue protocol's charter-compliance check
-- **`trio-identities.md`** — the pillar palette maps to a three-identity naming system
+- **`trio-identities.md`** — the same pick-your-own pattern applied to naming your three sprints
+- **`cycle-architecture.md`** — rotating which axis a cycle focuses on
+- **`onboarding-an-existing-repo.md`** — the other repo classifier: by shape rather than by purpose
+- **`validation-gate.md`** — where axis coverage sits among the pre-cycle checks

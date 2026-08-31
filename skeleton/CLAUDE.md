@@ -43,7 +43,7 @@ This project follows the Foreman^^ methodology. Key docs at `dacumen/docs/`:
 - **`foreman-manifesto.md`** — the framework spec
 - **`three-sprint-cascade.md`** — the three-layer cascade architecture + rescue protocol
 - **`cycle-architecture.md`** — the layer above sprints: pillar rotation + cascade lag
-- **`three-pillars.md`** — the Professional / Personal / Domestic test
+- **`three-pillars.md`** — naming the axes your work serves, and sorting repos by them
 - **`memory-framework.md`** — CLAUDE.md + MEMORY.md tier system + vocabulary guardrails + Cycle Context section
 - **`hitl-cadence.md`** — Human-in-the-Loop checkpoint rule
 - **`charter-versioning.md`** — amendment ratification process + external-sync rituals
@@ -69,9 +69,21 @@ This project follows the Foreman^^ methodology. Key docs at `dacumen/docs/`:
 
 *If you ship this anywhere, document the deploy path here. For personal-only projects, delete this section.*
 
-## Three Pillars Check
+## Axis Coverage
 
-*Confirm this project passes the three-pillars test. If the missing pillar is served by bundling, name the bundle. If it's deferred, note it and revisit later.*
+*Which axes does this repo serve, and what tier does it sit at? See `dacumen/docs/three-pillars.md`. The three axes below are the DAcumen author's defaults — replace them with axes that describe your own situation.*
+
+- **Tier**: (one of your ordered tiers, e.g. `customer` / `revenue` / `daily` / `experiment`)
+- **Why this tier**: (one line — what breaks, and for whom, if this repo fails)
+- **Depended on by**: (repos that import, deploy, or call this one — or `nothing`)
+
+**Effective tier is the lowest of this repo's own tier and its dependents'.** If something at a
+higher tier depends on this one, this repo inherits that tier and should be gated like it. A gap
+between declared and effective tier is the finding — it usually means the repo quietly became
+load-bearing and nobody re-tiered it.
+
+Axis coverage — a prompt to think, not a form to complete. Single-axis is a fact to record, not a
+verdict to appeal:
 
 - **Professional**: (how this advances the business / capability / revenue)
 - **Personal**: (creative satisfaction / skill growth / intellectual engagement)

@@ -1,9 +1,10 @@
 # dacumen — Memory
 
 ## Session Status
-- **Status**: v0.2.15 landed LOCAL — `031c7fd` (docs) + the CHANGELOG/MEMORY commit. `main` is
-  **2 commits ahead of `origin/main` and unpushed**. v0.2.14 (`c89b269`-era public-surface
-  remediation) is the last pushed state.
+- **Status**: v0.2.15 (pillar-test reframe), v0.2.16 (guardrail Check 5) and v0.2.17 (upstream
+  ratification note) all landed LOCAL and **unpushed**. v0.2.14 is the last pushed state — run
+  `git rev-list --count origin/main..HEAD` for the live count rather than trusting a number typed
+  here, which is how the last two in this file went stale.
 - **Current Focus**: the pillar-test reframe (2026-08-31) and its propagation. `three-pillars.md`
   was the hardest language in a repo whose README promises the opposite; it is now a **sorting
   mechanism, not a bar to clear**. An axis says what work is FOR, which sets how much rigor it
@@ -19,7 +20,8 @@
   v0.1.20 → v0.1.21) — charter §1 now carries the sorting framing, precedence, propagation and the
   attention budget directly, so charter and framework agree and the precedence note is gone from
   the global config. Open operator actions: (1) **`git push`** — the one thing still held. dacumen
-  is 5 commits ahead of `origin/main`; a push here is a publish, same standing gate as v0.2.14.
+  is several commits ahead of `origin/main` (count it, don't quote it); a push here is a
+  publish, same standing gate as v0.2.14.
   (3) the v0.2.14 history rewrite and social-preview upload, both still open. (4) **DONE — `check-guardrails.sh`
   Check 5** (address / endpoint / port, corpus-wide). Trigger: on 2026-08-31 a tailnet IP + port
   was written into this file and the suite returned 4/4 PASS; caught by eye. **Correction on the

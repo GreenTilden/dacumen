@@ -2,6 +2,67 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.14 — the sanitization that wasn't · public-surface remediation (2026-08-30)
+
+The repo was shared on LinkedIn on 2026-08-17. This is what a look at it found.
+
+Every gate said green. `check-guardrails.sh` passed 3/3, the pre-commit scrub hook
+passed, and the nightly detector built specifically to answer "does a public remote of
+ours serve private content" reported `dacumen — clean (75 files)`. The repo was
+publishing two children's given names, a client entity name, 15 live deployment ids, a
+Notion page id, 928 lines inventorying a private service estate, and systemd units
+carrying an absolute `/home/<user>` path. It had been doing so for 98 days.
+
+Nothing was broken. Each check did exactly its job: financial vocabulary, a private
+literal deny-list, key material, addresses and ports — over staged files, for the hook,
+so anything that landed before it was installed was never scanned at all. No check owned
+*the whole corpus, for identity-shaped things*. That is what let commit `7aeae4d` assert
+"the gate passes on all 85 tracked files, across every category" and be simultaneously
+true of the instrument and false of the repo.
+
+The lesson is portable, and it is the reason this entry is this long: **a gate that
+cannot see a category must not be quoted as evidence about that category.** A green board
+is a claim about what was measured, never about what is true.
+
+### Removed
+
+- **`docs/agent-card-research/`** (4 files, 928 lines) and five operational scripts plus
+  their systemd units — moved to the private repo with per-file history. Verified before
+  removal: zero references from `README.md`, `docs/quickstart.md`, or the manifesto, and
+  `install.sh` copied none of them. Carry-over the 2026-08-07 split missed.
+
+### Changed
+
+- **`docs/manifests/org-chart-responsibilities.{md,yml}`** — restored to the contract its
+  own header states ("role-labels, no proper nouns"). The agent inventory always honoured
+  it; the `project_endpoint` rows underneath had accumulated real identifiers commit by
+  commit while the header kept asserting the opposite. Operator project names are kept
+  deliberately — they are not client data, and breadth is the point of a work sample.
+- **`README.md`'s "What's explicitly NOT in the box"** — three of its five promises were
+  false. Now true, which was cheaper than softening the claim and worth more.
+- **`docs/hitl-cadence.md`** — the worked example for "don't write acceptance gates for
+  users who don't exist yet" used a real child as the illustration. The lesson survives
+  the redaction.
+
+### Added
+
+- **`scripts/check-guardrails.sh` Check 4** — identity / operator-path / resource-id,
+  corpus-wide. Literal-free by construction: patterns describe shapes, never a remembered
+  name, because this file is public and a committed literal is itself the leak. That is
+  not hypothetical here — it is what happened in April 2026, when the check written to
+  suppress a private literal hard-coded it.
+  Self-contained on purpose: it runs for a stranger who cloned this repo and has none of
+  the author's private tooling. Delegating to the estate's shared scrub gate would have
+  made the kit depend on the giver's machine, which is the thing README promises it
+  doesn't do.
+- **Summary honesty** — the suite printed "All N checks passed" from a constant, even
+  when a check SKIPped. A check that could not run is not a pass; that case now exits 2.
+
+### Note on history
+
+HEAD is clean. Every value redacted here is still served at old SHAs until the history
+rewrite lands. A public repo's history is part of its public surface.
+
 ## v0.2.13 — second case study · the mark ships for real (2026-07-28)
 
 Not an amendment sync. Two things the repo owed: a second worked example so `docs/case-studies/` stops being a directory with one file in it, and a README that stops contradicting itself about its own logo.

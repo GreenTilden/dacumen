@@ -2,6 +2,40 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.17 — the upstream authority catches up (2026-08-31)
+
+v0.2.15 reframed the pillar test here and ran outward the same day — to the private operating
+twin, to the pre-cycle validation doctrine, to the operator's global config and to the
+`/validate` executor. The one surface it could not change unilaterally was the upstream
+business charter whose §1 Mission *is* the rule those docs describe. That §1 still read
+"every initiative the company takes on must advance all three or be bundled with work that
+does", so for one day the mirror and its own authority disagreed, and the docs said so
+plainly rather than papering over it.
+
+**Charter Amendment 26 ratified 2026-08-31, v0.1.20 → v0.1.21.** §1 now states that every
+initiative *records* which pillars it advances, that the test sorts work rather than gating
+it, and that single-pillar work is recorded rather than rejected — with bundling and
+deferring preserved as operator choices rather than obligations. It also takes on the three
+rules that make the test a taxonomy: precedence, dependency propagation, and a declared
+attention budget. The family-tier clause follows: a Domestic-only plan proceeds as
+deliberately single-pillar instead of being held for a bundle.
+
+Nothing changes in this repo's text. This entry exists because a mirror that quietly stops
+mentioning a disagreement it previously recorded is less trustworthy than one that closes the
+loop out loud.
+
+### Note on direction
+
+DAcumen normally mirrors what has already been ratified upstream. This ran backwards: the
+mirror led and the charter followed within a day. Recorded rather than tidied, because the
+ordering is the interesting part — the reframe was easiest to see from the surface that had
+to explain itself to a stranger, and hardest to see from the charter that had been true for
+its author all along. That is the same asymmetry v0.2.15 named as its portable lesson,
+observed from the other end.
+
+One item stays open upstream and is not claimed as done: the §8 review of the amendment,
+non-blocking by charter rule, flagged for the next cycle-close.
+
 ## v0.2.16 — Check 5, and a correction about why it was needed (2026-08-31)
 
 While writing v0.2.15's session handoff, a tailnet IP and port went into this repo's own

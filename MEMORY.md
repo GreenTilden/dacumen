@@ -15,11 +15,11 @@
   governance-thread `4a61a12` (5 files were byte-identical to dacumen's pre-reframe versions),
   coriolii `95cbd3d` (pre-cycle validation doctrine — coverage no longer skips the 6-axis walk),
   `~/.claude/CLAUDE.md` §Three Pillars, and the `/validate` skill + its capability file.
-- **Blockers**: none blocking. Open operator actions: (1) **ratify or reject darntech charter
-  Amendment 26** — `darntech/docs/charter/charter-v0.1.21-amendments-DRAFT.md` (`017fbd20`), which
-  amends §1 Mission from "must advance all three or be bundled" to the sorting framing. **Until it
-  ratifies, charter §1 outranks every doc listed above**, and the global CLAUDE.md says so
-  explicitly. (2) `git push` — still held for review, same as v0.2.14; a push here is a publish.
+- **Blockers**: none blocking. **Amendment 26 RATIFIED 2026-08-31** (darntech `980433b3`, charter
+  v0.1.20 → v0.1.21) — charter §1 now carries the sorting framing, precedence, propagation and the
+  attention budget directly, so charter and framework agree and the precedence note is gone from
+  the global config. Open operator actions: (1) **`git push`** — the one thing still held. dacumen
+  is 6 commits ahead of `origin/main`; a push here is a publish, same standing gate as v0.2.14.
   (3) the v0.2.14 history rewrite and social-preview upload, both still open. (4) **DONE — `check-guardrails.sh`
   Check 5** (address / endpoint / port, corpus-wide). Trigger: on 2026-08-31 a tailnet IP + port
   was written into this file and the suite returned 4/4 PASS; caught by eye. **Correction on the
@@ -30,6 +30,9 @@
   returned a clean answer it had not earned, and the hook only ever sees STAGED files, so it
   cannot see content that landed before it was installed — the v0.2.14 hole. Check 5 is
   corpus-wide and covers that.
+- **Open upstream, not claimed done**: Gizmoduck's charter §8 review of Amendment 26 — non-blocking
+  per §8, flagged for the next cycle-close. It carries a self-reference worth a second reader: §8
+  reviews amendments *against* the Three Pillars test, and this amendment changed that test.
 - **Next Steps**: wire tier into `scan-repo.sh` — it classifies repo *shape* (greenfield / legacy /
   established / foreman-enabled) but not *purpose*, and shape × tier → recipe is the natural next
   piece (~45 min; a legacy repo at `experiment` doesn't need a full cartography sprint, one at

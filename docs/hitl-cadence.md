@@ -169,7 +169,7 @@ resolved_at: (filled in at transition)
 
 HITL acceptance gates should specify who is actually using the feature and what "pass" looks like for them. Two failure modes:
 
-**Aspirational user pass**: the gate names a user who doesn't exist yet ("[REDACTED-PRIVATE] will test the Kavita OPDS feed"). If that user isn't a current household member or isn't actually going to touch the feature this session, the gate never fires — the gate was written for future-you, not present-you.
+**Aspirational user pass**: the gate names a user who doesn't exist yet ("a family member will test the ebook-reader feed"). If that user isn't a current household member or isn't actually going to touch the feature this session, the gate never fires — the gate was written for future-you, not present-you.
 
 **Operator-only consumption misidentified as multi-user**: if the only real consumer of a feature right now is the operator themselves, the operator self-pass IS the real-user pass. Don't manufacture a second check for a user who hasn't shown up yet. When that user eventually shows up, add the gate then.
 

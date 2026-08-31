@@ -12,7 +12,7 @@ Carbon design language (tokens · type · 16px grid · hairline borders · namin
 - **React optional escape hatch** for genuinely complex viz islands within static pages.
 - **IBM blue (`#0f62fe`) is primary action color** for customer-facing surfaces.
 - **Brand v3 olive (`#747438`) demoted to brand-mark accent only.**
-- **Internal ops dashboard** (Vue at `ops.darrenarney.com`) transitionally retains brand v3 palette · multi-cycle migration deferred to cycle-9 autonomous-migration-per-surface arc.
+- **Internal ops dashboard** (Vue) transitionally retains brand v3 palette · multi-cycle migration deferred to cycle-9 autonomous-migration-per-surface arc.
 
 ## Context
 
@@ -29,7 +29,7 @@ Decision elevated to ground-floor standard with multi-cycle migration implicatio
 ## Consequences
 
 - **Customer-facing surfaces** (current: `customer-hub/*`; future: deal pages · project hubs · SoW/MOU renders · cross-project surfaces) → Carbon-thin static.
-- **Internal ops dashboard** (Vue at `/`, `/ops`, `/review`, `/customers`, `/lorna`, `/charter`) → brand v3 Vue today; multi-cycle migration deferred; cycle-9 autonomous-migration-per-surface arc proposed.
+- **Internal ops dashboard** (Vue at `/`, `/ops`, `/review`, `/customers`, `/<finance-app>`, `/charter`) → brand v3 Vue today; multi-cycle migration deferred; cycle-9 autonomous-migration-per-surface arc proposed.
 - **Other DArnTech projects** (GBGreg, sprite-forge, beakly, etc.) → Carbon-thin opportunistically when touching new surfaces; full retrofit only if/when justified per project (operator: *"would go back and rebuild gbgreg in this"*).
 - **WS-A8 architecture reshape**: Casey backend serves both Carbon-thin static AND Vue dashboard surfaces (no backend rework needed).
 - **Sub-D shipped L11** retained for internal-ops dashboard-developer view; customer-facing equivalent migrates to Carbon-thin.
@@ -52,7 +52,7 @@ Decision elevated to ground-floor standard with multi-cycle migration implicatio
 
 - **Cycle-9 first-firing**: MISC customer hub (operator-pick · "small bite of the apple, allows us to apply it to others cleanly")
 - **Cycle-10ish**: customer-hub framework/template (so other customers inherit it)
-- **Cycle-11ish**: `ops.darrenarney.com` (internal Vue → Carbon-thin)
+- **Cycle-11ish**: the internal ops dashboard (Vue → Carbon-thin)
 - **Last**: `darn-tech.com` homepage (after darn3 viz mapped there · operator preserves as canvas)
 
 Cycle-9 = stress-test of work-shape primitive automation discipline · pre-authored single-fire prompts for full H→L→D pass on n=1 surface migration.
@@ -119,7 +119,7 @@ Codifies how off-pattern visual treatments interact with carbon-thin migration. 
 
 Original cycle-08 arc (cycle-9 first-fire MISC · cycle-10ish customer-hub framework · cycle-11ish ops dashboard · last darn-tech.com homepage):
 - Cycle-9 ✅ MISC customer hub LIGHT · ratified pre-DARK-correction
-- Cycle-10 ✅ shell-level Vue page-migrations on `/charter` + `/projects/darnbot` (DARK)
+- Cycle-10 ✅ shell-level Vue page-migrations on `/charter` + `/projects/<project>` (DARK)
 - Cycle-11 ✅ page-DEEP migration on Darnbot children (DARK · n=4 + n=5 of MIGRATION primitive) + framework codification arc
 - **Cycle-12+ projection**: true cold one-shot demonstration on a fresh page (operator picks at cycle-11 close) using the now-ratified §6 + §11 + §12 amendments. Pure-cold cascade evidence still pending (cycle-11 was interrupted-by-design via audit-heavy front-load).
 

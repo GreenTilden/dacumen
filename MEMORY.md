@@ -64,4 +64,4 @@ See `decisions/adr-001-carbon-thin-house-standard.md` + `decisions/adr-002-rag-c
 ## Deployment Targets
 - **GitHub** (`github.com/GreenTilden/dacumen`) — the only consumer-facing surface; `git push origin main` after a clean `check-guardrails.sh` pass
 - **Local installer** — copies skeleton/ + scripts/ into a user's `~/.claude/` (or a path of their choosing)
-- **Casey Junior dashboard** — registered as a deployment (id at `dacumen-internal/.foreman/casey-deployment-id`); shows up on `ops.darrenarney.com` as a project tile via the dellatech-cycle-40-L02 PROJECT_ENDPOINTS + vaultNoteMap landing
+- **Casey Junior dashboard** — registered as a deployment (id at `dacumen-internal/.foreman/casey-deployment-id`); shows up on the internal ops dashboard as a project tile via the dellatech-cycle-40-L02 PROJECT_ENDPOINTS + vaultNoteMap landing

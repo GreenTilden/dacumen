@@ -170,8 +170,8 @@ Aggregations the dashboard can compute from these entries:
 
 **Daily at 23:45 local**, alongside the existing observatory snapshot cadence. One ordered execution per night:
 
-1. Render: `dacumen/scripts/render-responsibilities.sh` reads this manifest, regenerates all derived surfaces.
-2. Drift check: `dacumen/scripts/check-responsibility-drift.sh` content-hashes each derived surface, compares against expected, emits per-surface result.
+1. Render: the manifest renderer (private; lives in the internal repo) reads this manifest, regenerates all derived surfaces.
+2. Drift check: the drift checker (private; lives in the internal repo) content-hashes each derived surface, compares against expected, emits per-surface result.
 3. Snapshot write: synthesis snapshot pipeline reads the drift result + writes to observatory data.
 4. Telemetry fire: one EllaBot entry per agent (Touchpoint Contract above).
 

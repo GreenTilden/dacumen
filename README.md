@@ -83,9 +83,17 @@ cd dacumen
 The installer will:
 
 1. **Back up your existing `~/.claude/` directory** to `~/.claude.pre-dacumen.<timestamp>` so nothing is destroyed.
-2. **Copy skeleton templates** (`CLAUDE.md`, `MEMORY.md`, sprint folder) into `~/.claude/` or a path of your choosing.
-3. **Install the cross-sprint audit script** into your preferred scripts directory.
+2. **Copy skeleton templates** (`CLAUDE.md`, `MEMORY.md`, sprint folder, and a seeded `.foreman/cycle.json`) into `~/.claude/` or a path of your choosing.
+3. **Install the `/brief` skill and the cross-sprint audit script**, so the briefing above renders against the sample sprint before you've written anything of your own.
 4. **Print next steps** — what to read first, how to open your first sprint, where the docs live.
+
+Restart Claude Code when it finishes, then:
+
+```bash
+cd ~/.claude && claude
+```
+
+and type `/brief`. That's the whole loop, working, in one command. `docs/quickstart.md` takes it from there.
 
 If you'd rather not touch your existing `~/.claude/` at all, pass `--reference`:
 

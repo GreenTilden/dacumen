@@ -13,12 +13,13 @@ cd /path/to/dacumen
 
 The installer backs up your existing `~/.claude/` (if any), copies the skeleton templates into place, and asks you to name your three sprint agents. If you skipped the naming prompt, the defaults are **Huey** (discovery), **Louie** (validation), **Dewey** (consolidation). You can rename them anytime by editing `~/.claude/.dacumen-trio.json`.
 
-You'll want these four files in rough reading order:
+You'll want these five files in rough reading order:
 
 1. **`dacumen/docs/foreman-manifesto.md`** — the framework spec (15 min, but skim it for now; come back later)
 2. **`~/.claude/CLAUDE.md`** — your freshly-installed agent identity file
 3. **`~/.claude/MEMORY.md`** — your freshly-installed running-state file
 4. **`~/.claude/sprints/SAMPLE-01/`** — a pre-built sample sprint with three example loops you can learn from
+5. **`~/.claude/.foreman/cycle.json`** — a seeded cycle manifest, stamped with your install date, that makes `/brief` render before you've written anything
 
 ## Step 1 — Read the sample sprint (2 min)
 
@@ -115,7 +116,81 @@ With one sprint, the cascade health will read `incomplete — need 3 sprints (di
 
 When you have three sprints running (one per role), re-run the audit and you'll see the real cascade lag pattern: `<discovery loops> > <validation loops> > <consolidation loops>` and a green / amber / red health label based on whether the cascade order is intact.
 
-## Step 5 — Decide when to open sprints 2 and 3
+## Step 5 — Run `/brief` (1 min)
+
+`/brief` is the payoff. It reads your cycle manifest, sprint-log tails, audit rollup, and open HITL checkpoints, and prints one screen that tells a cold-start session where the work stands. The installer seeded everything it needs, so it works now:
+
+```bash
+cd ~/.claude
+claude          # restart Claude Code first — it loads commands at process start
+```
+
+Then type:
+
+```
+/brief
+```
+
+You should see something close to this:
+
+```
+# /brief — .claude · cycle-01 `first-cycle`
+**Pillar**: professional · **Status**: open · **Opened**: 2026-04-14 · **Cascade**: `dev-week` · **Charter**: 0.1
+
+## Sprint trio
+- **Huey** SAMPLE-01 · discovery
+
+## Recent loops (sprint-log.md tails)
+**SAMPLE-01**:
+  - L02 — **CLOSED** — example make loop...
+  - L03 (HITL) — **CLOSED** — example HITL checkpoint...
+  - L04 — QUEUED — next loop's scope will be shaped by the L03 HITL outcome
+
+## Ledger _(since 2026-04-14)_
+_(ledger integration disabled — set `DACUMEN_LEDGER_URL` to enable)_
+```
+
+That's the sample sprint reading back at you. Once you've done Step 2 and Step 3 with your own sprint, the same command shows your real loops.
+
+### Point it at your own sprint
+
+Edit `~/.claude/.foreman/cycle.json` and change the trio entry to the sprint you created:
+
+```json
+"sprint_trio": [
+  { "identity": "Huey", "id": "MYFIRST-01", "role": "discovery" }
+]
+```
+
+Add the validation and consolidation entries when you open those sprints (Step 6). Also set `cycle_label` and `pillar` to describe what this cycle is actually for — `cycle_number` stays 1 until you close it.
+
+### Where `/brief` looks for your sprints
+
+Sprint folders live in different places depending on how a project is laid out. `/brief` tries these in order, per sprint, and uses the first one that has a `sprint-log.md`:
+
+1. `$DACUMEN_SPRINT_DIR` — an explicit override
+2. the `sprint_root` field in `cycle.json` — absolute, or relative to the directory holding `.foreman/`
+3. `<repo>/docs/foreman/sprints/` — the in-repo convention
+4. `<repo>/sprints/` — the flat convention the installer scaffolds
+5. `~/.claude/sprints/`
+
+The seeded manifest sets `"sprint_root": "sprints"`. If you keep sprints inside a project repo instead, either change that field or drop the field and use the `docs/foreman/sprints/` convention.
+
+### Running `/brief` from a project repo
+
+`/brief` walks up from your current directory looking for `.foreman/cycle.json`. `~/.claude/` is not a parent of your project directories, so to brief a real project, give that project its own manifest:
+
+```bash
+cd ~/projects/your-project
+mkdir -p .foreman
+cp ~/.claude/.foreman/cycle.json .foreman/cycle.json
+```
+
+Then edit it — set `sprint_root` to where that project keeps its sprints, and point the trio at that project's sprint codes. One manifest per project is the intended shape: the cycle is a property of the work, not of your home directory.
+
+**Troubleshooting**: if `/brief` says `No .foreman/cycle.json found`, you're in a directory with no manifest above it — `cd` somewhere that has one. If a sprint shows `_sprint-log.md not found_`, the message lists every root it searched; either move the sprint folder or set `sprint_root`. See `setup-brief.md` for the optional ledger integration.
+
+## Step 6 — Decide when to open sprints 2 and 3
 
 The three-sprint architecture compounds when all three layers are running concurrently. You don't have to open them all on day one — most operators start with a discovery sprint, add a validation sprint when the discovery work has produced a pattern worth stress-testing against a foreign context, and add a consolidation sprint when the validation work has produced patterns worth baking into high-rep reflex.
 
@@ -146,6 +221,7 @@ None of these are canonical. They're all workarounds for a real methodology gap.
 - **`three-pillars.md`** — the Professional / Personal / Domestic test. You already wrote a paragraph per pillar in your sprint charter; this doc explains why.
 - **`memory-framework.md`** — the CLAUDE.md + MEMORY.md tier system and the vocabulary-guardrail pattern. Read this when you're about to surface time or money metrics in a UI or report.
 - **`hitl-cadence.md`** — the Human-in-the-Loop checkpoint rule. You'll hit your first cadence trigger around L03 — come back here before you do.
+- **`setup-brief.md`** — the `/brief` skill in full: the sprint-root and observatory lookup order, and the optional ledger contract that fills in the Ledger section.
 - **`trio-identities.md`** — naming your three sprints with alternate trios (Three Stooges, Chipmunks, Musketeers, ...) and the pick-your-own-palette checklist.
 
 ## Troubleshooting
@@ -182,10 +258,12 @@ That prints the paths where files would go without writing anything. You can cop
 ## The shortest version
 
 1. Install DAcumen
-2. Copy `SAMPLE-01` to `MYFIRST-01`, edit the charter, clear the log
-3. Fire a 20-minute loop: capture start time, do the work, capture end time, write a row
-4. Update `~/.claude/MEMORY.md` Session Status before ending the session
-5. Run `cross-sprint-audit.sh` occasionally to see cascade state
-6. Add sprints 2 and 3 when the moment feels right — no rush
+2. Restart Claude Code, `cd ~/.claude`, run `/brief` — confirm it renders the sample sprint
+3. Copy `SAMPLE-01` to `MYFIRST-01`, edit the charter, clear the log
+4. Point `~/.claude/.foreman/cycle.json` at `MYFIRST-01`
+5. Fire a 20-minute loop: capture start time, do the work, capture end time, write a row
+6. Update `~/.claude/MEMORY.md` Session Status before ending the session
+7. Run `/brief` at the start of every session and `cross-sprint-audit.sh` occasionally
+8. Add sprints 2 and 3 when the moment feels right — no rush
 
 That's it. The framework is a gift — take what works, drop what doesn't, shape the rest to your context.

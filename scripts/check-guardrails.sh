@@ -119,14 +119,18 @@ FORBIDDEN_PATTERN='\$[0-9]|hours worked|billable hours|claimable|QRE|rd_credit|r
 ALLOWLIST_MARKER='check-guardrails: allow-forbidden-terms'
 
 # Scan content types that might carry display vocabulary. Skip .git, node_modules,
-# and scratch/test-install artifacts. Skip check-guardrails.sh itself because it
-# legitimately names the forbidden terms inside its own audit pattern.
+# scratch/test-install artifacts, and .render-cache (a regenerated, gitignored
+# cache — never canonical, never committed). Skip check-guardrails.sh itself
+# because it legitimately names the forbidden terms inside its own audit pattern.
+# Keep these exclusions in step with .gitignore: auditing a path that can never
+# reach a commit produces failures no commit can clear.
 FORBIDDEN_CANDIDATES=$(find "$REPO_ROOT" -type f \
     \( -name "*.md" -o -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.html" -o -name "*.css" -o -name "*.json" \) \
     -not -path "*/.git/*" \
     -not -path "*/node_modules/*" \
     -not -path "*/scratch/*" \
     -not -path "*/tmp-install/*" \
+    -not -path "*/.render-cache/*" \
     -print0 2>/dev/null \
     | xargs -0 grep -lE "$FORBIDDEN_PATTERN" 2>/dev/null || true)
 
@@ -223,6 +227,7 @@ else
         -not -path "*/node_modules/*" \
         -not -path "*/scratch/*" \
         -not -path "*/tmp-install/*" \
+        -not -path "*/.render-cache/*" \
         -print0 2>/dev/null)
     DENY_MATCHES="${DENY_MATCHES%$'\n'}"
 

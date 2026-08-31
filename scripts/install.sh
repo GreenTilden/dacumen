@@ -15,7 +15,8 @@
 #
 # The installer:
 #   1. Backs up your existing ~/.claude/ to ~/.claude.pre-dacumen.<timestamp>
-#   2. Copies skeleton templates (CLAUDE.md, MEMORY.md, sprints) into your target
+#   2. Copies skeleton templates (CLAUDE.md, MEMORY.md, sprints, .foreman/cycle.json)
+#      into your target, and stamps the cycle manifest with today's date
 #   3. Copies skills (brief) + commands (brief.md) so /brief works out of the box
 #   4. Copies scripts into the target scripts dir
 #   5. Prints a "where to go next" summary
@@ -89,6 +90,7 @@ if [ "$MODE" = "reference" ]; then
     say "  $REPO_ROOT/skeleton/CLAUDE.md         -> $TARGET/CLAUDE.md"
     say "  $REPO_ROOT/skeleton/MEMORY.md         -> $TARGET/MEMORY.md"
     say "  $REPO_ROOT/skeleton/sprints/          -> $TARGET/sprints/"
+    say "  $REPO_ROOT/skeleton/.foreman/         -> $TARGET/.foreman/"
     say "  $REPO_ROOT/scripts/cross-sprint-audit.sh -> ~/bin/ (or anywhere on PATH)"
     say ""
     say "Read the docs at $REPO_ROOT/docs/ — start with foreman-manifesto.md."
@@ -137,7 +139,8 @@ mkdir -p "$TARGET"
 
 # ---- Copy skeleton files ----
 say_blue "Installing skeleton templates..."
-for item in CLAUDE.md MEMORY.md sprints; do
+CYCLE_JSON_INSTALLED=0
+for item in CLAUDE.md MEMORY.md sprints .foreman; do
     src="$REPO_ROOT/skeleton/$item"
     dst="$TARGET/$item"
     if [ -e "$src" ]; then
@@ -146,9 +149,25 @@ for item in CLAUDE.md MEMORY.md sprints; do
         else
             cp -a "$src" "$dst"
             say_green "  installed $item"
+            [ "$item" = ".foreman" ] && CYCLE_JSON_INSTALLED=1
         fi
     fi
 done
+
+# Stamp the freshly-seeded cycle manifest with today's date so the first /brief
+# reads as a real cycle rather than a placeholder. Only touches a manifest this
+# run created — an existing cycle.json is the operator's live state, never ours.
+CYCLE_JSON="$TARGET/.foreman/cycle.json"
+if [ "$CYCLE_JSON_INSTALLED" -eq 1 ] && [ -f "$CYCLE_JSON" ]; then
+    if tmp=$(mktemp) && jq --arg now "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+        '.opened_at = $now' "$CYCLE_JSON" > "$tmp" 2>/dev/null; then
+        mv "$tmp" "$CYCLE_JSON"
+        say_green "  stamped .foreman/cycle.json opened_at"
+    else
+        rm -f "$tmp"
+        say_amber "  could not stamp .foreman/cycle.json — edit opened_at by hand"
+    fi
+fi
 
 # ---- Install scripts into $TARGET/scripts so they're easy to find ----
 say_blue "Installing scripts..."
@@ -270,6 +289,19 @@ if [ "$FORCE" -eq 0 ] && [ ! -e "$TRIO_FILE" ]; then
 EOF
     say_green "  saved $TRIO_FILE"
     say_dim "    $trio_discovery (discovery) · $trio_validation (validation) · $trio_consolidation (consolidation)"
+
+    # The seeded cycle manifest names the discovery agent too. Keep the two in
+    # step, otherwise /brief greets the operator with a name they just replaced.
+    if [ "$CYCLE_JSON_INSTALLED" -eq 1 ] && [ -f "$CYCLE_JSON" ]; then
+        if tmp=$(mktemp) && jq --arg d "$trio_discovery" \
+            '(.sprint_trio[] | select(.role == "discovery") | .identity) = $d' \
+            "$CYCLE_JSON" > "$tmp" 2>/dev/null; then
+            mv "$tmp" "$CYCLE_JSON"
+            say_dim "    updated .foreman/cycle.json discovery identity"
+        else
+            rm -f "$tmp"
+        fi
+    fi
 fi
 
 # ---- Summary ----
@@ -277,10 +309,16 @@ say ""
 say_bold "Done."
 say ""
 say "What now:"
-say "  1. Read $REPO_ROOT/docs/foreman-manifesto.md (the core framework)"
-say "  2. Read $REPO_ROOT/docs/quickstart.md (spin up your first sprint)"
-say "  3. Edit $TARGET/CLAUDE.md to match your context"
-say "  4. Run $TARGET/scripts/cross-sprint-audit.sh when you have sprints"
+say "  1. Restart Claude Code, then run:"
+say ""
+say "       cd $TARGET && claude"
+say "       /brief"
+say ""
+say_dim "     The seeded cycle manifest + sample sprint make that render now."
+say "  2. Read $REPO_ROOT/docs/quickstart.md (spin up your first real sprint)"
+say "  3. Read $REPO_ROOT/docs/foreman-manifesto.md (the core framework)"
+say "  4. Edit $TARGET/CLAUDE.md to match your context"
+say "  5. Run $TARGET/scripts/cross-sprint-audit.sh when you have sprints"
 say ""
 say_dim "DAcumen is a starting point. Take what works, drop what doesn't,"
 say_dim "shape the rest to your context. There's nothing to update, no service"

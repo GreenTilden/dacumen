@@ -2,6 +2,74 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.16 — Check 5, and a correction about why it was needed (2026-08-31)
+
+While writing v0.2.15's session handoff, a tailnet IP and port went into this repo's own
+public `MEMORY.md`. `check-guardrails.sh` returned **4/4 PASS**. It was caught by eye, in
+review.
+
+The first account of this — in a commit message, in `MEMORY.md`, and on the operator's
+review page — said the local `pre-commit` hook was equally blind. **That was wrong, and the
+error is more instructive than the original finding.** The hook delegates to a shared scrub
+gate that owns `internal-ip` and `internal-port` categories; staging the exact leaked shape
+**blocks the commit**. The wrong claim came from grepping the hook *file* for address
+patterns, finding none because they live in the gate it calls, and concluding no check
+existed — inferring a capability from a source read instead of running the thing. That is
+the same error class this repo minted in v0.2.14, committed one level up, by the instrument's
+own author, within a day of writing it down.
+
+So the honest version of the gap is narrower, and still worth a check:
+
+1. **`check-guardrails.sh` is what this repo documents as "MUST pass before any commit"**, and
+   it is what a session runs and quotes in a commit message. It returned a clean answer it had
+   not earned. A documented gate that does that teaches its reader to trust it, and the reader
+   is the one writing the leak.
+2. **The hook only ever sees staged files.** Content that landed before it was installed is
+   never scanned by it — precisely the hole that let v0.2.14 run 98 days. Check 5 is
+   corpus-wide, so it reaches history the hook structurally cannot.
+
+Belt and braces, deliberately: the hook stops the next commit, Check 5 stops the quiet claim
+that the repo is clean and sees the part of the repo the hook can't.
+
+### Added
+
+- **`check-guardrails.sh` Check 5 — address + endpoint audit**, corpus-wide, literal-free and
+  self-contained, on the same construction rules as Check 4. Four labels: `private-ip`
+  (the RFC 1918 private ranges plus the RFC 6598 carrier-grade-NAT range Tailscale hands out),
+  `public-ip` (any other dotted quad), `endpoint` (a URL or IP carrying an explicit port), and
+  `tailnet-host` (`*.ts.net`).
+- **An allowlist that is evidence-based rather than guessed.** Loopback, the any-address and the
+  three RFC 5737 documentation ranges are permitted — those exist so examples never name a real
+  host. `localhost:PORT` is permitted because the corpus's only two endpoint-shaped lines are
+  `http://localhost:5010` teaching examples in `docs/memory-framework.md` and
+  `skeleton/MEMORY.md`, and they should stay.
+- **A file-level opt-out**, `<!-- check-guardrails: allow-endpoints -->`, mirroring Check 1's
+  marker mechanism — greppable, so any file claiming the exemption is visible to a reviewer.
+  For docs that must quote an address shape to teach it, never to hide a live endpoint.
+
+### Verified by injection, not by reading
+
+Check 4's own comments record a pattern bug that reported `PASS` on a tree containing a real
+leak, caught only by injecting one. Same discipline here — every row below was run:
+
+| Injected | Result |
+|---|---|
+| the exact 2026-08-31 leak (tailnet IP + port) | FAIL — `private-ip` + `endpoint` |
+| RFC1918 LAN address with port | FAIL — `private-ip` + `endpoint` |
+| public routable IP | FAIL — `public-ip` |
+| `*.ts.net` MagicDNS host | FAIL — `tailnet-host` |
+| loopback · any-address · `localhost:5010` | PASS |
+| RFC 5737 documentation ranges | PASS |
+| semver, charter versions (`v0.1.20`), `node 22.23.1` | PASS |
+| a clock time, a ratio, a plain FQDN with no port | PASS |
+| a real address *with* the allowlist marker | PASS, and listed under `--verbose` |
+| the same address *without* the marker | FAIL |
+
+Four octets is what keeps version strings out: semver has three parts, so `v0.2.16` and
+`v0.1.20` cannot match. Private ranges are excluded from `public-ip` so a leak reports under
+its most specific label — one line under three headings is noise at the moment someone is
+reading the output to decide what to redact.
+
 ## v0.2.15 — the pillar test sorts, it does not gate (2026-08-31)
 
 The three-pillars material was the hardest language in this repo, and this repo's README

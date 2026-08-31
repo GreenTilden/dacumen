@@ -20,13 +20,16 @@
   amends §1 Mission from "must advance all three or be bundled" to the sorting framing. **Until it
   ratifies, charter §1 outranks every doc listed above**, and the global CLAUDE.md says so
   explicitly. (2) `git push` — still held for review, same as v0.2.14; a push here is a publish.
-  (3) the v0.2.14 history rewrite and social-preview upload, both still open. (4) **NEW —
-  `check-guardrails.sh` has no address/endpoint check.** Demonstrated live on 2026-08-31: a
-  tailnet IP + port was written into this file, all 4 checks passed, and neither the corpus-wide
-  script nor the local `pre-commit` hook flagged it. Caught by eye, not by instrument. This is the
-  v0.2.14 lesson repeating one version later — *a gate that cannot see a category must not be
-  quoted as evidence about that category* — and it wants a Check 5 (address / endpoint / port,
-  corpus-wide) with an allowlist for the example addresses docs legitimately use.
+  (3) the v0.2.14 history rewrite and social-preview upload, both still open. (4) **DONE — `check-guardrails.sh`
+  Check 5** (address / endpoint / port, corpus-wide). Trigger: on 2026-08-31 a tailnet IP + port
+  was written into this file and the suite returned 4/4 PASS; caught by eye. **Correction on the
+  record:** the first write-up claimed the `pre-commit` hook was equally blind. It is not — the
+  hook delegates to `scrub-gate.sh`, which owns `internal-ip`/`internal-port`, and staging the
+  exact shape BLOCKS the commit (verified by staging it). The commit was never at risk. The real
+  gap was narrower: this script is the one CLAUDE.md calls "MUST pass before any commit" and it
+  returned a clean answer it had not earned, and the hook only ever sees STAGED files, so it
+  cannot see content that landed before it was installed — the v0.2.14 hole. Check 5 is
+  corpus-wide and covers that.
 - **Next Steps**: wire tier into `scan-repo.sh` — it classifies repo *shape* (greenfield / legacy /
   established / foreman-enabled) but not *purpose*, and shape × tier → recipe is the natural next
   piece (~45 min; a legacy repo at `experiment` doesn't need a full cartography sprint, one at

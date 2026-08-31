@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # check-guardrails.sh — DAcumen pre-commit guardrail audit.
 #
-# Runs three discipline checks and fails loudly if any trip. Designed to be
+# Runs five discipline checks and fails loudly if any trip. Designed to be
 # installed as a pre-commit hook (via install.sh --hooks) or run manually
 # before any commit that touches framework docs, UI strings, or config.
 #
@@ -14,6 +14,8 @@
 #                               etc.) leaking into distributable files. The
 #                               literals live OUTSIDE this repo; see Check 2.
 #   3. Script lint           — shellcheck if installed, bash -n otherwise
+#   4. Identity + resource-id — operator paths, uuids, private FQDNs (corpus-wide)
+#   5. Address + endpoint    — IPs, host:port endpoints, tailnet names (corpus-wide)
 #
 # Usage:
 #   ./scripts/check-guardrails.sh                # run all checks, exit 0/1
@@ -52,7 +54,7 @@ while [ $# -gt 0 ]; do
         --verbose)  VERBOSE=1; shift ;;
         --fix-help) FIX_HELP=1; shift ;;
         -h|--help)
-            sed -n '2,30p' "$0" | sed 's/^# //; s/^#//'
+            sed -n '2,34p' "$0" | sed 's/^# //; s/^#//'
             exit 0
             ;;
         *) echo "unknown arg: $1" >&2; exit 2 ;;
@@ -87,7 +89,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 FAIL_COUNT=0
 PASS_COUNT=0
-TOTAL=4
+TOTAL=5
 
 # Helper: print fix suggestion if --fix-help mode
 suggest_fix() {
@@ -363,6 +365,104 @@ else
     printf " ${C_RED}FAIL${C_RESET}\n"
     echo "$CAT4_MATCHES" | sed 's|^|  |'
     suggest_fix "an identity-shaped literal is in a tracked file. This repo is PUBLIC. Redact to a placeholder; if a real value is genuinely needed, it belongs in a private overlay outside this repo, not in another tracked file."
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+fi
+
+# ---- Check 5: address / endpoint / port categories ----
+#
+# WHY THIS EXISTS (2026-08-31):
+# One day after Check 4 landed, a session writing this repo's own MEMORY.md handoff
+# wrote a tailnet IP and port into it — a public file in a public repo — and this
+# suite returned 4/4 PASS. It was caught by eye, in review.
+#
+# What that did NOT mean, stated plainly because the first write-up of this got it
+# wrong: the commit was never actually at risk. The pre-commit hook delegates to
+# operator-scripts/utility/scrub-gate.sh, which owns `internal-ip` and
+# `internal-port` categories, and staging the exact leaked shape BLOCKS the commit.
+# Verified by doing it, not by reading the hook. (The wrong claim came from
+# grepping the hook FILE for address patterns, finding none because they live in
+# the gate it calls, and concluding no check existed — inferring a capability from
+# a source read instead of running the thing. Same error class this check exists
+# to catch, one level up.)
+#
+# The real gap, which is narrower and still worth closing:
+#   1. This script is what CLAUDE.md calls "MUST pass before any commit", and it is
+#      what a session runs and quotes. It said 4/4 PASS over a file containing a
+#      live endpoint. A documented gate that returns a clean answer it did not earn
+#      teaches its reader to trust it, and the reader is the one writing the leak.
+#   2. The hook only ever sees STAGED files. Content that landed before the hook was
+#      installed is never scanned by it at all — that is precisely the hole that let
+#      v0.2.14 run 98 days. This check is CORPUS-WIDE, so it covers the history the
+#      hook structurally cannot reach.
+#
+# So: belt and braces, deliberately. The hook stops the next commit; this stops the
+# quiet claim that the repo is clean, and sees the part of the repo the hook can't.
+#
+# Same construction rules as Check 4, for the same reasons:
+#   - LITERAL-FREE. Patterns describe SHAPES (RFC1918 range, dotted quad, host:port),
+#     never a remembered address. This file is public; a committed literal IS the leak.
+#   - SELF-CONTAINED. Must run for a stranger who cloned the kit and has none of the
+#     author's private tooling.
+#   - Exclusions are a SECOND pass, never inline — grep -E has no lookahead.
+printf "${C_BOLD}[5/%d]${C_RESET} Address + endpoint audit..." "$TOTAL"
+
+# Addresses a doc may legitimately use. Loopback and the any-address teach real
+# patterns; 192.0.2.x / 198.51.100.x / 203.0.113.x are the RFC 5737 documentation
+# ranges, which exist precisely so examples never name a real host.
+ADDR_ALLOW='127\.0\.0\.1|0\.0\.0\.0|255\.255\.255\.255|192\.0\.2\.[0-9]{1,3}|198\.51\.100\.[0-9]{1,3}|203\.0\.113\.[0-9]{1,3}'
+
+# File-level opt-out, same mechanism and same caveat as Check 1's marker: it is
+# itself greppable, so any file claiming the exemption is visible to a reviewer.
+# For docs that must quote an address shape to teach it — NOT for a real endpoint.
+ADDR_MARKER='check-guardrails: allow-endpoints'
+
+CAT5_MATCHES=""
+# scan5 <label> <ere> [exclude-ere]
+scan5() {
+    local label="$1" ere="$2" excl="${3:-}" hits filtered line file
+    hits=$(git -C "$REPO_ROOT" grep -nIE "$ere" -- . 2>/dev/null \
+           | grep -vE '^scripts/check-guardrails\.sh:' || true)
+    [ -n "$excl" ] && hits=$(echo "$hits" | grep -vE "$excl" || true)
+    # Drop hits in files carrying the allowlist marker.
+    filtered=""
+    while IFS= read -r line; do
+        [ -z "$line" ] && continue
+        file="${line%%:*}"
+        if grep -qF "$ADDR_MARKER" "$REPO_ROOT/$file" 2>/dev/null; then
+            [ "$VERBOSE" -eq 1 ] && printf "${C_DIM}  allowlist: %s${C_RESET}\n" "$line" >&2
+            continue
+        fi
+        filtered="${filtered}${line}"$'\n'
+    done <<< "$hits"
+    filtered="${filtered%$'\n'}"
+    [ -n "$filtered" ] && CAT5_MATCHES="${CAT5_MATCHES}${label}"$'\n'"$(echo "$filtered" | sed 's|^|    |')"$'\n'
+    return 0
+}
+
+# RFC1918 + CGNAT (100.64.0.0/10, which is what Tailscale hands out). These have no
+# legitimate use in a public methodology kit — they are somebody's actual network.
+scan5 "private-ip" '\b(10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|192\.168\.[0-9]{1,3}\.[0-9]{1,3}|172\.(1[6-9]|2[0-9]|3[01])\.[0-9]{1,3}\.[0-9]{1,3}|100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\.[0-9]{1,3}\.[0-9]{1,3})\b'
+# Any OTHER dotted quad. A public IP in a doc is a host someone can reach.
+# Four octets, so semver (3 parts) and charter versions (v0.1.20) never match.
+# Private ranges are excluded here so a leak reports under its most specific
+# label — private-ip already owns them, and one line under three headings is
+# noise at the moment someone is reading this output to decide what to redact.
+PRIVATE_RANGES='\b(10\.[0-9]{1,3}|192\.168|172\.(1[6-9]|2[0-9]|3[01])|100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7]))\.'
+scan5 "public-ip"  '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b' "$ADDR_ALLOW|$PRIVATE_RANGES"
+# An explicit port on a URL or an IP is a service endpoint by any other name.
+scan5 "endpoint"   '(https?://[a-zA-Z0-9._-]+:[0-9]{2,5}|\b([0-9]{1,3}\.){3}[0-9]{1,3}:[0-9]{2,5})' "localhost:|$ADDR_ALLOW"
+# Tailnet MagicDNS names identify a private mesh and often the machines on it.
+scan5 "tailnet-host" '\b[a-z0-9-]+\.(ts\.net|tailnet)\b'
+
+CAT5_MATCHES=$(echo "$CAT5_MATCHES" | grep -vE '^\s*$' || true)
+
+if [ -z "$CAT5_MATCHES" ]; then
+    printf " ${C_GREEN}PASS${C_RESET}\n"
+    PASS_COUNT=$((PASS_COUNT + 1))
+else
+    printf " ${C_RED}FAIL${C_RESET}\n"
+    echo "$CAT5_MATCHES" | sed 's|^|  |'
+    suggest_fix "an address or service endpoint is in a tracked file. This repo is PUBLIC, and an endpoint is reachable infrastructure, not just a string. Use localhost, a placeholder, or an RFC 5737 documentation address (192.0.2.x). A real endpoint belongs in a private overlay outside this repo. If the file genuinely teaches an address shape, add the marker '$ADDR_MARKER' — never to hide a live endpoint."
     FAIL_COUNT=$((FAIL_COUNT + 1))
 fi
 

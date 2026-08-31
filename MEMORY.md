@@ -1,11 +1,28 @@
 # dacumen — Memory
 
 ## Session Status
-- **Status**: v0.2.13 landed LOCAL, **not pushed** — content refresh, not an amendment sync. Amendments through 25 (upstream charter v0.1.20) remain covered as of v0.2.12 (pushed + tagged 2026-07-11)
-- **Current Focus**: v0.2.13 = second case study + the mark shipping for real. Added `docs/case-studies/whethermap-observatory.md` (*Altitude as Abstraction Order* — invariant-beats-layout, the decision-ledger convention, build-a-second-artifact-instead-of-filtering, four honesty rules for self-updating surfaces) and a README §"What this looks like at scale" pointing at the live map. Logo truth-up: the hand-rolled 32×32 SVG is now declared the mark rather than a placeholder, with raster forms generated *from* it
-- **Blockers**: none. Two operator actions pending, neither blocking: (1) `git push` to `GreenTilden/dacumen` — held deliberately, a public-surface sanitization gets eyes before it leaves the machine; (2) upload `public/social-1200x630.png` to the repo's social-preview slot, which is a repo-settings action and cannot be a commit
-- **Next Steps**: the standing amendment triage resumes version-forward — `ls` the upstream charter dir for versions past v0.1.20 and read each `dacumen_impact` line (see sync-process lessons v0.2.12). Casey deployment `4da4550b` registered; id now stored at `dacumen-internal/.foreman/casey-deployment-id`
-- **Last Updated**: 2026-08-07
+- **Status**: v0.2.13 is PUSHED — `c89b269`, 2026-08-18, local `main` equals `origin/main`.
+  (This line read "landed LOCAL, **not pushed**" until 2026-08-30, dated 2026-08-07 — 23 days
+  stale and wrong about the repo's own push state, in the repo that publishes the
+  session-handoff rule. Recorded rather than quietly corrected: it is the cheapest possible
+  worked example of why the handoff is mandatory.)
+- **Current Focus**: public-surface remediation (2026-08-30). The 2026-08-07 split cleaned
+  CLAUDE.md and MEMORY.md but left the internal half tracked: `docs/agent-card-research/`,
+  five operational scripts, and systemd units carrying absolute `/home/<user>` paths. Those
+  are now in `dacumen-internal` with history. The org-chart manifest, which promises
+  "role-labels, no proper nouns", was publishing two children's given names, a client entity
+  name, 15 live Casey deployment ids and a Notion page id — all redacted. `check-guardrails.sh`
+  gained Check 4 (identity / operator-path / resource-id, corpus-wide, literal-free,
+  self-contained) because Checks 1-3 structurally could not see any of it and passed for 98 days.
+- **Blockers**: none blocking. Open operator actions: (1) `git push` — held for review, the
+  whole point of a public-surface change; (2) the history rewrite — HEAD is clean but every
+  redacted value is still served at old SHAs; (3) social-preview upload, a repo-settings action.
+- **Next Steps**: amendment triage resumes version-forward — `ls` the upstream charter dir past
+  v0.1.20 and read each `dacumen_impact`. Highest ratified is Amendment 25 / v0.1.20 and dacumen
+  covers through it, so there is no sync gap today. Casey deployment id lives at
+  `dacumen-internal/.foreman/casey-deployment-id` (not restated here — it is a live handle into
+  an unauthenticated tracker).
+- **Last Updated**: 2026-08-30
 
 ### Repo split (2026-08-07)
 This repo is public and is cited as a work sample. The internal working artifacts —

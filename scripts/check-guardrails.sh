@@ -76,7 +76,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 FAIL_COUNT=0
 PASS_COUNT=0
-TOTAL=3
+TOTAL=4
 
 # Helper: print fix suggestion if --fix-help mode
 suggest_fix() {
@@ -267,11 +267,83 @@ else
     fi
 fi
 
+# ---- Check 4: identity / operator-path / resource-id categories ----
+#
+# WHY THIS EXISTS (the incident, 2026-08-30):
+# On 2026-08-07 commit 7aeae4d asserted "the gate passes on all 85 tracked files,
+# across every category". It did pass. The repo was still publishing two children's
+# given names, a client entity name, 15 live deployment ids, a Notion page id, and
+# systemd units carrying the author's absolute home path — for 98 days.
+#
+# Nothing was broken. Check 1 greps financial vocabulary. Check 2 greps a private
+# literal deny-list. The pre-commit hook checks ip/port/topology/secrets, and only
+# over STAGED files, so content that landed before it was installed was never
+# scanned at all. Every check did its job. No check owned "the whole corpus, for
+# identity-shaped things", so the claim "across every category" was true of the
+# instrument and false of the repo.
+#
+# The rule this encodes: a gate that cannot see a category must not be quoted as
+# evidence about that category.
+#
+# Categories are LITERAL-FREE by construction — patterns describe SHAPES, never
+# a remembered name. A specific personal literal belongs in $SCRUB_DENYLIST_FILE
+# (Check 2), never here, because this file is public and a committed literal is
+# itself the leak. This check is also fully self-contained: it must run for a
+# stranger who cloned the repo and has none of the author's private tooling.
+printf "${C_BOLD}[4/%d]${C_RESET} Identity + resource-id audit..." "$TOTAL"
+
+# Domains this repo legitimately cites. Everything else with 3+ labels is flagged.
+FQDN_ALLOW='raw\.githubusercontent\.com|www\.w3\.org'
+
+CAT4_MATCHES=""
+scan4() { # <label> <ere> <hint>
+    local label="$1" ere="$2" hits
+    hits=$(git -C "$REPO_ROOT" grep -nIE "$ere" -- . 2>/dev/null \
+           | grep -vE '^scripts/check-guardrails\.sh:' || true)
+    [ -n "$hits" ] && CAT4_MATCHES="${CAT4_MATCHES}${label}"$'\n'"$(echo "$hits" | sed 's|^|    |')"$'\n'
+}
+
+# An absolute home path is a hidden dependency on one machine, and names its user.
+scan4 "operator-path" '(/home/|/Users/)[a-z][a-z0-9._-]*/'
+# Live handles into deployment trackers / SaaS pages. Casey Junior runs unauthenticated.
+scan4 "resource-id"   '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+scan4 "resource-id"   '(deployment|deploy_id|page_id|/review/)[^0-9a-f]{0,12}\b[0-9a-f]{8}\b'
+# A fully-qualified internal host is an infrastructure endpoint by any other name.
+scan4 "private-host"  "\\b[a-z0-9-]+\\.[a-z0-9-]+\\.(com|net|org|io|house|dev)\\b"
+
+# private-host is noisy by nature; drop the allowlisted domains from its findings.
+CAT4_MATCHES=$(echo "$CAT4_MATCHES" | grep -vE "$FQDN_ALLOW" || true)
+CAT4_MATCHES=$(echo "$CAT4_MATCHES" | grep -vE '^\s*$' || true)
+# A label line with no findings under it is an artifact of the filter above.
+CAT4_MATCHES=$(echo "$CAT4_MATCHES" | awk '
+    /^[a-z-]+$/ { label=$0; next }
+    { if (label != "") { print label; label="" } print }
+' || true)
+
+if [ -z "$CAT4_MATCHES" ]; then
+    printf " ${C_GREEN}PASS${C_RESET}\n"
+    PASS_COUNT=$((PASS_COUNT + 1))
+else
+    printf " ${C_RED}FAIL${C_RESET}\n"
+    echo "$CAT4_MATCHES" | sed 's|^|  |'
+    suggest_fix "an identity-shaped literal is in a tracked file. This repo is PUBLIC. Redact to a placeholder; if a real value is genuinely needed, it belongs in a private overlay outside this repo, not in another tracked file."
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+fi
+
 # ---- Summary ----
 echo ""
-if [ "$FAIL_COUNT" -eq 0 ]; then
+SKIP_COUNT=$(( TOTAL - PASS_COUNT - FAIL_COUNT ))
+if [ "$FAIL_COUNT" -eq 0 ] && [ "$SKIP_COUNT" -eq 0 ]; then
     printf "${C_GREEN}${C_BOLD}All %d guardrail checks passed.${C_RESET}\n" "$TOTAL"
     exit 0
+elif [ "$FAIL_COUNT" -eq 0 ]; then
+    # A check that could not run is NOT a pass. Reporting it as one is the exact
+    # failure this suite exists to prevent, so it exits 2 (ERROR), matching the
+    # house detector contract: 0 PASS / 1 FAIL / 2 COULD-NOT-RUN.
+    printf "${C_RED}${C_BOLD}%d of %d checks passed; %d could not run.${C_RESET}\n" \
+        "$PASS_COUNT" "$TOTAL" "$SKIP_COUNT"
+    printf "${C_DIM}A skipped check is not evidence. Do not quote this run as clean.${C_RESET}\n"
+    exit 2
 else
     printf "${C_RED}${C_BOLD}%d of %d guardrail checks failed.${C_RESET}\n" "$FAIL_COUNT" "$TOTAL"
     if [ "$FIX_HELP" -eq 0 ]; then

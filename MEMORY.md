@@ -19,7 +19,7 @@
   v0.1.20 → v0.1.21) — charter §1 now carries the sorting framing, precedence, propagation and the
   attention budget directly, so charter and framework agree and the precedence note is gone from
   the global config. Open operator actions: (1) **`git push`** — the one thing still held. dacumen
-  is 6 commits ahead of `origin/main`; a push here is a publish, same standing gate as v0.2.14.
+  is 5 commits ahead of `origin/main`; a push here is a publish, same standing gate as v0.2.14.
   (3) the v0.2.14 history rewrite and social-preview upload, both still open. (4) **DONE — `check-guardrails.sh`
   Check 5** (address / endpoint / port, corpus-wide). Trigger: on 2026-08-31 a tailnet IP + port
   was written into this file and the suite returned 4/4 PASS; caught by eye. **Correction on the

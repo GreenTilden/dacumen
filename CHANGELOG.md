@@ -2,6 +2,59 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.18 — the catch-up, and why the process had not caught it (2026-09-06)
+
+Six days after v0.2.17, five methodology-grade changes had landed upstream and none of them
+had a path here. A reader noticed; the process did not. This entry records both the catch-up
+and the reason, because a mirror that quietly refills is less useful than one that says how
+it ran dry.
+
+**Why it ran dry.** The sync ritual has one wired trigger: a frontmatter field on the primary
+implementation's charter amendments. The second implementation keeps a separate charter with
+no such field, the shared tooling repo lands gates and detectors with no amendment at all,
+and the standing backstop sweep had not run in two months. The consolidation nephew on the
+second implementation checked a queue that nothing populated, because populating it was
+never in its close checklist. Every part did its job. No part owned "did anything
+methodology-shaped land this cycle, anywhere." The fix on the private side is a nightly
+detector that reads a freshness marker the mirror writes last, after each push, and
+compares it with narrow, named feeder paths under a 14-day grace; plus the missing checklist
+line. `dacumen-sync-process.md` carries the marker's contract and the lessons-learned.
+
+**What landed, in order of the commits:**
+
+1. `cycle-architecture.md` — **a cycle may close on its goals, not a calendar.**
+   `close_criterion.kind` is `scope` or `date`; with `scope`, `target_close: null` is a legal
+   declared shape, and the day counter goes away.
+2. `three-sprint-cascade.md` — **lanes the cascade does not own.** Three states, not two:
+   cascade role, known non-cascade lane, unrecognized. A detector names the lanes it sets
+   aside and prints both numbers.
+3. `scripts/cross-sprint-audit.sh` — the matching fix. Known lanes stop vanishing into
+   "unknown"; the ledger fetch says when it is a window (`LEDGER_SINCE`,
+   `ledger_possibly_truncated`); and a pre-existing `grep -c` defect that broke every sprint
+   log with zero outstanding items is gone. Said plainly: this copy had the invisibility
+   defect, not the positional-corruption one the second implementation found.
+4. `scripts/classify-loop-mode.sh` + `loop-mode-evidence-gate.md` — **the loop-mode evidence
+   gate.** A commit that changed a measuring instrument and quotes its result must say how it
+   was checked (`MEASURED:`); a production change needs `VERIFIED-BY:`; declining is
+   `SKIPPED-BECAUSE:`. Two obvious wirings were measured and rejected first.
+5. `case-studies/conformance-fixture-corpus.md` — **testing the detector.** Lead with the
+   fixture that must come back clean; recipes not repos; expectations before the run;
+   known-wrong passes said out loud; the effective-from date measured, not chosen.
+6. `scripts/check-guardrails.sh --audience` + `tests/check-guardrails-audience/run.sh` +
+   `guardrail-audience.md` — **narrow by audience, not by regex.** Under `internal`, the
+   identity and address checks report as `[soft]`; the financial-vocabulary and deny-list
+   checks stay hard at every audience. Default `public` is byte-identical to v0.2.17. The
+   harness was run against the old gate first and failed six of ten arms.
+
+**Ledger housekeeping.** `charter-versioning.md` had stopped at Amendment 25 while this file
+went on to 26. The CHANGELOG is the authoritative record; the versioning doc now reconciles
+against it every pass.
+
+**Direction, again.** Items 1, 2 and 6 originate in the second implementation's charter and
+land here through the registered second-implementation feeder, not as amendment docs. The
+primary charter has not yet reviewed them for its own applicability; that review is a
+follow-up on the private side and is not claimed here.
+
 ## v0.2.17 — the upstream authority catches up (2026-08-31)
 
 v0.2.15 reframed the pillar test here and ran outward the same day — to the private operating

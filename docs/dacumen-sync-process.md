@@ -107,6 +107,10 @@ When a sync ritual item is complete, mark the private cycle manifest's `pending_
 
 Without this update, completed work looks pending indefinitely — inflating the apparent backlog and masking real debt. The first lessons-learned section below names this exact failure ("§14b was already synced — discoverable only by reading the doc"). The `synced_at` field is the fix: a sync is not done until the queue entry is struck.
 
+**Machine-readable freshness marker (added 2026-09-06).** The per-amendment `synced_at` bookkeeping above only covers amendment-shaped changes. Alongside it, the private half of the mirror keeps one file, `.foreman/dacumen-synced-through.json`, recording the date of the last sync pass, the mirror version it produced, and the newest commit considered in each feeder repo. A nightly detector reads that file and compares it with narrow, named paths in every feeder (the second implementation's charter file, new mutating or utility scripts in the shared tooling repo, new docs in the registered standing sources). A missing marker is UNVERIFIABLE, never a pass. Candidates older than a grace window (default 14 days) are a FAIL that names them. The marker is written last, after the public push, dated to match the CHANGELOG entry, and never in advance.
+
+Why a marker and not a vocabulary grep: words like gate, detector, cascade and ceremony appear in most ordinary commits in a working estate. A detector keyed on them would fire every night and be ignored within a week. Path-scoped candidates with a date floor fire rarely and mean something when they do.
+
 **For multi-source entries**: the implementation that generated the learnings should carry a corresponding "externalized at `<dacumen-version>`" note in its own record-keeping, so the governance thread doesn't re-sweep already-externalized content on the next pass.
 
 ## Exit conditions
@@ -283,3 +287,16 @@ The v0.2.7 lesson warned about over-declared tags. Amendment 23's `doc-edit` was
 ### When the next sync fires
 
 Amendments through 25 (charter v0.1.20) are covered at v0.2.12. The next triage opens with: `ls` the upstream charter dir for versions past v0.1.20 → read each `dacumen_impact` line → grep `docs/` here for the core concepts → tier.
+
+## Lessons-learned — multi-source H2 catch-up (2026-09-06, v0.2.18)
+
+The first pass that pulled from more than one feeder in a single ritual, and the first time the mirror was found stale by a reader rather than by the process. Six days after v0.2.17, five methodology-grade changes had landed upstream and none had a path here.
+
+**What failed, and it was the trigger, not the people.** The amendment-driven trigger fires on a frontmatter field that exists only on the primary implementation's charter amendments. The second implementation keeps a separate charter, a single running file with amendments written inline, and it has no such field. Two of the five changes were amendments to that charter. Two more were plain commits to the shared tooling repo, which no amendment describes. The fifth was a test corpus added beside a detector. None of the five could fire the primary trigger, and the standing backstop sweep that would have caught them had not run in two months. The consolidation nephew for the second implementation checks a queue that nothing populates, because populating it was never in its close checklist. Every part did its job. No part owned "did anything methodology-shaped land this cycle, anywhere."
+
+**What changed.** The freshness marker and nightly detector described under Completion tracking; a one-line close-checklist addition for the second implementation's consolidation nephew; and the two mirror ledgers (this doc's version record and `charter-versioning.md`) brought back into agreement, since they had drifted from each other by one amendment.
+
+**Ledger housekeeping.** `charter-versioning.md` had stopped one amendment behind `CHANGELOG.md`. Two records of the same fact in one repo will disagree eventually; the CHANGELOG is the authoritative external record, and the versioning doc now says so and points at it.
+
+**Carry forward.** A registered feeder source whose own charter cannot signal impact needs either the field or a detector watching its charter file. This pass chose the detector because it lands without a charter amendment on the feeder's side. The field is the better long-term fix and is recorded as a follow-up.
+

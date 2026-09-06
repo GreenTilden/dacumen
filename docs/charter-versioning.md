@@ -40,6 +40,8 @@ Charters use a variant of semver tuned for methodology docs:
 
 **Amendment 25 note**: ratified upstream 2026-07-03 (v0.1.20). `dacumen_impact: manifesto` — one new `business_role` card + persona mapping in the org-chart responsibilities manifest. Synced via the manifest itself (`docs/manifests/org-chart-responsibilities.*`, ephemeralization_officer entry) rather than a patterns doc — manifest-impact amendments land where the manifest lives.
 
+**Amendment 26 note**: ratified upstream 2026-08-31 (v0.1.21). `dacumen_impact: none` — the pillar test became a sorting mechanism rather than a gate, and this mirror already carried that framing (it led the charter by a day; CHANGELOG v0.2.15 and v0.2.17 record the inversion). Logged here because this ledger had silently stopped at Amendment 25 while the CHANGELOG went on: when two records of the same fact live in one repo, the CHANGELOG is the authoritative one and this list must be reconciled against it at every sync pass.
+
 ## Amendment ratification
 
 An amendment goes through these states:

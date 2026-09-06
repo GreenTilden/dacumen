@@ -135,6 +135,25 @@ The consolidation nephew (typically the third role in the Huey/Louie/Dewey-style
 
 The close commit flips the cycle manifest to `status: closed`. The next cycle's open is a separate commit authored by the next discovery nephew's L01.
 
+### Cycles close on scope or on a date, and the manifest says which
+
+A cycle manifest declares how it knows it's done:
+
+```json
+{
+  "close_criterion": {
+    "kind": "scope",
+    "target_close": null
+  }
+}
+```
+
+`kind` is `"scope"` or `"date"`. With `scope`, `target_close: null` is a legal declared shape, not a defect — the cycle isn't missing a deadline, it never had one. A scope-bound cycle closes when every goal is done, or moved on purpose with the reason recorded in the close artifact. With `date`, the old rules apply: `target_close` is a real ISO date, and the boundary detector checks whether the cycle overran it.
+
+A boundary detector reading this field should fail only when neither a date nor a scope criterion is declared — an undeclared `close_criterion` is the actual defect, not a null `target_close` on a cycle that declared itself scope-bound. `/brief`-style tooling should print no day counter for a scope-bound cycle; there's nothing to count down to. Retire the "close by `<date>` or move it" goal template — it doesn't fit a cycle that was never going to close on a date.
+
+**Why this exists**: an inherited two-week cadence had never actually decided when to close. Cycles ran a month with no date in sight, and other cycles closed early with days still on the clock — the date was decoration, not decision. Every briefing run still spent tokens computing and printing a day count against it. Declaring the criterion up front removes the pretense: if the work itself decides the close, say so in the manifest, and stop paying for a countdown nobody was using.
+
 ## Carryover decisions
 
 Every cycle close produces a `carryover_decisions_at_open` block on the next cycle's manifest. Conventional keys:

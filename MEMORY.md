@@ -1,59 +1,39 @@
 # dacumen — Memory
 
 ## Session Status
-- **Status**: **PUSHED 2026-08-31.** v0.2.15 (pillar-test reframe), v0.2.16 (guardrail Check 5)
-  and v0.2.17 (upstream ratification note) are all on `origin/main` at `357f5c6`; local equals
-  remote. Verified after the push by re-running the nightly `d-anon-2` detector, which full-depth
-  clones the real remote rather than reading any local copy: dacumen clean, 63 files, and the
-  overall PASS covers all 7 public repos. For the live ahead-count run
-  `git rev-list --count origin/main..HEAD` rather than trusting a number typed here — two hand-
-  written counts in this file went stale within ten minutes on 2026-08-31.
-- **Current Focus**: the pillar-test reframe (2026-08-31) and its propagation. `three-pillars.md`
-  was the hardest language in a repo whose README promises the opposite; it is now a **sorting
-  mechanism, not a bar to clear**. An axis says what work is FOR, which sets how much rigor it
-  earns. Single-axis work is **recorded, not rejected**. Added precedence (axes totally ordered by
-  what breaks), propagation (`effective_tier = min(declared, worst dependent)`), and an attention
-  budget that may honestly render as *unbudgeted*. `skeleton/CLAUDE.md` now carries Tier / Why this
-  tier / Depended on by.
-- **Propagated the same day** — this ran backwards from the usual upstream→mirror direction:
-  governance-thread `4a61a12` (5 files were byte-identical to dacumen's pre-reframe versions),
-  coriolii `95cbd3d` (pre-cycle validation doctrine — coverage no longer skips the 6-axis walk),
-  `~/.claude/CLAUDE.md` §Three Pillars, and the `/validate` skill + its capability file.
-- **Blockers**: none blocking. **Amendment 26 RATIFIED 2026-08-31** (darntech `980433b3`, charter
-  v0.1.20 → v0.1.21) — charter §1 now carries the sorting framing, precedence, propagation and the
-  attention budget directly, so charter and framework agree and the precedence note is gone from
-  the global config. Open operator actions: none outstanding — the push
-  landed 2026-08-31 alongside governance-thread, coriolii and darntech, all four verified against
-  their remotes.
-  (3) the v0.2.14 history rewrite and social-preview upload, both still open. (4) **DONE — `check-guardrails.sh`
-  Check 5** (address / endpoint / port, corpus-wide). Trigger: on 2026-08-31 a tailnet IP + port
-  was written into this file and the suite returned 4/4 PASS; caught by eye. **Correction on the
-  record:** the first write-up claimed the `pre-commit` hook was equally blind. It is not — the
-  hook delegates to `scrub-gate.sh`, which owns `internal-ip`/`internal-port`, and staging the
-  exact shape BLOCKS the commit (verified by staging it). The commit was never at risk. The real
-  gap was narrower: this script is the one CLAUDE.md calls "MUST pass before any commit" and it
-  returned a clean answer it had not earned, and the hook only ever sees STAGED files, so it
-  cannot see content that landed before it was installed — the v0.2.14 hole. Check 5 is
-  corpus-wide and covers that.
-- **Open upstream, not claimed done**: Gizmoduck's charter §8 review of Amendment 26 — non-blocking
-  per §8, flagged for the next cycle-close. It carries a self-reference worth a second reader: §8
-  reviews amendments *against* the Three Pillars test, and this amendment changed that test.
-- **Next Steps**: wire tier into `scan-repo.sh` — it classifies repo *shape* (greenfield / legacy /
-  established / foreman-enabled) but not *purpose*, and shape × tier → recipe is the natural next
-  piece (~45 min; a legacy repo at `experiment` doesn't need a full cartography sprint, one at
-  `customer` does). Then amendment triage resumes version-forward past charter v0.1.20.
-- **Review surface**: the reframe is published for operator reading on the private tailnet review
-  page (host + path deliberately not recorded here — this repo is public; the endpoint is in
-  `dacumen-internal`).
-- **Last Updated**: 2026-08-31
-
-### Repo split (2026-08-07)
-This repo is public and is cited as a work sample. The internal working artifacts —
-GOV sprint logs, the estate memory corpus, `.foreman/` cycle state — moved to the
-private **`GreenTilden/dacumen-internal`** (`~/projects/dacumen-internal`), with
-per-file history carried over. What stays here is the framework itself: docs,
-skeleton, decisions, manifests, scripts. Full costing:
-`darntech/docs/dacumen-public-exposure-spike.md`.
+- **Status**: **PUSHED 2026-09-06.** v0.2.18 is on `origin/main` at the commit tag `v0.2.18` points
+  to; local equals remote (`git rev-list --count origin/main..HEAD` = 0 at push time; run it, don't
+  trust a typed number). Verified by a fresh `--depth 1` clone: all five new files present, the
+  audit script carries its lane fields, and the audience harness passes 10/10 from the clone.
+- **What landed (9 commits)**: the sync-process freshness marker + lessons-learned; scope-bound
+  cycles (`cycle-architecture.md`); lanes the cascade does not own (`three-sprint-cascade.md`);
+  the matching `cross-sprint-audit.sh` fix (lane classes, `LEDGER_SINCE`, truncation flag, and a
+  pre-existing `grep -c` defect); `scripts/classify-loop-mode.sh` + its doc; the conformance
+  fixture corpus case study; `check-guardrails.sh --audience` + `tests/check-guardrails-audience/`
+  + its doc; CHANGELOG v0.2.18. `charter-versioning.md` reconciled to Amendment 26.
+- **Push incident, recorded**: the remote carried the 2026-09-05 identity-scrubbed rewrite and
+  local main had never been moved onto it. A first `git push --tags` was rejected on old tags and
+  pushed a `v0.2.18` tag that made the pre-rewrite lineage reachable again on the remote for a few
+  minutes; the tag was deleted, the nine commits rebased onto the rewritten lineage (tip trees
+  identical), and main plus the single tag pushed explicitly. Never `--tags` from this clone; local
+  tags older than v0.2.18 still point at the old lineage. Old objects are unreachable on the remote
+  but may sit in its cache until it collects them; the exposure class was already ruled accepted
+  risk upstream (username paths, opaque record ids).
+- **Why the mirror had gone stale**: the sync ritual's one wired trigger is a frontmatter field on
+  the primary charter's amendments; the second implementation's charter has no such field, the
+  shared tooling repo lands gates with no amendment, and the standing GOV backstop had not run
+  since 2026-07-05. Now guarded by a nightly detector on the private side that reads
+  `dacumen-internal/.foreman/dacumen-synced-through.json` (written LAST, after the push) against
+  path-scoped feeder candidates with a 14-day grace, plus a close-checklist line for the second
+  implementation's consolidation nephew.
+- **Blockers**: none.
+- **Next steps**: (1) primary charter reviews the second implementation's lane / scope-bound /
+  audience rulings for its own applicability (its §8 review, not claimed here). (2) `install.sh
+  --hooks` could wire `classify-loop-mode.sh` as a commit-msg hook and run the audience harness as
+  a self-test. (3) A README "measured on ourselves" section, script-generated, now that the
+  upstream cycle that produced the numbers has closed. (4) Deferred feeders: artifact-freshness
+  doctrine (hard to sanitize), per-detector timeouts (already covered).
+- **Date**: 2026-09-06
 
 ## Project Identity
 

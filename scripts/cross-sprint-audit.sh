@@ -26,11 +26,21 @@
 #                     When set, the script fetches entries and merges them with
 #                     sprint-log parsing. When unset, sprint-log parsing only.
 #   DISCOVERY_SOFT_CAP — operator soft cap for discovery (default: 80)
+#   KNOWN_NON_CASCADE_ROLES — space-separated roles the roster may declare that the
+#                     cascade does NOT grade (default: "operator governance"). They are
+#                     counted and named, never graded for cascade order, and never
+#                     mistaken for an undeclared role. See docs/three-sprint-cascade.md,
+#                     "Lanes the cascade does not own".
+#   LEDGER_SINCE    — optional ISO date passed to the ledger as date_from. Without it the
+#                     fetch is the newest 500 rows, which is a decaying reading, not a
+#                     measurement: as the ledger grows, an older sprint's rows age out
+#                     of the window and its totals shrink silently.
 #   CANONICAL_OUT   — where --out defaults to (default: $SPRINT_DIR/../observatory/cross-sprint-audit.json)
 #
 # Sprint discovery:
 #   - Scans $SPRINT_DIR for subdirs containing charter.md or sprint-log.md
-#   - Parses charter frontmatter for role: discovery | validation | consolidation
+#   - Parses charter frontmatter for role: discovery | validation | consolidation,
+#     or one of $KNOWN_NON_CASCADE_ROLES
 #   - If no role is declared, uses sprint code position for fallback ordering
 #   - Needs at least one sprint to produce output (zero sprints = empty result)
 #
@@ -39,10 +49,13 @@
 #   sprint_dir             — path audit was run against
 #   sprints                — array of per-sprint objects
 #   cross_sprint           — synthesis (totals + cascade_lag_pattern + health + rescue_recommendation)
+#                            + cascade_lanes_read / known_non_cascade_lanes / unrecognized_lanes
+#                            + ledger_possibly_truncated (true when the fetch hit the 500-row cap)
 #
 # Per-sprint object:
 #   sprint                 — sprint directory name (e.g. EXPLORE-01)
-#   role                   — discovery | validation | consolidation | unknown
+#   role                   — discovery | validation | consolidation | <known lane> | unknown
+#   lane_class             — cascade | known-non-cascade | unrecognized
 #   charter_path           — path to charter.md if present
 #   log_path               — path to sprint-log.md if present
 #   log_data               — parsed sprint-log data (loop_rows / outstanding_open / outstanding_closed / sprint_health_label)
@@ -54,6 +67,21 @@ SPRINT_DIR="${SPRINT_DIR:-$HOME/.claude/sprints}"
 LEDGER_API="${LEDGER_API:-}"
 DISCOVERY_SOFT_CAP="${DISCOVERY_SOFT_CAP:-80}"
 HARD_CAP=100
+KNOWN_NON_CASCADE_ROLES="${KNOWN_NON_CASCADE_ROLES:-operator governance}"
+LEDGER_SINCE="${LEDGER_SINCE:-}"
+LEDGER_TRUNCATED=false
+
+# lane_class_of <role> — three states, so "ignored" and "invisible" never read the same.
+lane_class_of() {
+    case " $1 " in
+        " discovery "|" validation "|" consolidation ") echo "cascade" ;;
+        *)
+            case " $KNOWN_NON_CASCADE_ROLES " in
+                *" $1 "*) echo "known-non-cascade" ;;
+                *) echo "unrecognized" ;;
+            esac ;;
+    esac
+}
 
 OUT_PATH=""
 PRETTY=0
@@ -122,10 +150,19 @@ fi
 # (lowercased with underscores replacing hyphens, e.g. EXPLORE-01 -> explore_01_).
 ENTRIES_JSON='{"entries":[]}'
 if [ -n "$LEDGER_API" ]; then
-    ENTRIES_JSON=$(curl -sf --max-time 5 "$LEDGER_API?limit=500" 2>/dev/null || echo '{"entries":[]}')
+    LEDGER_URL="$LEDGER_API?limit=500"
+    [ -n "$LEDGER_SINCE" ] && LEDGER_URL="${LEDGER_URL}&date_from=${LEDGER_SINCE}"
+    ENTRIES_JSON=$(curl -sf --max-time 5 "$LEDGER_URL" 2>/dev/null || echo '{"entries":[]}')
     if ! echo "$ENTRIES_JSON" | jq -e '.entries' >/dev/null 2>&1; then
         echo "cross-sprint-audit: ledger at $LEDGER_API unreachable or returned invalid JSON — falling back to sprint-log parsing only" >&2
         ENTRIES_JSON='{"entries":[]}'
+    fi
+    # A fetch that fills the cap is a window, not the corpus. Say so, or the totals
+    # below get quoted as facts when they are a lower bound.
+    ENTRY_COUNT=$(echo "$ENTRIES_JSON" | jq '.entries | length' 2>/dev/null || echo 0)
+    if [ "$ENTRY_COUNT" -ge 500 ]; then
+        LEDGER_TRUNCATED=true
+        echo "cross-sprint-audit: ledger returned the full 500-row cap — telemetry totals are a LOWER BOUND, not a fact. Set LEDGER_SINCE=<ISO date> to bound the window to the cycle." >&2
     fi
 fi
 
@@ -133,7 +170,8 @@ fi
 # Each sprint's JSON object combines sprint-log parse output and (optional) ledger telemetry.
 per_sprint_json() {
     local sprint_name="$1" role="$2" charter="$3" log_path="$4"
-    local sprint_code_lower
+    local sprint_code_lower lane_class
+    lane_class=$(lane_class_of "$role")
     sprint_code_lower=$(echo "$sprint_name" | tr '[:upper:]-' '[:lower:]_')
 
     # Ledger aggregation (no-op when ENTRIES_JSON is empty)
@@ -158,9 +196,11 @@ per_sprint_json() {
         local loop_rows outstanding_open outstanding_closed sprint_health
         # Match both header-style (## L01) and table-style rows with or without bold markers
         # (| **L01** | ... and | L01 | ...) — sprint-log format varies across implementations.
-        loop_rows=$(grep -cE '^(## L[0-9]+|\| (\*\*)?L[0-9]+)' "$log_path" 2>/dev/null || echo 0)
-        outstanding_open=$(grep -cE '^- \[ \]' "$log_path" 2>/dev/null || echo 0)
-        outstanding_closed=$(grep -cE '^- \[x\]' "$log_path" 2>/dev/null || echo 0)
+        # grep -c prints "0" AND exits 1 on no match, so `|| echo 0` produced "0\n0",
+        # which is not JSON. Count, then default only when grep printed nothing.
+        loop_rows=$(grep -cE '^(## L[0-9]+|\| (\*\*)?L[0-9]+)' "$log_path" 2>/dev/null || true); loop_rows=${loop_rows:-0}
+        outstanding_open=$(grep -cE '^- \[ \]' "$log_path" 2>/dev/null || true); outstanding_open=${outstanding_open:-0}
+        outstanding_closed=$(grep -cE '^- \[x\]' "$log_path" 2>/dev/null || true); outstanding_closed=${outstanding_closed:-0}
         sprint_health=$(grep -iE '^\| Sprint health \|' "$log_path" 2>/dev/null | head -1 | grep -oE '[A-Z]{4,}' | head -1)
         [ -z "$sprint_health" ] && sprint_health="UNKNOWN"
         log_data=$(jq -n \
@@ -174,6 +214,7 @@ per_sprint_json() {
     jq -n \
         --arg sprint "$sprint_name" \
         --arg role "$role" \
+        --arg lane_class "$lane_class" \
         --arg charter "$charter" \
         --arg log_path "$log_path" \
         --argjson agg "$agg" \
@@ -181,6 +222,7 @@ per_sprint_json() {
         '{
             sprint: $sprint,
             role: $role,
+            lane_class: $lane_class,
             charter_path: $charter,
             log_path: $log_path,
             telemetry: $agg,
@@ -188,10 +230,13 @@ per_sprint_json() {
         }'
 }
 
-# Build per-sprint array, sorted by role (discovery / validation / consolidation / unknown)
+# Build per-sprint array, sorted by role: the three cascade roles, then every known
+# non-cascade lane, then unknown. A declared lane the cascade does not own is
+# emitted and named, never dropped.
 sprints_arr="["
 first=1
-for role_filter in discovery validation consolidation unknown; do
+# shellcheck disable=SC2086  # word-splitting KNOWN_NON_CASCADE_ROLES is the point
+for role_filter in discovery validation consolidation $KNOWN_NON_CASCADE_ROLES unknown; do
     for tuple in "${SPRINT_LIST[@]}"; do
         IFS='|' read -r sname srole scharter slog <<< "$tuple"
         [ "$srole" = "$role_filter" ] || continue
@@ -208,6 +253,7 @@ sprints_arr="${sprints_arr}]"
 SYNTH=$(echo "$sprints_arr" | jq \
     --arg now "$(date -Iseconds)" \
     --arg sprint_dir "$SPRINT_DIR" \
+    --argjson truncated "$LEDGER_TRUNCATED" \
     --argjson soft_cap "$DISCOVERY_SOFT_CAP" \
     --argjson hard_cap "$HARD_CAP" '
     {
@@ -221,6 +267,14 @@ SYNTH=$(echo "$sprints_arr" | jq \
             discovery: (first(.[] | select(.role == "discovery")) // null),
             validation: (first(.[] | select(.role == "validation")) // null),
             consolidation: (first(.[] | select(.role == "consolidation")) // null),
+            # Lane accounting. The verdict below reads ONLY the cascade roles; these
+            # three fields say which lanes it read and which it set aside, because a
+            # count with a hidden denominator is not a measurement.
+            cascade_lanes_read: ([.[] | select(.lane_class == "cascade") | .sprint]),
+            known_non_cascade_lanes: ([.[] | select(.lane_class == "known-non-cascade") | {sprint: .sprint, role: .role}]),
+            unrecognized_lanes: ([.[] | select(.lane_class == "unrecognized") | {sprint: .sprint, role: .role}]),
+            ledger_possibly_truncated: $truncated,
+            cascade_health_measures: "loop counts per cascade role, nothing else — a verifier that out-loops a builder reads amber",
             cascade_lag_pattern: (
                 [.[] | select(.role == "discovery" or .role == "validation" or .role == "consolidation")]
                 | map(.telemetry.loop_numbers | length | tostring)
@@ -295,6 +349,10 @@ if [ "$PRETTY" -eq 1 ] || [ "$STDOUT_ONLY" -eq 1 ]; then
               ) | join("\n"))
             + "\n\n  cascade: " + (.cross_sprint.cascade_lag_pattern // "?")
             + "\n  health:  " + (.cross_sprint.cascade_health // "?")
+            + "\n  lanes:   read " + ((.cross_sprint.cascade_lanes_read // []) | length | tostring)
+            + " · set aside " + ((.cross_sprint.known_non_cascade_lanes // []) | map(.role) | join(",") | if . == "" then "none" else . end)
+            + " · unrecognized " + ((.cross_sprint.unrecognized_lanes // []) | length | tostring)
+            + (if .cross_sprint.ledger_possibly_truncated then "\n  ledger:  TRUNCATED at 500 rows — totals are a lower bound" else "" end)
             + "\n  totals:  " + ((.cross_sprint.total_loops_closed // 0) | tostring) + " closes, "
             + ((.cross_sprint.total_minutes_closed // 0) | tostring) + " min\n"
         ' >&2

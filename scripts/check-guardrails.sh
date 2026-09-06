@@ -21,9 +21,25 @@
 #   ./scripts/check-guardrails.sh                # run all checks, exit 0/1
 #   ./scripts/check-guardrails.sh --fix-help     # print fix suggestions for common failures
 #   ./scripts/check-guardrails.sh --verbose      # show all file scans even on pass
+#   ./scripts/check-guardrails.sh --audience internal   # login-gated surface: see below
 #   ./scripts/check-guardrails.sh --help         # this help
 #
+# --audience <public|internal>   (default: public)
+#   Narrow the rule BY AUDIENCE, NOT BY REGEX. Not one pattern changes between the
+#   two audiences; what changes is the severity the reader earns.
+#     public    (DEFAULT) every check is hard. Byte-identical to the gate before
+#               this flag existed, so forgetting the flag is the safe direction.
+#     internal  Checks 4 and 5 (identity, address, endpoint) are reported as [soft]
+#               and do not fail. A login removes the anonymous reader those checks
+#               guard against. Checks 1 and 2 (financial vocabulary, private
+#               deny-list) stay HARD at every audience: a login does not move the
+#               boundary a household's private finances or a bearer token sit behind.
+#   An unknown audience exits 2, loud, whether it arrived by flag or by env. A
+#   wrapper picks an audience; it never keeps its own copy of which checks soften.
+#   Harness: tests/check-guardrails-audience/run.sh. Doc: docs/guardrail-audience.md.
+#
 # Environment:
+#   DACUMEN_AUDIENCE        public|internal — same as --audience; the flag wins.
 #   DACUMEN_NO_DENYLIST=1   Acknowledge that you keep no private deny-list. If you
 #                           cloned this kit that is the normal case; without it,
 #                           Check 2 cannot run and the suite exits 2 rather than
@@ -48,11 +64,15 @@ set -u
 
 VERBOSE=0
 FIX_HELP=0
+AUDIENCE="${DACUMEN_AUDIENCE:-public}"
 
 while [ $# -gt 0 ]; do
     case "$1" in
         --verbose)  VERBOSE=1; shift ;;
         --fix-help) FIX_HELP=1; shift ;;
+        --audience)
+            [ $# -ge 2 ] || { echo "check-guardrails: --audience requires a value (public|internal)" >&2; exit 2; }
+            AUDIENCE="$2"; shift 2 ;;
         -h|--help)
             sed -n '2,34p' "$0" | sed 's/^# //; s/^#//'
             exit 0
@@ -60,6 +80,24 @@ while [ $# -gt 0 ]; do
         *) echo "unknown arg: $1" >&2; exit 2 ;;
     esac
 done
+
+# Audience is validated whether it came by flag or by env: a typo must never
+# silently pick a severity nobody asked for.
+case "$AUDIENCE" in
+    public|internal) ;;
+    *) echo "check-guardrails: unknown audience '$AUDIENCE' (known: public internal)" >&2; exit 2 ;;
+esac
+SOFT_COUNT=0
+# soft_verdict <check-label> <matches> <fix-text>: under --audience internal,
+# Checks 4 and 5 report their hits as [soft] and count toward PASS. The patterns
+# they ran are identical to the public run; only the severity moved.
+soft_verdict() {
+    printf " ${C_AMBER}PASS [soft]${C_RESET} ${C_DIM}(audience=internal: %s reported, not failed)${C_RESET}\n" "$1"
+    echo "$2" | sed 's|^|  [soft] |'
+    PASS_COUNT=$((PASS_COUNT + 1))
+    SOFT_COUNT=$((SOFT_COUNT + 1))
+}
+
 
 # ---- Colors (degrade gracefully) ----
 if [ -t 1 ]; then
@@ -361,6 +399,8 @@ CAT4_MATCHES=$(echo "$CAT4_MATCHES" | awk '
 if [ -z "$CAT4_MATCHES" ]; then
     printf " ${C_GREEN}PASS${C_RESET}\n"
     PASS_COUNT=$((PASS_COUNT + 1))
+elif [ "$AUDIENCE" = "internal" ]; then
+    soft_verdict "identity" "$CAT4_MATCHES"
 else
     printf " ${C_RED}FAIL${C_RESET}\n"
     echo "$CAT4_MATCHES" | sed 's|^|  |'
@@ -459,6 +499,8 @@ CAT5_MATCHES=$(echo "$CAT5_MATCHES" | grep -vE '^\s*$' || true)
 if [ -z "$CAT5_MATCHES" ]; then
     printf " ${C_GREEN}PASS${C_RESET}\n"
     PASS_COUNT=$((PASS_COUNT + 1))
+elif [ "$AUDIENCE" = "internal" ]; then
+    soft_verdict "address/endpoint" "$CAT5_MATCHES"
 else
     printf " ${C_RED}FAIL${C_RESET}\n"
     echo "$CAT5_MATCHES" | sed 's|^|  |'
@@ -471,6 +513,9 @@ echo ""
 SKIP_COUNT=$(( TOTAL - PASS_COUNT - FAIL_COUNT ))
 if [ "$FAIL_COUNT" -eq 0 ] && [ "$SKIP_COUNT" -eq 0 ]; then
     printf "${C_GREEN}${C_BOLD}All %d guardrail checks passed.${C_RESET}\n" "$TOTAL"
+    if [ "$SOFT_COUNT" -gt 0 ]; then
+        printf "${C_AMBER}%d check(s) passed [soft] under audience=%s. This run is NOT evidence the repo is clean for an anonymous reader.${C_RESET}\n" "$SOFT_COUNT" "$AUDIENCE"
+    fi
     exit 0
 elif [ "$FAIL_COUNT" -eq 0 ]; then
     # A check that could not run is NOT a pass. Reporting it as one is the exact

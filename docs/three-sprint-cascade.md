@@ -211,6 +211,41 @@ A rescue that fails any of these checks is **incomplete** and must be completed 
 - **Ceiling**: 3 sprints is ALSO the current practical ceiling. Four or more exceeds the daily audit's ability to produce useful cross-learning without noise. Additional bounded initiatives that don't need cross-learning can run outside the three-sprint architecture as standalone sprints.
 - **Allocation**: the operator's role is to assign incoming work to the right layer. Bleeding-edge novelty → discovery. Portability test → validation. Production-grade rep work → consolidation.
 
+## Lanes the cascade does not own
+
+The three roles graded above — discovery, validation, consolidation — aren't the only kind of lane a sprint roster can carry. Two show up often enough to name:
+
+- **A standing governance thread** — cross-cutting maintenance work (methodology upkeep, cross-project audits) that doesn't belong to any one pillar's rotation.
+- **A human-operator lane** — the operator making inline point-updates directly from the main worktree, rather than through one of the three cascade roles.
+
+A roster that carries a fourth (or fifth) lane needs its reading instruments to recognize three distinct states, not two:
+
+1. **Cascade role** — `discovery` / `validation` / `consolidation`. Graded for lag and cascade order, exactly as described above.
+2. **Known non-cascade lane** — declared in the roster and recognized by name (`operator`, `governance`, ...). Counted toward the sprint budget and named beside the trio in any audit output. NOT graded for cascade order — there's no upstream/downstream relationship to measure.
+3. **Unrecognized** — an undeclared key that nothing in the roster's vocabulary names. This still fails. Recognizing non-cascade lanes is not the same as accepting anything.
+
+**The failure shape to avoid**: an instrument that hard-codes three lanes, reads them by array position instead of by name, or derives its budget denominator from a constant, will silently drop or misread a fourth declared lane. One implementation found four separate instruments doing exactly this at once, plus a ledger that counted 13 of 45 rows and called it complete — the missing rows all belonged to the lane nothing was looking for.
+
+**The fix, as a rule**: a detector reads the roles it owns, names the lanes it sets aside, and prints both numbers. A count with a hidden denominator is not a measurement. "Ignored" (a lane the detector knows about and deliberately doesn't grade) and "invisible" (a lane the detector never knew existed) must not read the same on a board — the operator needs to be able to tell them apart at a glance.
+
+This also affects how you read the cascade-health verdict itself: it compares loop counts across the graded roles only, so a validation lane that legitimately out-loops the discovery lane it's checking reads `amber` ("cascade order inverted") for a reason that has nothing to do with drift. The instrument should say what it measured, not just what color it landed on.
+
+The reference audit (`scripts/cross-sprint-audit.sh`) implements this: it emits `cascade_lanes_read`, `known_non_cascade_lanes`, and `unrecognized_lanes` as three separate fields, and takes a `KNOWN_NON_CASCADE_ROLES` environment variable (default `operator governance`) so a roster can declare lanes beyond the trio without failing the audit or corrupting the cascade math.
+
+A four-lane roster:
+
+```yaml
+sprint_trio:
+  - role: discovery
+    code: PLATFORM-03-D
+  - role: validation
+    code: PLATFORM-03-V
+  - role: consolidation
+    code: PLATFORM-03-C
+  - role: operator
+    code: PLATFORM-03-OPS
+```
+
 ## When to close and respawn
 
 Each sprint still respects the 100-loop hard ceiling and the short-loop velocity norm. When a sprint closes, its role-slot becomes available. A new sprint can inherit the slot and the lag-discipline, or the architecture can temporarily run with two sprints while the third slot is reallocated. The architecture is a pattern, not a rigid structure — it survives a sprint closing.

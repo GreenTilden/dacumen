@@ -1,10 +1,20 @@
 # dacumen — Memory
 
 ## Session Status
-- **Status**: **PUSHED 2026-09-06.** v0.2.18 is on `origin/main` at the commit tag `v0.2.18` points
-  to; local equals remote (`git rev-list --count origin/main..HEAD` = 0 at push time; run it, don't
-  trust a typed number). Verified by a fresh `--depth 1` clone: all five new files present, the
-  audit script carries its lane fields, and the audience harness passes 10/10 from the clone.
+- **Status**: **PUSHED 2026-09-14.** v0.2.19 is on `origin/main`; tag `v0.2.19` points at the
+  changelog commit (`8d08ff4`); this note lands one commit after it. Fetched first, 0 behind; main
+  and the single tag pushed by name, never `--tags`. Marker written last in
+  `dacumen-internal/.foreman/dacumen-synced-through.json` — darntech head advanced, the other four
+  feeders left at their v0.2.18 commits on purpose (not swept this pass).
+- **What landed in v0.2.19**: `docs/process-hygiene.md` — reader test · instrument retirement
+  (measure the cost the reader pays, not the file count; the 87th-fire memory-audit re-scope is
+  the worked example) · the LEAVE disposition · don't measure the measurement. Manifesto §2.5
+  counter-bar, README item 8. Origin: operator asked whether the kit guards against process cruft;
+  the answer was "Amendment 14, memory files only."
+- **Checked, not changed**: darntech's memory audit nine-fire streak as a rule-2 candidate → keep.
+  Zero pruned since the 87th fire is by design (retirement is a tag, unindexed files cost nothing);
+  the paid cost (the index) has the floor-size guard. No darntech write.
+- **Previous push (v0.2.18, 2026-09-06)** — kept below for the lineage incident it records.
 - **What landed (9 commits)**: the sync-process freshness marker + lessons-learned; scope-bound
   cycles (`cycle-architecture.md`); lanes the cascade does not own (`three-sprint-cascade.md`);
   the matching `cross-sprint-audit.sh` fix (lane classes, `LEDGER_SINCE`, truncation flag, and a

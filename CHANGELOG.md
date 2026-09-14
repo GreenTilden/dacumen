@@ -2,6 +2,40 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.20 — the four feeders swept (2026-09-14)
+
+v0.2.19 swept one feeder and said so. This pass swept the other four from their v0.2.18
+commits, using the nightly detector's own path definitions: the second implementation's charter
+(no change), the governance standing source (no new docs), the shared tooling repo (22 commits
+adding utility or installer scripts), and the orchestration-head implementation (20 commits
+adding docs, most of them sprint logs).
+
+**What landed.**
+
+1. **`process-hygiene.md` rule 2 rewritten around the retirement question** the shared tooling
+   repo's detector registry asks: *who notices if this check is deleted?* — public · service ·
+   operator · framework-only. Only the last retires cleanly. Carries the ninety-day
+   self-reference measure, the keep / fold / retire table with the "counted by name as retired,
+   never as pass or fail" rule, and the repo-level parked/retired lane whose broken marker
+   reads as active so a sweep can never silently shrink.
+2. **Rule 1 now covers what a check prints.** A red that shows a bare code name has no reader;
+   one resolver, one sentence per check, "no rule on file" instead of an empty string.
+3. **`case-studies/generated-vs-hand-authored-register.md`** — a working page with a real
+   reader went stale in one day (wrong cycle number, stale quoted figure, one project invisible
+   because it opened the day the page was written). Ruled hybrid: generated skeleton re-globbed
+   every run, hand-authored judgment sidecar, one row key. "A discipline-dependent fix for a
+   discipline-caused gap is a promise, not evidence."
+
+**Triaged no-impact.** Chat-archive plumbing, host lease and tenant-flip installers, unit-file
+mirrors, and per-service action wrappers in the shared tooling repo — infrastructure, not
+method. Sprint logs, kickoffs and verification notes in the orchestration-head repo — the
+pattern they produced is item 3.
+
+**Deferred, with triggers.** The sibling-handoff document (one repo's read-only finding about
+another, "the fix is words, not a diff") — two instances so far; lands as a pattern when a
+third appears or a generator does. The artifact-freshness doctrine deferred at v0.2.18 is
+older than the detector's window and stays deferred until someone asks for it.
+
 ## v0.2.19 — a doc needs a reader, a gate needs a catch (2026-09-14)
 
 One new doc, `process-hygiene.md`, and two pointers to it. The operator asked whether the kit

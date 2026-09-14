@@ -15,19 +15,29 @@ If you cannot answer either, do not write it. A doc that exists because "we shou
 
 The test applies to the thing being written, not to the writer's intent. "This will be useful later" is not a reader. "The operator, at cycle-open, choosing scope" is.
 
+The test applies to what a check *prints*, too. A detector's failure line has the most time-pressed reader in the whole kit — someone on a phone, deciding whether to act — and a red that prints a bare code name has no reader at all. The private upstream found six surfaces doing exactly that and fixed it with one resolver: every check carries a one-sentence rule in plain words, every surface that shows a red resolves the key through the same place, and a missing sentence prints as "no rule on file" rather than an empty string. One place to look means the wording is the same everywhere and a gap is visible everywhere at once.
+
 ## 2. Instrument retirement
 
-A detector, gate, or audit is a claim: *this fires when something is wrong*. Track how often it fires and how often the firing changed anything. When an instrument runs on a schedule and has produced a run of consecutive results with **zero resulting action** — no prune, no fix, no ruling, no re-plan — it is a candidate for one of three dispositions:
+A detector, gate, or audit is a claim: *this fires when something is wrong*. The question that decides whether to keep it is not "does it still fire" but:
+
+> **Who notices if this check is deleted?**
+
+Four honest answers: **public** (a reader outside the estate) · **service** (something running breaks) · **operator** (a person's decision changes) · **framework-only** (another check, a lint, or a handoff gate). Only the last retires cleanly. A framework-only check watched the framework watching itself — it protects an internal document's freshness, or a script's own output, or bookkeeping about bookkeeping. Any other answer means the check has a reader, and rule 1 says keep it.
+
+Measure before you ask. The private upstream scores each nightly check by what its fix commits touched in the last ninety days: a check whose fixes changed zero files outside framework directories is a self-reference candidate. Three checks retired on that evidence in one ruling; each entry records the reason "written for someone reading it cold in three months."
 
 | Disposition | When | What it looks like |
 |---|---|---|
-| **Keep** | The zero-action streak is the healthy signal — the thing it guards has stayed clean, and the guard is cheap | Note the streak in the close report. Nothing else. |
-| **Fold** | Another instrument already covers the same failure | Merge the check into the survivor. Retire the duplicate with a dated note. |
-| **Retire** | The failure it was built to catch cannot happen anymore, or nobody would act on it if it did | Mark it `retired-<date>` in the registry that lists it. Keep the entry — a list of what is watched cannot tell you what was retired on purpose (`manifests/org-chart-responsibilities.md` §surface registry). |
+| **Keep** | Someone outside the framework notices | Record the ruling with the one sentence that names who — so the next audit does not re-ask. A kept check runs like any other. |
+| **Fold** | A sibling check already covers the case | Name the sibling and mark the fold pending or done. Until it is done, the case is uncovered — say so. |
+| **Retire** | Framework-only | List it in a retirements registry with reason, who-notices, who ruled, date. The script stays on disk. The sweep skips it and **counts it, by name, as retired** — never as pass, fail, or missing. |
 
-The streak length that triggers review is yours to set — somewhere between five and ten runs is honest for a per-cycle instrument. Set it, write it down, and let the instrument report its own streak so nobody has to count.
+Retirement is a record, never a deletion. A list of what is watched cannot tell you what was retired on purpose; the registry can (`manifests/org-chart-responsibilities.md` §surface registry uses the same shape for surfaces).
 
-One more thing to get right before you retire anything: **measure the cost the reader actually pays, not the count of things.** An audit that fires every cycle, prunes nothing, and adds every time looks like a prune step that became a growth step — and sometimes it is. But check what the additions cost first. The private upstream's memory audit carried seven prune candidates to a deadline, then re-examined the lens instead of deferring a third time: an unindexed memory file is loaded into no session, so "unreferenced" was measuring a cost nobody paid. The lens was re-scoped to *retrieval harm* — does this file rank ahead of a better answer? — and retirement became a tag on the file rather than a deletion. Zero pruned since then is the healthy result, not the drift. The cost that is paid, the always-loaded index, has its own size guard. Point rule 2 at the number someone pays for; a count of files is rarely that number.
+The same lane exists one level up, for whole repos. A repo marked **parked** or **retired** keeps only the checks that survive retirement — the proven-remote backup check, because a parked repo is where the last push matters most — and is reported in its own bucket, never dropped from the sweep. Two details that make the marker safe: a missing, unparseable, or `active` marker all read as active, so a broken marker cannot silently shrink a sweep; and setting the status back to active (or deleting the file) rejoins every check. The upstream added this the week a fleet updater committed a dependency bump to a retired repo with a read-only remote, recreating an unpushable backlog every night.
+
+One more thing to get right before you retire anything: **measure the cost the reader actually pays, not the count of things.** An audit that fires every cycle, prunes nothing, and adds every time looks like a prune step that became a growth step — and sometimes it is. But check what the additions cost first. The upstream's memory audit carried seven prune candidates to a deadline, then re-examined the lens instead of deferring a third time: an unindexed memory file is loaded into no session, so "unreferenced" was measuring a cost nobody paid. The lens was re-scoped to *retrieval harm* — does this file rank ahead of a better answer? — and retirement became a tag on the file rather than a deletion. Zero pruned since then is the healthy result, not the drift. The cost that is paid, the always-loaded index, has its own size guard. Point rule 2 at the number someone pays for; a count of files is rarely that number.
 
 ## 3. The LEAVE disposition
 
@@ -49,6 +59,8 @@ When the framework starts to feel heavy, the temptation is to build a dashboard 
 A measurement earns a script and a number. It does not earn a surface, a schema, a contract, and a detector unless the number has already changed a decision — in which case rule 1 lets you write those.
 
 ## How these four fit together
+
+`case-studies/generated-vs-hand-authored-register.md` is rule 1 applied to a page that had a reader and still went stale in a day — the fix was to split it by who can honestly author each column.
 
 Rule 1 stops cruft at the door. Rule 2 removes it once it has crept in. Rule 3 gives you a way to say no to it without pretending you never saw it. Rule 4 stops you from building a second framework to police the first. Amendment 14 runs the same four moves on memory files at every cycle-close; this doc asks you to run them on everything else, at the same moment.
 

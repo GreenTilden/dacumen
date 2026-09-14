@@ -1,11 +1,14 @@
 # dacumen — Memory
 
 ## Session Status
-- **Status**: **PUSHED 2026-09-14.** v0.2.19 is on `origin/main`; tag `v0.2.19` points at the
-  changelog commit (`8d08ff4`); this note lands one commit after it. Fetched first, 0 behind; main
-  and the single tag pushed by name, never `--tags`. Marker written last in
-  `dacumen-internal/.foreman/dacumen-synced-through.json` — darntech head advanced, the other four
-  feeders left at their v0.2.18 commits on purpose (not swept this pass).
+- **Status**: **PUSHED 2026-09-14.** v0.2.20 is on `origin/main`; tag `v0.2.20` → `2ce5c1c`, tag
+  `v0.2.19` → `8d08ff4`. Fetched first each time, 0 behind; main and each tag pushed by name, never
+  `--tags`. Marker in `dacumen-internal/.foreman/dacumen-synced-through.json` written last with all
+  five feeder heads; `d-dacumen-1` run live after: 3 pass, 0 candidates.
+- **What landed in v0.2.20**: rule 2 rewritten around "who notices if this check is deleted?"
+  (public · service · operator · framework-only) + the repo lifecycle lane; rule 1 covers what a
+  check prints (one rule-sentence resolver); `case-studies/generated-vs-hand-authored-register.md`.
+  Deferred with triggers: sibling-handoff pattern (2 instances), artifact-freshness doctrine.
 - **What landed in v0.2.19**: `docs/process-hygiene.md` — reader test · instrument retirement
   (measure the cost the reader pays, not the file count; the 87th-fire memory-audit re-scope is
   the worked example) · the LEAVE disposition · don't measure the measurement. Manifesto §2.5

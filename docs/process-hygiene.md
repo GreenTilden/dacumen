@@ -27,7 +27,7 @@ A detector, gate, or audit is a claim: *this fires when something is wrong*. Tra
 
 The streak length that triggers review is yours to set — somewhere between five and ten runs is honest for a per-cycle instrument. Set it, write it down, and let the instrument report its own streak so nobody has to count.
 
-Watch for the inverse failure too: an audit that fires every cycle, prunes nothing, and *adds* every time. That is a prune step that has quietly become a growth step. The memory audit's size soft-gate (Amendment 14, §MEMORY.md size) exists for exactly this; apply the same logic to any instrument whose "clean" result still grows a file.
+One more thing to get right before you retire anything: **measure the cost the reader actually pays, not the count of things.** An audit that fires every cycle, prunes nothing, and adds every time looks like a prune step that became a growth step — and sometimes it is. But check what the additions cost first. The private upstream's memory audit carried seven prune candidates to a deadline, then re-examined the lens instead of deferring a third time: an unindexed memory file is loaded into no session, so "unreferenced" was measuring a cost nobody paid. The lens was re-scoped to *retrieval harm* — does this file rank ahead of a better answer? — and retirement became a tag on the file rather than a deletion. Zero pruned since then is the healthy result, not the drift. The cost that is paid, the always-loaded index, has its own size guard. Point rule 2 at the number someone pays for; a count of files is rarely that number.
 
 ## 3. The LEAVE disposition
 

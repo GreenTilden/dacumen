@@ -123,6 +123,7 @@ Once installed, the onboarding path is:
 5. **`docs/memory-framework.md`** — how CLAUDE.md and MEMORY.md work together across sessions. ~5 minutes.
 6. **`docs/quickstart.md`** — your first sprint, start to finish. ~10 minutes to read + try.
 7. **`docs/onboarding-an-existing-repo.md`** — pointing all this at a repo that already exists, which is usually what you're actually doing. ~5 minutes.
+8. **`docs/process-hygiene.md`** — how to keep the kit from growing rules about itself: a doc needs a reader, a gate needs a catch. ~5 minutes.
 
 At that point you have enough to open a real sprint, fire a real loop, and see your first cross-sprint audit. Everything else in DAcumen is reference material you pull in when you need it.
 

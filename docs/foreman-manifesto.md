@@ -138,6 +138,8 @@ The loop is the unit of work. Each phase has concrete expected outputs and a min
 
 **Minimum bar**: no loose ends. If something is deferred, it's deferred to a named next action with an owner.
 
+**Counter-bar**: no new doc, detector, or ritual step without a named reader or a named catch — see `process-hygiene.md`. The Update step is where cruft enters, because "propagate the updates" reads like permission to write everything down.
+
 ---
 
 ## 3. Primitives Foreman^^ inherits (the backbone)
@@ -427,6 +429,7 @@ If you've read this far and want to actually adopt Foreman^^, the DAcumen starte
 - **`three-pillars.md`** — the Three Pillars bundling test for deciding what work is worth doing
 - **`memory-framework.md`** — the CLAUDE.md + MEMORY.md tier system for cross-session continuity + the vocabulary-guardrail pattern
 - **`hitl-cadence.md`** — the HITL checkpoint rule in detail with concrete firing patterns
+- **`process-hygiene.md`** — the four rules against process cruft: reader test, instrument retirement, the LEAVE disposition, don't measure the measurement
 - **`trio-identities.md`** — naming your three sprints with the Huey/Louie/Dewey pattern or a trio of your choosing
 - **`quickstart.md`** — "spin up your first sprint in 10 minutes" walkthrough
 

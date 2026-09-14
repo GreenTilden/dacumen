@@ -2,6 +2,35 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.19 — a doc needs a reader, a gate needs a catch (2026-09-14)
+
+One new doc, `process-hygiene.md`, and two pointers to it. The operator asked whether the kit
+had any measure against process cruft — docs written because "we should document that", tests
+written because the doc should have one, checks that stay green and change nothing. The honest
+answer was: one, and only for memory files (Amendment 14). The private upstream had four more
+that had never crossed.
+
+**What landed.**
+
+1. **The reader test.** A doc, detector, test, or ritual step names who reads it in the next
+   60 seconds or which failure it caught. Neither → don't write it.
+2. **Instrument retirement.** Keep / fold / retire, with the retired entry kept in its registry
+   so a list of what is watched can still say what was retired on purpose. The rule measures
+   the cost a reader pays, not a count of things — the upstream's memory audit re-scoped its
+   prune lens once it noticed an unindexed file costs zero loaded tokens, and that example is
+   in the doc because the first draft of this rule made the same mistake.
+3. **The LEAVE disposition.** The four-way carryover triage (done-dead / filed out / LEAVE /
+   chore), one line each, texts preserved, not re-litigated.
+4. **Don't measure the measurement.** The upstream's ceremony-vs-work spike — ceremony at 23%
+   overall and falling — and its own recommendation not to build a dashboard for it.
+
+The manifesto's Update step (§2.5) gains a counter-bar beside its "no loose ends" minimum bar,
+because that step is where cruft enters. README reading list item 8.
+
+**Direction.** This did not arrive through an amendment; it was pulled from a cycle-close
+report, a measurement spike, and a memory-audit doc in the primary implementation. Only that
+feeder was swept for this version; the freshness marker says so.
+
 ## v0.2.18 — the catch-up, and why the process had not caught it (2026-09-06)
 
 Six days after v0.2.17, five methodology-grade changes had landed upstream and none of them

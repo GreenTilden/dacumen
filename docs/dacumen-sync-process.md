@@ -300,3 +300,9 @@ The first pass that pulled from more than one feeder in a single ritual, and the
 
 **Carry forward.** A registered feeder source whose own charter cannot signal impact needs either the field or a detector watching its charter file. This pass chose the detector because it lands without a charter amendment on the feeder's side. The field is the better long-term fix and is recorded as a follow-up.
 
+
+## Lessons-learned — debt-ruled sweep (2026-10-10, v0.2.21)
+
+The first sweep that ran because the operator ruled it from a debt triage, not because anyone acted on the nightly red. The freshness check had been red for 25 days. It did its job: it named all 30 candidates, with dates. Nobody owned acting on it. A red with no owner is a feed row. The fix was not a louder check. It was a debt-triage ruling that put the sweep on someone's list.
+
+Two other things were new. **A deferral trigger fired as written.** v0.2.20 deferred the sibling-handoff pattern "until a third instance appears". Three appeared, and this sweep landed it without a fresh argument. Write deferrals with a countable trigger, and the next sweep can check the count instead of re-deciding. **Read the rulings inside the close commits.** Most of the 22 candidates from the orchestration-head implementation were sprint logs, kickoffs and cycle closes. The pattern-grade material lived in their commit bodies and in a few decision documents they added. A path-scoped detector finds the commit; only reading it finds the rule.

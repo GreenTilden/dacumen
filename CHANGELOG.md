@@ -2,6 +2,47 @@
 
 *DAcumen is a living artifact. This file notes what landed when so colleagues pulling the repo can see what's new without re-reading everything. New entries go at the top.*
 
+## v0.2.21 — gates that can be fooled, and how to stop them (2026-10-10)
+
+The nightly freshness check had been red for 25 days with 30 candidates: the shared tooling
+repo 6, the orchestration-head implementation 22, the governance standing source 2, the second
+implementation's charter 0. This sweep ran because the operator ruled it from a debt triage, not
+because the red was read. Most candidates were cycle closes and sprint logs. The rulings inside
+them carried one theme: a check that can be passed without doing what it claims.
+
+**What landed.**
+
+1. **`commit-gates.md`** (new) — three practices from the shared tooling repo. A staged-only
+   secret gate that fails closed, with an allowlist proven against a planted key and a daily
+   audit of commits that skipped a gate (its first week flagged 62 of 157, one repo with no gate
+   at all); rotate with approval, never rewrite history. A hook that 71 repos run now lives in a
+   repo, after a loose copy was lost once and took eight days to notice. A suite that skips an
+   arm may not print green.
+2. **`guardrail-audience.md`** — new section: the audience follows the emission path, not the
+   file. Working notes scan at `internal`; the day a generator serves them, that call site scans
+   at `public`. A finance finding still had to be rewritten before the file passed.
+3. **`process-hygiene.md` rule 3** — carryforward amnesty. Count snapshots by script, bin by age
+   and severity, prove the partition, guard it at close. Then the hardening: a guard that looked
+   for the word LOW passed four items that never said it. Severity now comes from a fixed prefix,
+   and a missing prefix fails closed.
+4. **`sibling-handoff.md`** (new) — the pattern deferred at v0.2.20 until a third instance; three
+   more landed. The finder writes words, the owner writes the diff. Each ask carries a done-test
+   run before posting, is measured before it is posted (one went out as "checked, not
+   reproduced", 249 of 249), lands where the owner reads, and is read back cold.
+5. **`case-studies/pre-registered-judge-eval.md`** (new) — a local model was tested against the
+   path regex under a rule committed before any data. It scored 0.6364 against a 0.6469 baseline
+   and failed. The question closed with a decision row and a reopen condition.
+
+**Triaged no-impact.** In the orchestration-head implementation: cycle closes, kickoffs,
+sprint logs, verifier notes and a resume note (cycles 30 to 39), and a dashboard drill-down
+contract specific to one consumer. In the shared tooling repo: a localhost lease-window stub
+for one probe, an operator alert helper over the estate's chat feed, and a demo-site snapshot
+script. In the governance standing source: one sprint open and one timer-roster handoff, whose
+pattern is item 4.
+
+**Deferred.** The alert helper's contract (mention the person, keep a local ledger, ping on
+state changes, never on states) is portable but has one user; it lands when a second appears.
+
 ## v0.2.20 — the four feeders swept (2026-09-14)
 
 v0.2.19 swept one feeder and said so. This pass swept the other four from their v0.2.18

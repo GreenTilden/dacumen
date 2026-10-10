@@ -26,6 +26,15 @@ An unknown value — a typo in the flag, or a bad `DACUMEN_AUDIENCE` environment
 
 The gate is the only place that knows which categories are soft under which audience. A wrapper script picks `public` or `internal` and nothing else — it does not keep its own list of "categories that are fine internally," because two lists that are supposed to agree will eventually disagree, and by the time anyone notices, the drift has already shipped. If a wrapper ever needs a category to behave differently than this file says, that is a change to this file, not a second copy of the rule living somewhere else.
 
+## The audience follows the emission path, not the file
+
+A private implementation carried the same finding for six cycles: two of its own working documents failed the publication gate every time anyone ran it. Every hit was a topology fact those documents exist to record. Neither document was served anywhere. The ruling was one sentence: scan a repo's own working documents at `internal`, and keep every path that emits content to a public place on the default `public`.
+
+Two details made the ruling safe.
+
+- **The audience belongs to the call site, not to the text.** The day a generator starts copying one of those documents to a served page, that generator is a new call site, and it scans at the default `public`. The ruling does not follow the text when it moves. A working note can be `internal` in its repo and still be scanned as `public` on its way out.
+- **The flag alone was not enough, and that was the point.** One of the two documents still failed at `internal`, because two lines named a household-finance service. Those lines were rewritten to the category name before the file passed. A finance finding stays hard at every audience, so no audience ruling can waive it.
+
 ## Usage
 
 ```

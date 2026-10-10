@@ -50,6 +50,19 @@ Process items pile up on a carryover board faster than product items, because ea
 
 LEAVE is the important one. It is a decision, not a deferral: the item is not coming back on its own. The text stays so the ruling is auditable, and so the next person who has the same idea finds the earlier ruling before they write it up a second time. One private upstream cycle ruled ten process items LEAVE in a single line at close and took its carryover board from thirty-six to twenty-one in one triage pass. That is what the ruling is for.
 
+### Carryforward amnesty: let age do the ruling, with a guard that cannot be fooled by wording
+
+LEAVE needs someone to rule it. Some items never get that attention: low-severity findings carried from cycle to cycle because each close copies the list forward. The orchestration-head implementation added a mechanical rule for them.
+
+- **Count, never hand-count.** A script counts how many cycle-close snapshots each carried item appears in.
+- **Bin by age and severity.** A low or informational item seen in four or more snapshots, with no fix loop, moves to *known, not carried*. Its tracking ticket closes with a comment naming the bin and the trigger that would reopen it. An item waiting on the operator or on another repo moves to an *operator-gated* register. Everything else stays live.
+- **Prove the partition.** The three bins must be disjoint and together equal the original list, checked by the script, not by eye. The first run binned 22 items: 9 closed, 8 gated, 5 live.
+- **Guard it at close.** A close-time guard fails if an item sits in two bins, or if a stale low item is still live with no dated re-measure marker. It never passes on an empty list.
+
+The first verifier pass found the gap that matters most. The guard read severity by scanning each item's text for the word LOW. Four of the nine correctly binned items never said the word, so they would have ridden past the guard unflagged. One live item did exactly that for four snapshots. The fix: severity is read only from a fixed prefix at the start of the item (`severity: MEDIUM · …`), and a live item with no prefix fails unconditionally. A medium or high item past the threshold warns instead of failing, because it may be waiting on real work. Two cycles later the live register was down to one item.
+
+The lesson travels beyond carryovers: **a check that looks for a word passes everything that does not use the word.** When a guard decides on a label, make the label a required field in a fixed place, and fail closed when it is missing.
+
 ## 4. Don't measure the measurement
 
 When the framework starts to feel heavy, the temptation is to build a dashboard for it. Resist that. The private upstream measured its own ceremony share once — every logged loop classified as ceremony, work, substrate, or other, across roughly two thousand entries — and found ceremony at 23% overall, falling from 60–90% in the codification cycles to 10–30% once the rituals were routine. The verdict was that ceremony was not the bottleneck; scope-picking at cycle-open was. And the fourth recommendation of that spike is the one that belongs here:
@@ -60,7 +73,7 @@ A measurement earns a script and a number. It does not earn a surface, a schema,
 
 ## How these four fit together
 
-`case-studies/generated-vs-hand-authored-register.md` is rule 1 applied to a page that had a reader and still went stale in a day — the fix was to split it by who can honestly author each column.
+`commit-gates.md` §3 is rule 1 applied to test suites that skip arms and still print green. `case-studies/generated-vs-hand-authored-register.md` is rule 1 applied to a page that had a reader and still went stale in a day — the fix was to split it by who can honestly author each column.
 
 Rule 1 stops cruft at the door. Rule 2 removes it once it has crept in. Rule 3 gives you a way to say no to it without pretending you never saw it. Rule 4 stops you from building a second framework to police the first. Amendment 14 runs the same four moves on memory files at every cycle-close; this doc asks you to run them on everything else, at the same moment.
 
